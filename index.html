@@ -8,91 +8,90 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <style>
-        /* Tối ưu hóa thanh cuộn và chống tràn ngang tuyệt đối */
-        html, body {
-            max-width: 100vw;
-            overflow-x: hidden;
-        }
-    </style>
 </head>
-<body class="bg-slate-100 font-sans text-gray-800 text-xs antialiased">
+<body class="bg-slate-50 font-sans leading-normal tracking-normal text-gray-800 text-sm">
 
-    <div class="min-h-screen flex flex-col max-w-[1600px] mx-auto">
-        <!-- Header Siêu Gọn -->
-        <header class="bg-white shadow-xs border-b border-slate-200 px-3 py-2.5 sticky top-0 z-40">
-            <div class="flex flex-col sm:flex-row justify-between items-center gap-2">
+    <div class="min-h-screen flex flex-col">
+        <!-- Header -->
+        <header class="bg-white shadow-xs border-b border-slate-100">
+            <div class="max-w-7xl mx-auto px-4 py-3 flex flex-col md:flex-row justify-between items-center gap-2">
                 <div class="flex items-center gap-2 flex-wrap">
-                    <h1 class="text-sm sm:text-base font-black text-blue-600 tracking-tight flex items-center gap-1.5"><span>📊</span> Quản Lý Đầu Tư</h1>
-                    <span id="cloud-status" class="text-[9px] font-bold px-2 py-0.5 rounded-full bg-amber-100 text-amber-700">Đang kết nối Cloud...</span>
-                    <span id="role-badge" class="text-[9px] font-bold px-2 py-0.5 rounded-full bg-slate-100 text-slate-600">👁️ Xem</span>
+                    <h1 class="text-lg font-extrabold text-blue-600 tracking-tight flex items-center gap-2"><span>📊</span> Dashboard Quản Lý Đầu Tư Đa Danh Mục</h1>
+                    <span id="cloud-status" class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-100 text-amber-700">Đang kết nối Cloud...</span>
+                    <span id="role-badge" class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-slate-100 text-slate-600">👁️ Chế độ Xem</span>
                 </div>
-                <div class="flex items-center space-x-1.5">
-                    <div id="realtime-clock" class="text-[11px] font-semibold text-gray-600 bg-slate-50 px-2.5 py-1 rounded-full border border-slate-200"></div>
-                    <button id="auth-btn" onclick="toggleAdminAuth()" class="bg-amber-500 hover:bg-amber-600 text-white text-[11px] font-bold px-2.5 py-1 rounded-lg shadow-xs transition">🔒 Admin</button>
-                    <button onclick="syncFromCloud()" class="bg-blue-50 hover:bg-blue-100 text-blue-600 text-[11px] font-bold px-2.5 py-1 rounded-lg border border-blue-200 transition">🔄 Đồng Bộ</button>
-                    <button id="btn-clear-data" onclick="clearAllData()" class="bg-red-50 hover:bg-red-100 text-red-600 text-[11px] font-bold px-2.5 py-1 rounded-lg border border-red-200 transition hidden">🗑️ Xóa</button>
+                <div class="flex items-center space-x-2">
+                    <div id="realtime-clock" class="text-xs font-semibold text-gray-600 bg-slate-100 px-3 py-1 rounded-full shadow-inner"></div>
+                    
+                    <!-- Nút Đăng nhập / Đăng xuất Admin -->
+                    <button id="auth-btn" onclick="toggleAdminAuth()" class="bg-amber-500 hover:bg-amber-600 text-white text-xs font-bold px-3 py-1.5 rounded-xl shadow-xs transition">🔒 Đăng nhập Admin</button>
+                    
+                    <button onclick="syncFromCloud()" class="bg-blue-50 hover:bg-blue-100 text-blue-600 text-xs font-bold px-2.5 py-1 rounded-xl border border-blue-200 transition">🔄 Đồng Bộ</button>
+                    <button id="btn-clear-data" onclick="clearAllData()" class="bg-red-50 hover:bg-red-100 text-red-600 text-xs font-bold px-2.5 py-1 rounded-xl border border-red-200 transition hidden">🗑️ Xóa Dữ Liệu</button>
                 </div>
             </div>
         </header>
 
-        <!-- Main Content Grid: Tự động chuyển từ 1 cột (Mobile) sang 4 cột (Desktop) -->
-        <main class="flex-grow p-2 sm:p-4 grid grid-cols-1 lg:grid-cols-4 gap-3.5">
+        <!-- Main Content -->
+        <main class="flex-grow max-w-7xl w-full mx-auto px-4 py-5 grid grid-cols-1 lg:grid-cols-4 gap-5">
             
-            <!-- CỘT TRÁI (Desktop: col-span-1) -->
-            <div class="lg:col-span-1 space-y-3.5">
+            <!-- CỘT TRÁI -->
+            <div class="lg:col-span-1 space-y-5">
                 <!-- Bảng giá thị trường -->
-                <div class="bg-white p-3 rounded-xl shadow-2xs border border-slate-200">
-                    <div class="flex justify-between items-center mb-2">
-                        <h3 class="text-[11px] font-bold text-gray-700 uppercase tracking-wide">⚡ Bảng Giá Thị Trường</h3>
-                        <span class="text-[9px] text-slate-400">Thủ công</span>
+                <div class="bg-white p-4 rounded-2xl shadow-xs border border-slate-100">
+                    <div class="flex justify-between items-center mb-3">
+                        <h3 class="text-xs font-bold text-gray-700 uppercase tracking-wide">⚡ Bảng Giá Thị Trường</h3>
+                        <span class="text-[10px] text-slate-400 font-medium">Thủ công</span>
                     </div>
-                    <div id="market-prices-widget" class="space-y-1.5 text-xs max-h-40 overflow-y-auto"></div>
+                    <div id="market-prices-widget" class="space-y-2 text-xs"></div>
                 </div>
 
                 <!-- Nhắc nhở chốt lời -->
-                <div class="bg-gradient-to-br from-amber-50 to-orange-50 p-3 rounded-xl shadow-2xs border border-amber-200">
-                    <h3 class="text-[11px] font-bold text-amber-800 uppercase tracking-wide mb-1.5 flex items-center gap-1">
-                        <span>💡</span> Đề Xuất Chốt Lời
+                <div class="bg-gradient-to-br from-amber-50 to-orange-50 p-4 rounded-2xl shadow-xs border border-amber-200">
+                    <h3 class="text-xs font-bold text-amber-800 uppercase tracking-wide mb-2 flex items-center gap-1.5">
+                        <span>💡</span> Nhắc Nhở & Đề Xuất Chốt Lời
                     </h3>
-                    <div id="profit-alert-widget" class="space-y-1.5 text-xs max-h-40 overflow-y-auto"></div>
+                    <div id="profit-alert-widget" class="space-y-2 text-xs"></div>
                 </div>
 
                 <!-- Tỷ Trọng Danh Mục -->
-                <div class="bg-white p-3 rounded-xl shadow-2xs border border-slate-200 flex flex-col items-center">
-                    <div class="flex justify-between items-center w-full mb-2">
-                        <h3 class="text-[11px] font-bold text-gray-700 uppercase tracking-wide">Tỷ Trọng Danh Mục</h3>
-                        <span class="text-[9px] text-slate-400">Tự động</span>
+                <div class="bg-white p-4 rounded-2xl shadow-xs border border-slate-100 flex flex-col items-center">
+                    <div class="flex justify-between items-center w-full mb-3">
+                        <h3 class="text-xs font-bold text-gray-700 uppercase tracking-wide">Tỷ Trọng Danh Mục</h3>
+                        <span class="text-[10px] text-slate-400 font-medium">Tự động</span>
                     </div>
-                    <div class="relative w-full max-w-[170px] h-[170px] flex items-center justify-center">
+                    
+                    <div class="relative w-full max-w-[210px] h-[210px] flex items-center justify-center">
                         <canvas id="portfolioChart"></canvas>
                         <div class="absolute inset-0 flex flex-col items-center justify-center pointer-events-none text-center">
-                            <span class="text-[9px] uppercase font-bold text-slate-400">Tổng Tài Sản</span>
-                            <span id="chart-center-total" class="text-[11px] font-black text-slate-800 mt-0.5">0 đ</span>
+                            <span class="text-[10px] uppercase font-bold text-slate-400 tracking-wider">Tổng Tài Sản</span>
+                            <span id="chart-center-total" class="text-xs font-black text-slate-800 mt-0.5">0 đ</span>
                         </div>
                     </div>
-                    <div id="custom-chart-legend" class="w-full mt-2.5 space-y-1 border-t border-slate-100 pt-2"></div>
+
+                    <div id="custom-chart-legend" class="w-full mt-4 space-y-1.5 border-t border-slate-50 pt-3"></div>
                 </div>
 
-                <!-- Hiệu suất 5 danh mục (Bubble Chart) -->
-                <div class="bg-white p-3 rounded-xl shadow-2xs border border-slate-200">
-                    <h3 class="text-[11px] font-bold text-gray-700 uppercase tracking-wide mb-1">📈 Hiệu Suất 5 Danh Mục</h3>
-                    <div class="w-full h-36">
+                <!-- Biểu Đồ Bong Bóng -->
+                <div class="bg-white p-4 rounded-2xl shadow-xs border border-slate-100">
+                    <h3 class="text-xs font-bold text-gray-700 uppercase tracking-wide mb-1">📈 Hiệu Suất 5 Danh Mục</h3>
+                    <p class="text-[10px] text-gray-400 mb-2">X: Vốn | Y: ROI TB (%) | Cỡ: Lãi/Lỗ</p>
+                    <div class="w-full h-44">
                         <canvas id="bubbleChart"></canvas>
                     </div>
                 </div>
 
                 <!-- Tổng Hợp Khối Lượng -->
-                <div class="bg-white p-3 rounded-xl shadow-2xs border border-slate-200">
-                    <h3 class="text-[11px] font-bold text-gray-700 uppercase tracking-wide mb-2">📦 Tổng Hợp Khối Lượng</h3>
+                <div class="bg-white p-4 rounded-2xl shadow-xs border border-slate-100">
+                    <h3 class="text-xs font-bold text-gray-700 uppercase tracking-wide mb-2.5">📦 Tổng Hợp Khối Lượng</h3>
                     <div class="overflow-x-auto">
-                        <table class="w-full text-left text-[11px]">
+                        <table class="w-full text-left text-[11px] whitespace-nowrap">
                             <thead>
                                 <tr class="bg-slate-50 text-slate-500 border-b border-slate-100">
-                                    <th class="p-1 font-semibold">Mã</th>
-                                    <th class="p-1 text-right font-semibold">Mua</th>
-                                    <th class="p-1 text-right font-semibold">Bán</th>
-                                    <th class="p-1 text-right font-semibold">Còn</th>
+                                    <th class="p-1.5 font-semibold">Mã</th>
+                                    <th class="p-1.5 text-right font-semibold">Mua</th>
+                                    <th class="p-1.5 text-right font-semibold">Bán</th>
+                                    <th class="p-1.5 text-right font-semibold">Còn Lại</th>
                                 </tr>
                             </thead>
                             <tbody id="volume-summary-body" class="divide-y divide-slate-50"></tbody>
@@ -101,55 +100,57 @@
                 </div>
             </div>
 
-            <!-- CỘT PHẢI (Desktop: col-span-3) -->
-            <div class="lg:col-span-3 space-y-3.5">
+            <!-- CỘT PHẢI -->
+            <div class="lg:col-span-3 space-y-5">
                 
-                <!-- Ví Tiền Mặt & Nạp Rút Nhanh -->
-                <div class="bg-gradient-to-r from-teal-600 to-emerald-600 p-3.5 sm:p-4 rounded-xl shadow-sm text-white flex flex-col sm:flex-row justify-between items-center gap-3">
-                    <div class="flex items-center gap-2.5">
-                        <div class="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center text-xl shadow-inner">💵</div>
+                <!-- Ví Tiền Mặt -->
+                <div class="bg-gradient-to-r from-teal-600 to-emerald-600 p-5 rounded-2xl shadow-md text-white flex flex-col md:flex-row justify-between items-center gap-4">
+                    <div class="flex items-center gap-3">
+                        <div class="w-12 h-12 bg-white/20 rounded-2xl flex items-center justify-center text-2xl shadow-inner">💵</div>
                         <div>
-                            <h3 class="text-[10px] uppercase font-bold tracking-wider text-teal-100">Ví Tiền Mặt</h3>
-                            <p id="top-cash-balance" class="text-xl sm:text-2xl font-black mt-0.5">0 đ</p>
+                            <h3 class="text-xs uppercase font-bold tracking-wider text-teal-100">Ví Tiền Mặt</h3>
+                            <p id="top-cash-balance" class="text-2xl font-black mt-0.5">0 đ</p>
                         </div>
                     </div>
-                    <div id="quick-cash-controls" class="flex items-center gap-2 w-full sm:w-auto hidden">
-                        <input type="text" id="quick-cash-input" placeholder="Nhập số tiền..." oninput="formatNumberInput(this)" class="bg-white/10 border border-white/30 px-2.5 py-1.5 rounded-lg text-xs placeholder-teal-200 text-white focus:outline-none w-full sm:w-36">
-                        <button onclick="quickCashTransaction('BUY')" class="bg-white text-teal-700 hover:bg-teal-50 font-bold px-2.5 py-1.5 rounded-lg text-xs shadow transition whitespace-nowrap">+ Nạp</button>
-                        <button onclick="quickCashTransaction('SELL')" class="bg-teal-800 text-white hover:bg-teal-900 font-bold px-2.5 py-1.5 rounded-lg text-xs shadow transition whitespace-nowrap">- Rút</button>
+                    <div id="quick-cash-controls" class="flex flex-col sm:flex-row items-center gap-2 w-full md:w-auto hidden">
+                        <input type="text" id="quick-cash-input" placeholder="Nhập số tiền..." oninput="formatNumberInput(this)" class="bg-white/10 border border-white/30 px-3 py-2 rounded-xl text-xs placeholder-teal-200 text-white focus:outline-none focus:bg-white/20 w-full sm:w-40">
+                        <div class="flex items-center gap-2 w-full sm:w-auto">
+                            <button onclick="quickCashTransaction('BUY')" class="bg-white text-teal-700 hover:bg-teal-50 font-bold px-3 py-2 rounded-xl text-xs shadow transition whitespace-nowrap flex-1 sm:flex-none">+ Nạp Thêm</button>
+                            <button onclick="quickCashTransaction('SELL')" class="bg-teal-800 text-white hover:bg-teal-900 font-bold px-3 py-2 rounded-xl text-xs shadow transition whitespace-nowrap flex-1 sm:flex-none">- Rút Tiền</button>
+                        </div>
                     </div>
                 </div>
 
                 <!-- Thống kê tổng quan -->
-                <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
-                    <div class="bg-white p-3 rounded-xl shadow-2xs border border-slate-200">
-                        <h3 class="text-gray-400 text-[10px] font-bold uppercase tracking-wider">Tổng Giá Trị Danh Mục</h3>
-                        <p id="total-portfolio-value" class="text-lg font-black text-gray-800 mt-0.5">0 đ</p>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+                    <div class="bg-white p-4 rounded-2xl shadow-xs border border-slate-100">
+                        <h3 class="text-gray-400 text-[11px] font-bold uppercase tracking-wider">Tổng Giá Trị Danh Mục</h3>
+                        <p id="total-portfolio-value" class="text-xl font-black text-gray-800 mt-1">0 đ</p>
                     </div>
-                    <div class="bg-white p-3 rounded-xl shadow-2xs border border-slate-200">
-                        <h3 class="text-gray-400 text-[10px] font-bold uppercase tracking-wider">Tổng Vốn Đầu Tư (Gốc)</h3>
-                        <p id="total-invested" class="text-lg font-black text-gray-800 mt-0.5">0 đ</p>
+                    <div class="bg-white p-4 rounded-2xl shadow-xs border border-slate-100">
+                        <h3 class="text-gray-400 text-[11px] font-bold uppercase tracking-wider">Tổng Vốn Đầu Tư (Gốc)</h3>
+                        <p id="total-invested" class="text-xl font-black text-gray-800 mt-1">0 đ</p>
                     </div>
-                    <div class="bg-white p-3 rounded-xl shadow-2xs border border-slate-200">
-                        <h3 class="text-gray-400 text-[10px] font-bold uppercase tracking-wider">Lợi Nhuận Ước Tính</h3>
-                        <p id="total-profit" class="text-lg font-black text-gray-800 mt-0.5">0 đ (0%)</p>
+                    <div class="bg-white p-4 rounded-2xl shadow-xs border border-slate-100">
+                        <h3 class="text-gray-400 text-[11px] font-bold uppercase tracking-wider">Lợi Nhuận Ước Tính</h3>
+                        <p id="total-profit" class="text-xl font-black text-gray-800 mt-1">0 đ (0%)</p>
                     </div>
                 </div>
 
                 <!-- Form Thêm Giao Dịch Mới (Chỉ hiện khi là Admin) -->
-                <div id="add-tx-form-card" class="bg-white p-4 rounded-xl shadow-2xs border border-slate-200 hidden">
-                    <h3 class="text-[11px] font-bold text-gray-700 uppercase tracking-wide mb-2.5">Thêm Giao Dịch Mới</h3>
-                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5 mb-2.5">
+                <div id="add-tx-form-card" class="bg-white p-5 rounded-2xl shadow-xs border border-slate-100 hidden">
+                    <h3 class="text-xs font-bold text-gray-700 uppercase tracking-wide mb-3">Thêm Giao Dịch Mới</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-3 mb-3">
                         <div>
-                            <label class="block text-[10px] font-bold text-gray-500 mb-1">Loại</label>
-                            <select id="tx-type" onchange="onTxTypeChange()" class="w-full border border-slate-200 p-1.5 rounded-lg text-xs bg-slate-50 font-bold text-blue-600 outline-none">
-                                <option value="BUY">Mua / Gửi / Nạp</option>
+                            <label class="block text-[11px] font-bold text-gray-500 mb-1">Loại Giao Dịch</label>
+                            <select id="tx-type" onchange="onTxTypeChange()" class="w-full border border-slate-200 p-2 rounded-xl text-xs bg-slate-50 font-bold text-blue-600 outline-none">
+                                <option value="BUY">Mua / Gửi Mới / Nạp Tiền</option>
                                 <option value="SELL">Bán / Rút</option>
                             </select>
                         </div>
                         <div>
-                            <label class="block text-[10px] font-bold text-gray-500 mb-1">Danh Mục</label>
-                            <select id="channel" onchange="onChannelChange()" class="w-full border border-slate-200 p-1.5 rounded-lg text-xs bg-slate-50 font-semibold outline-none">
+                            <label class="block text-[11px] font-bold text-gray-500 mb-1">Danh Mục</label>
+                            <select id="channel" onchange="onChannelChange()" class="w-full border border-slate-200 p-2 rounded-xl text-xs bg-slate-50 font-semibold outline-none">
                                 <option value="TIETKIEM">1. Tiết Kiệm</option>
                                 <option value="VANG">2. Vàng</option>
                                 <option value="CK">3. Chứng Khoán</option>
@@ -158,69 +159,64 @@
                             </select>
                         </div>
                         <div>
-                            <label class="block text-[10px] font-bold text-gray-500 mb-1">Ngày Giao Dịch</label>
-                            <input type="date" id="tx-date" class="w-full border border-slate-200 p-1.5 rounded-lg text-xs bg-slate-50 outline-none">
+                            <label class="block text-[11px] font-bold text-gray-500 mb-1">Ngày Giao Dịch</label>
+                            <input type="date" id="tx-date" class="w-full border border-slate-200 p-2 rounded-xl text-xs bg-slate-50 outline-none">
                         </div>
                     </div>
 
-                    <div class="mb-2.5" id="symbol-container">
-                        <label class="block text-[10px] font-bold text-gray-500 mb-1">Mã / Tên Tài Sản</label>
-                        <input type="text" id="tx-symbol" placeholder="VD: SJC, VCB..." class="w-full border border-slate-200 p-1.5 rounded-lg text-xs uppercase outline-none">
+                    <div class="mb-3" id="symbol-container">
+                        <label class="block text-[11px] font-bold text-gray-500 mb-1">Mã / Tên Tài Sản</label>
+                        <input type="text" id="tx-symbol" placeholder="VD: SJC, VCB, TIEN_MAT..." class="w-full border border-slate-200 p-2 rounded-xl text-xs uppercase outline-none">
                     </div>
 
-                    <div id="dynamic-fields" class="grid grid-cols-1 sm:grid-cols-3 gap-2.5 mb-3"></div>
+                    <div id="dynamic-fields" class="grid grid-cols-1 md:grid-cols-3 gap-3 mb-4"></div>
 
-                    <button onclick="addTransaction()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 rounded-lg text-xs transition shadow-xs">Xác Nhận Thêm Giao Dịch</button>
+                    <button onclick="addTransaction()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2.5 rounded-xl text-xs transition shadow-md shadow-blue-200">Xác Nhận Thêm Giao Dịch</button>
                 </div>
 
-                <!-- Thông báo Chế độ Xem -->
-                <div id="guest-notice" class="bg-blue-50/80 p-3 rounded-xl border border-blue-100 text-center">
-                    <p class="text-[11px] font-semibold text-blue-700">🔒 Đang ở chế độ xem. Bấm nút <b>"Admin"</b> ở góc trên để đăng nhập (Mật khẩu: <code class="bg-blue-100 px-1 py-0.5 rounded">090393</code>) và thao tác.</p>
+                <!-- Thông báo nếu chưa Đăng nhập Admin -->
+                <div id="guest-notice" class="bg-blue-50/60 p-4 rounded-2xl border border-blue-100 text-center">
+                    <p class="text-xs font-semibold text-blue-700">🔒 Bạn đang ở chế độ xem. Vui lòng bấm <b>"Đăng nhập Admin"</b> để thực hiện thêm, sửa hoặc xóa giao dịch.</p>
                 </div>
 
                 <!-- Bảng Tổng Hợp Danh Mục & ROI -->
-                <div class="bg-white p-4 rounded-xl shadow-2xs border border-slate-200">
-                    <h3 class="text-[11px] font-bold text-gray-700 uppercase tracking-wide mb-2.5">Tổng Hợp Danh Mục & ROI</h3>
-                    <!-- Thêm bọc cuộn di động thông minh, không tràn trang -->
-                    <div class="overflow-x-auto -mx-4 sm:mx-0 px-4 sm:px-0">
-                        <table class="w-full text-left border-collapse text-xs whitespace-nowrap">
-                            <thead>
-                                <tr class="bg-slate-50 text-slate-500 uppercase border-b border-slate-100 text-[10px]">
-                                    <th class="p-2.5 font-semibold rounded-l-lg">Mã</th>
-                                    <th class="p-2.5 font-semibold">Khối Lượng</th>
-                                    <th class="p-2.5 font-semibold">Giá Vốn</th>
-                                    <th class="p-2.5 font-semibold">Giá Thị Trường</th>
-                                    <th class="p-2.5 font-semibold">Thành Giá Trị</th>
-                                    <th class="p-2.5 font-semibold">Tỷ Trọng</th>
-                                    <th class="p-2.5 font-semibold">ROI (%)</th>
-                                    <th class="p-2.5 font-semibold rounded-r-lg">Lợi Nhuận</th>
-                                </tr>
-                            </thead>
-                            <tbody id="assets-table-body" class="divide-y divide-slate-50"></tbody>
-                        </table>
-                    </div>
+                <div class="bg-white p-5 rounded-2xl shadow-xs border border-slate-100 overflow-x-auto">
+                    <h3 class="text-xs font-bold text-gray-700 uppercase tracking-wide mb-3">Tổng Hợp Danh Mục & ROI</h3>
+                    <table class="w-full text-left border-collapse text-xs whitespace-nowrap">
+                        <thead>
+                            <tr class="bg-slate-50 text-slate-500 uppercase border-b border-slate-100 text-[11px]">
+                                <th class="p-3 font-semibold rounded-l-xl">Mã Tài Sản</th>
+                                <th class="p-3 font-semibold">Khối Lượng / Thời Gian</th>
+                                <th class="p-3 font-semibold">Giá Vốn TB</th>
+                                <th class="p-3 font-semibold">Giá Thị Trường</th>
+                                <th class="p-3 font-semibold">Thành Giá Trị</th>
+                                <th class="p-3 font-semibold">Tỷ Trọng</th>
+                                <th class="p-3 font-semibold">ROI (%)</th>
+                                <th class="p-3 font-semibold rounded-r-xl">Lợi Nhuận</th>
+                            </tr>
+                        </thead>
+                        <tbody id="assets-table-body" class="divide-y divide-slate-50"></tbody>
+                    </table>
                 </div>
 
                 <!-- Lịch sử chi tiết từng lệnh -->
-                <div class="bg-white p-4 rounded-xl shadow-2xs border border-slate-200">
-                    <h3 class="text-[11px] font-bold text-gray-700 uppercase tracking-wide mb-2.5">📜 Lịch Sử Chi Tiết Từng Lệnh</h3>
-                    <div class="overflow-x-auto -mx-4 sm:mx-0 px-4 sm:px-0">
-                        <table class="w-full text-left border-collapse text-xs whitespace-nowrap">
-                            <thead>
-                                <tr class="bg-slate-50 text-slate-500 uppercase border-b border-slate-100 text-[10px]">
-                                    <th class="p-2.5 font-semibold rounded-l-lg">Ngày</th>
-                                    <th class="p-2.5 font-semibold">Loại</th>
-                                    <th class="p-2.5 font-semibold">Danh Mục</th>
-                                    <th class="p-2.5 font-semibold">Mã</th>
-                                    <th class="p-2.5 font-semibold">Ngày ĐT</th>
-                                    <th class="p-2.5 font-semibold">Thông Số</th>
-                                    <th class="p-2.5 font-semibold">Thành Tiền</th>
-                                    <th class="p-2.5 font-semibold text-center rounded-r-lg">Thao Tác</th>
-                                </tr>
-                            </thead>
-                            <tbody id="transactions-table-body" class="divide-y divide-slate-50"></tbody>
-                        </table>
-                    </div>
+                <div class="bg-white p-5 rounded-2xl shadow-xs border border-slate-100 overflow-x-auto">
+                    <h3 class="text-xs font-bold text-gray-700 uppercase tracking-wide mb-3">📜 Lịch Sử Chi Tiết Từng Lệnh</h3>
+                    <table class="w-full text-left border-collapse text-xs whitespace-nowrap">
+                        <thead>
+                            <tr class="bg-slate-50 text-slate-500 uppercase border-b border-slate-100 text-[11px]">
+                                <th class="p-3 font-semibold rounded-l-xl">Ngày</th>
+                                <th class="p-3 font-semibold">Loại</th>
+                                <th class="p-3 font-semibold">Danh Mục</th>
+                                <th class="p-3 font-semibold">Mã</th>
+                                <th class="p-3 font-semibold">Số Ngày ĐT</th>
+                                <th class="p-3 font-semibold">Chi Tiết Thông Số</th>
+                                <th class="p-3 font-semibold">Thành Tiền / Vốn</th>
+                                <th class="p-3 font-semibold text-center rounded-r-xl">Thao Tác</th>
+                            </tr>
+                        </thead>
+                        <tbody id="transactions-table-body" class="divide-y divide-slate-50"></tbody>
+                    </table>
                 </div>
 
             </div>
@@ -228,14 +224,14 @@
     </div>
 
     <!-- Modal Sửa Giao Dịch -->
-    <div id="edit-modal" class="hidden fixed inset-0 bg-black bg-opacity-40 backdrop-blur-xs flex items-center justify-center px-4 z-50">
-        <div class="bg-white rounded-2xl shadow-xl p-4 max-w-sm w-full border border-slate-100">
-            <h3 class="text-xs font-bold text-gray-800 mb-2.5 uppercase tracking-wide">Chỉnh Sửa Giao Dịch</h3>
+    <div id="edit-modal" class="hidden fixed inset-0 bg-black bg-opacity-40 backdrop-blur-sm flex items-center justify-center px-4 z-50">
+        <div class="bg-white rounded-2xl shadow-xl p-5 max-w-md w-full border border-slate-100">
+            <h3 class="text-sm font-bold text-gray-800 mb-3 uppercase tracking-wide">Chỉnh Sửa Giao Dịch</h3>
             <input type="hidden" id="edit-index">
-            <div class="space-y-2.5 text-xs" id="edit-modal-content"></div>
-            <div class="flex justify-end space-x-2 mt-4">
-                <button onclick="closeEditModal()" class="bg-gray-100 text-gray-600 px-3 py-1.5 rounded-lg font-bold hover:bg-gray-200 transition">Hủy</button>
-                <button onclick="saveEditedTransaction()" class="bg-blue-600 text-white px-3 py-1.5 rounded-lg font-bold hover:bg-blue-700 transition shadow-xs">Lưu</button>
+            <div class="space-y-3 text-xs" id="edit-modal-content"></div>
+            <div class="flex justify-end space-x-2 mt-5">
+                <button onclick="closeEditModal()" class="bg-gray-100 text-gray-600 px-3 py-2 rounded-xl font-bold hover:bg-gray-200 transition">Hủy</button>
+                <button onclick="saveEditedTransaction()" class="bg-blue-600 text-white px-4 py-2 rounded-xl font-bold hover:bg-blue-700 transition shadow-md shadow-blue-200">Lưu Thay Đổi</button>
             </div>
         </div>
     </div>
@@ -244,12 +240,12 @@
         // ==========================================
         // CẤU HÌNH JSONBIN.IO CỦA BẠN (DÁN VÀO ĐÂY)
         // ==========================================
-        let jsonBinId = "6ad31b41ffd5d1605372eb7b";             
-        let jsonBinMasterKey = "$2a$10$IxCWhgMbqo9kEkkwoFa83.dg0TPCFSuhUZw.BkMBRgp2wA3CtqAHi";   
+        let jsonBinId = "6ad31b41ffd5d1605372eb7b";             // Thay bằng Bin ID thực tế
+        let jsonBinMasterKey = "$2a$10$IxCWhgMbqo9kEkkwoFa83.dg0TPCFSuhUZw.BkMBRgp2wA3CtqAHi";   // Thay bằng Master Key thực tế
         // ==========================================
 
-        let isAdmin = false; 
-        const ADMIN_PASS = "090393"; 
+        let isAdmin = false; // Trạng thái Admin
+        const ADMIN_PASS = "090393"; // Mật khẩu Admin
 
         let transactions = JSON.parse(localStorage.getItem('invest_transactions')) || [];
         let marketPrices = JSON.parse(localStorage.getItem('invest_market_prices')) || {};
@@ -264,6 +260,7 @@
             'TIENMAT': { bg: 'bg-teal-50', text: 'text-teal-700', border: 'border-teal-200', hex: '#14b8a6', name: 'Tiền Mặt' }
         };
 
+        // HÀM ĐỊNH DẠNG SỐ CÓ DẤU PHẨY TỰ ĐỘNG KHI NHẬP
         function formatNumberInput(input) {
             let val = input.value.replace(/,/g, '');
             if (!isNaN(val) && val.length > 0) {
@@ -278,6 +275,7 @@
             return parseFloat(valStr.toString().replace(/,/g, '')) || 0;
         }
 
+        // HÀM ĐĂNG NHẬP / ĐĂNG XUẤT ADMIN
         function toggleAdminAuth() {
             if (isAdmin) {
                 isAdmin = false;
@@ -302,19 +300,19 @@
             const btnClear = document.getElementById('btn-clear-data');
 
             if (isAdmin) {
-                authBtn.innerText = "🔓 Thoát Admin";
-                authBtn.className = "bg-rose-600 hover:bg-rose-700 text-white text-[11px] font-bold px-2.5 py-1 rounded-lg shadow-xs transition";
+                authBtn.innerText = "🔓 Đăng xuất Admin";
+                authBtn.className = "bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold px-3 py-1.5 rounded-xl shadow-xs transition";
                 roleBadge.innerText = "⚡ Quyền Admin";
-                roleBadge.className = "text-[9px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-700";
+                roleBadge.className = "text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-700";
                 addForm.classList.remove('hidden');
                 guestNotice.classList.add('hidden');
                 quickCashControls.classList.remove('hidden');
                 btnClear.classList.remove('hidden');
             } else {
-                authBtn.innerText = "🔒 Admin";
-                authBtn.className = "bg-amber-500 hover:bg-amber-600 text-white text-[11px] font-bold px-2.5 py-1 rounded-lg shadow-xs transition";
-                roleBadge.innerText = "👁️ Xem";
-                roleBadge.className = "text-[9px] font-bold px-2 py-0.5 rounded-full bg-slate-100 text-slate-600";
+                authBtn.innerText = "🔒 Đăng nhập Admin";
+                authBtn.className = "bg-amber-500 hover:bg-amber-600 text-white text-xs font-bold px-3 py-1.5 rounded-xl shadow-xs transition";
+                roleBadge.innerText = "👁️ Chế độ Xem";
+                roleBadge.className = "text-[10px] font-bold px-2 py-0.5 rounded-full bg-slate-100 text-slate-600";
                 addForm.classList.add('hidden');
                 guestNotice.classList.remove('hidden');
                 quickCashControls.classList.add('hidden');
@@ -323,12 +321,13 @@
             renderDashboard();
         }
 
+        // KẾT NỐI VÀ ĐỒNG BỘ JSONBIN.IO
         async function syncFromCloud() {
             const statusElem = document.getElementById('cloud-status');
             if (!jsonBinId || jsonBinId.includes("YOUR_")) {
                 if (statusElem) {
-                    statusElem.innerText = "Local (Chưa cấu hình Cloud)";
-                    statusElem.className = "text-[9px] font-bold px-2 py-0.5 rounded-full bg-slate-100 text-slate-700";
+                    statusElem.innerText = "Chế độ Local (Chưa cấu hình Cloud)";
+                    statusElem.className = "text-[10px] font-bold px-2 py-0.5 rounded-full bg-slate-100 text-slate-700";
                 }
                 renderDashboard();
                 return;
@@ -343,8 +342,8 @@
                     transactions = data.record.transactions || [];
                     marketPrices = data.record.marketPrices || {};
                     if (statusElem) {
-                        statusElem.innerText = "Đã đồng bộ Cloud";
-                        statusElem.className = "text-[9px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-700";
+                        statusElem.innerText = "Đã kết nối Cloud";
+                        statusElem.className = "text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-700";
                     }
                     saveLocal();
                     renderDashboard();
@@ -352,8 +351,8 @@
             } catch (e) {
                 console.error(e);
                 if (statusElem) {
-                    statusElem.innerText = "Lỗi Cloud (Dùng Local)";
-                    statusElem.className = "text-[9px] font-bold px-2 py-0.5 rounded-full bg-rose-100 text-rose-700";
+                    statusElem.innerText = "Lỗi Cloud (Đang dùng Local)";
+                    statusElem.className = "text-[10px] font-bold px-2 py-0.5 rounded-full bg-rose-100 text-rose-700";
                 }
                 renderDashboard();
             }
@@ -374,16 +373,16 @@
                     },
                     body: JSON.stringify({ transactions, marketPrices })
                 });
-                if (!res.ok) throw new Error("Không thể lưu Cloud");
+                if (!res.ok) throw new Error("Không thể lưu lên Cloud");
                 if (statusElem) {
                     statusElem.innerText = "Đã lưu Cloud";
-                    statusElem.className = "text-[9px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-700";
+                    statusElem.className = "text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-700";
                 }
             } catch (e) {
                 console.error(e);
                 if (statusElem) {
-                    statusElem.innerText = "Lỗi lưu Cloud";
-                    statusElem.className = "text-[9px] font-bold px-2 py-0.5 rounded-full bg-rose-100 text-rose-700";
+                    statusElem.innerText = "Lỗi ghi dữ liệu Cloud";
+                    statusElem.className = "text-[10px] font-bold px-2 py-0.5 rounded-full bg-rose-100 text-rose-700";
                 }
             }
         }
@@ -395,26 +394,32 @@
 
         function getSymbolBadgeHTML(symbol, channel) {
             const conf = categoryColors[channel] || { bg: 'bg-slate-50', text: 'text-slate-700', border: 'border-slate-200' };
-            return `<span class="px-2 py-0.5 rounded-md font-bold text-[10px] border ${conf.bg} ${conf.text} ${conf.border}">${symbol}</span>`;
+            return `<span class="px-2.5 py-1 rounded-lg font-bold text-xs border ${conf.bg} ${conf.text} ${conf.border} shadow-2xs">${symbol}</span>`;
         }
 
         function formatDateDDMMYY(dateString) {
             if (!dateString) return '';
             const parts = dateString.split('-');
-            if (parts.length === 3) return `${parts[2]}/${parts[1]}/${parts[0].slice(-2)}`;
+            if (parts.length === 3) {
+                return `${parts[2]}/${parts[1]}/${parts[0].slice(-2)}`;
+            }
             return dateString;
         }
 
         function getShortDateString(dateString) {
             if (!dateString) return '';
             const parts = dateString.split('-');
-            if (parts.length === 3) return `${parts[2]}${parts[1]}${parts[0].slice(-2)}`;
+            if (parts.length === 3) {
+                return `${parts[2]}${parts[1]}${parts[0].slice(-2)}`;
+            }
             return dateString;
         }
 
         function updateClock() {
             const now = new Date();
-            document.getElementById('realtime-clock').innerText = `🕒 ${now.toLocaleDateString('vi-VN')} - ${now.toLocaleTimeString('vi-VN')}`;
+            const timeString = now.toLocaleTimeString('vi-VN');
+            const dateString = now.toLocaleDateString('vi-VN', { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' });
+            document.getElementById('realtime-clock').innerText = `🕒 ${dateString} - ${timeString}`;
         }
         setInterval(updateClock, 1000);
         updateClock();
@@ -424,6 +429,7 @@
         function getCalculatedAssetsMap() {
             let assetMap = {};
             const today = new Date();
+
             assetMap['TIEN_MAT'] = { qty: 0, totalCost: 0, boughtQty: 0, soldQty: 0, channel: 'TIENMAT', startDate: new Date().toISOString().split('T')[0] };
 
             transactions.forEach((tx, idx) => {
@@ -431,6 +437,7 @@
                     assetMap['TIEN_MAT'].qty += tx.capital;
                     assetMap['TIEN_MAT'].totalCost += tx.capital;
                 }
+
                 if (tx.type === 'BUY' && (tx.channel === 'CK' || tx.channel === 'CCQ')) {
                     assetMap['TIEN_MAT'].qty -= tx.capital;
                     assetMap['TIEN_MAT'].totalCost -= tx.capital;
@@ -438,7 +445,8 @@
 
                 let key = tx.symbol;
                 if (tx.channel === 'TIETKIEM') {
-                    key = `${tx.symbol}_${tx.term || 0}T_${getShortDateString(tx.date)}_${idx}`;
+                    const shortDate = getShortDateString(tx.date);
+                    key = `${tx.symbol}_${tx.term || 0}T_${shortDate}_${idx}`;
                 }
 
                 if (!assetMap[key]) {
@@ -453,18 +461,28 @@
                     assetMap[key].qty += tx.qty;
                     assetMap[key].boughtQty += tx.qty;
                     assetMap[key].totalCost += tx.capital;
-                    if (new Date(tx.date) < new Date(assetMap[key].firstBuyDate)) assetMap[key].firstBuyDate = tx.date;
+                    if (new Date(tx.date) < new Date(assetMap[key].firstBuyDate)) {
+                        assetMap[key].firstBuyDate = tx.date;
+                    }
                 } else {
                     assetMap[key].soldQty += tx.qty;
                     if (tx.channel === 'TIENMAT') {
                         assetMap[key].qty -= tx.qty;
                         assetMap[key].totalCost -= tx.capital;
-                        if (assetMap[key].qty < 0) assetMap[key].qty = 0, assetMap[key].totalCost = 0;
-                    } else if (assetMap[key].qty > 0) {
-                        const avgCost = assetMap[key].totalCost / assetMap[key].qty;
-                        assetMap[key].qty -= tx.qty;
-                        assetMap[key].totalCost -= tx.qty * avgCost;
-                        if (assetMap[key].qty <= 0) assetMap[key].qty = 0, assetMap[key].totalCost = 0;
+                        if (assetMap[key].qty < 0) {
+                            assetMap[key].qty = 0;
+                            assetMap[key].totalCost = 0;
+                        }
+                    } else {
+                        if (assetMap[key].qty > 0) {
+                            const avgCost = assetMap[key].totalCost / assetMap[key].qty;
+                            assetMap[key].qty -= tx.qty;
+                            assetMap[key].totalCost -= tx.qty * avgCost;
+                            if (assetMap[key].qty <= 0) {
+                                assetMap[key].qty = 0;
+                                assetMap[key].totalCost = 0;
+                            }
+                        }
                     }
                 }
             });
@@ -472,35 +490,61 @@
             Object.keys(assetMap).forEach(key => {
                 const asset = assetMap[key];
                 if (asset.channel === 'TIETKIEM' && asset.qty > 0 && asset.startDate && asset.term) {
-                    const maturityD = new Date(asset.startDate);
+                    const startD = new Date(asset.startDate);
+                    const maturityD = new Date(startD);
                     maturityD.setMonth(maturityD.getMonth() + parseInt(asset.term));
+                    
                     if (today >= maturityD) {
                         const interest = asset.totalCost * ((asset.rate || 0) / 100) * ((asset.term || 0) / 12);
                         const totalMaturityVal = asset.totalCost + interest;
+
                         assetMap['TIEN_MAT'].qty += totalMaturityVal;
                         assetMap['TIEN_MAT'].totalCost += totalMaturityVal;
-                        asset.qty = 0; asset.totalCost = 0;
+
+                        asset.qty = 0;
+                        asset.totalCost = 0;
                     }
                 }
             });
+
             return assetMap;
         }
 
         function clearAllData() {
             if (!isAdmin) return;
-            if (confirm("Xóa toàn bộ dữ liệu?")) { transactions = []; marketPrices = {}; saveToCloud(); }
+            if (confirm("CẢNH BÁO: Bạn có chắc chắn muốn xóa toàn bộ lịch sử giao dịch không?")) {
+                transactions = [];
+                marketPrices = {};
+                saveToCloud();
+            }
         }
 
         function quickCashTransaction(type) {
             if (!isAdmin) return;
             const inputVal = parseFormattedNumber(document.getElementById('quick-cash-input').value);
-            if (isNaN(inputVal) || inputVal <= 0) return alert("Nhập số tiền hợp lệ!");
+            if (isNaN(inputVal) || inputVal <= 0) {
+                alert("Vui lòng nhập số tiền hợp lệ!");
+                return;
+            }
 
             const assetMap = getCalculatedAssetsMap();
             const currentCash = assetMap['TIEN_MAT'] ? assetMap['TIEN_MAT'].qty : 0;
-            if (type === 'SELL' && currentCash < inputVal) return alert("Số dư tiền mặt không đủ để rút!");
 
-            transactions.push({ type, channel: 'TIENMAT', symbol: 'TIEN_MAT', date: new Date().toISOString().split('T')[0], capital: inputVal, qty: inputVal, price: 1 });
+            if (type === 'SELL' && currentCash < inputVal) {
+                alert(`⚠️ CẢNH BÁO: Số dư tiền mặt hiện tại (${formatCurrency(currentCash)}) không đủ để rút ${formatCurrency(inputVal)}!`);
+                return;
+            }
+
+            const todayStr = new Date().toISOString().split('T')[0];
+            transactions.push({
+                type: type,
+                channel: 'TIENMAT',
+                symbol: 'TIEN_MAT',
+                date: todayStr,
+                capital: inputVal,
+                qty: inputVal,
+                price: 1
+            });
             document.getElementById('quick-cash-input').value = "";
             saveToCloud();
         }
@@ -510,119 +554,316 @@
             const symbolContainer = document.getElementById('symbol-container');
             const channel = document.getElementById('channel').value;
 
-            document.getElementById('channel').querySelector('option[value="TIETKIEM"]').disabled = (type === 'SELL');
-            if (type === 'SELL' && channel === 'TIETKIEM') document.getElementById('channel').value = 'VANG';
+            const channelSelect = document.getElementById('channel');
+            for(let opt of channelSelect.options) {
+                if(opt.value === 'TIETKIEM') {
+                    opt.disabled = (type === 'SELL');
+                }
+            }
+            if (type === 'SELL' && channel === 'TIETKIEM') {
+                document.getElementById('channel').value = 'VANG';
+            }
 
             const activeChannel = document.getElementById('channel').value;
+
             if (type === 'SELL') {
                 const assetMap = getCalculatedAssetsMap();
                 let filteredAssets = Object.keys(assetMap).filter(key => assetMap[key].channel === activeChannel && assetMap[key].qty > 0);
-                symbolContainer.innerHTML = filteredAssets.length === 0 
-                    ? `<label class="block text-[10px] font-bold text-gray-500 mb-1">Mã Tài Sản</label><select class="w-full border p-1.5 rounded-lg text-xs bg-slate-50 text-red-500 font-bold" disabled><option>Không có tài sản khả dụng</option></select>`
-                    : `<label class="block text-[10px] font-bold text-gray-500 mb-1">Chọn Mã Bán / Rút</label><select id="tx-symbol-select" onchange="updateFormFields()" class="w-full border p-1.5 rounded-lg text-xs uppercase bg-blue-50 font-bold text-blue-700 outline-none">${filteredAssets.map(k => `<option value="${k}">${assetMap[k].rawSymbol \vert{}\vert{} k} (Còn: ${assetMap[k].qty.toLocaleString()})</option>`).join('')}</select>`;
+
+                if (filteredAssets.length === 0) {
+                    symbolContainer.innerHTML = `
+                        <label class="block text-[11px] font-bold text-gray-500 mb-1">Mã Tài Sản</label>
+                        <select class="w-full border border-slate-200 p-2 rounded-xl text-xs bg-slate-50 text-red-500 font-bold" disabled>
+                            <option>Không có tài sản khả dụng ở danh mục này để bán/rút</option>
+                        </select>
+                    `;
+                } else {
+                    symbolContainer.innerHTML = `
+                        <label class="block text-[11px] font-bold text-gray-500 mb-1">Chọn Mã Tài Sản Cần Bán / Rút</label>
+                        <select id="tx-symbol-select" onchange="updateFormFields()" class="w-full border border-slate-200 p-2 rounded-xl text-xs uppercase bg-blue-50 font-bold text-blue-700 outline-none">
+                            ${filteredAssets.map(key => `<option value="${key}">${assetMap[key].rawSymbol || key} (Còn lại: ${assetMap[key].qty.toLocaleString()})</option>`).join('')}
+                        </select>
+                    `;
+                }
             } else {
-                symbolContainer.innerHTML = `<label class="block text-[10px] font-bold text-gray-500 mb-1">Mã / Tên Tài Sản</label><input type="text" id="tx-symbol" placeholder="VD: SJC, VCB..." class="w-full border p-1.5 rounded-lg text-xs uppercase outline-none">`;
+                symbolContainer.innerHTML = `
+                    <label class="block text-[11px] font-bold text-gray-500 mb-1">Mã / Tên Tài Sản</label>
+                    <input type="text" id="tx-symbol" placeholder="VD: SJC, VCB, TIEN_MAT..." class="w-full border border-slate-200 p-2 rounded-xl text-xs uppercase focus:ring-2 focus:ring-blue-500 outline-none">
+                `;
             }
             updateFormFields();
         }
 
-        function onChannelChange() { onTxTypeChange(); }
+        function onChannelChange() {
+            onTxTypeChange();
+        }
 
         function updateFormFields(isEdit = false, prefix = 'tx') {
             const channelSelect = document.getElementById(isEdit ? `${prefix}-channel` : 'channel');
             const container = document.getElementById(isEdit ? `${prefix}-dynamic-fields` : 'dynamic-fields');
             const type = isEdit ? document.getElementById(`${prefix}-type`).value : document.getElementById('tx-type').value;
+            
             if (!channelSelect || !container) return;
             const channel = channelSelect.value;
             
             if (channel === 'TIETKIEM') {
-                container.innerHTML = `<div><label class="block text-[10px] font-bold text-gray-500 mb-1">Số Tiền Gửi</label><input type="text" id="${prefix}-capital" oninput="formatNumberInput(this)" placeholder="0" class="w-full border p-1.5 rounded-lg text-xs"></div><div><label class="block text-[10px] font-bold text-gray-500 mb-1">Lãi Suất (%/năm)</label><input type="number" step="0.01" id="${prefix}-rate" placeholder="6.5" class="w-full border p-1.5 rounded-lg text-xs"></div><div><label class="block text-[10px] font-bold text-gray-500 mb-1">Kỳ Hạn (Tháng)</label><input type="number" id="${prefix}-term" placeholder="12" class="w-full border p-1.5 rounded-lg text-xs"></div>`;
+                container.innerHTML = `
+                    <div>
+                        <label class="block text-[11px] font-bold text-gray-500 mb-1">Số Tiền Gửi (VNĐ)</label>
+                        <input type="text" id="${prefix}-capital" oninput="formatNumberInput(this)" placeholder="0" class="w-full border border-slate-200 p-2 rounded-xl text-xs">
+                    </div>
+                    <div>
+                        <label class="block text-[11px] font-bold text-gray-500 mb-1">Lãi Suất (%/năm)</label>
+                        <input type="number" step="0.01" id="${prefix}-rate" placeholder="VD: 6.5" class="w-full border border-slate-200 p-2 rounded-xl text-xs">
+                    </div>
+                    <div>
+                        <label class="block text-[11px] font-bold text-gray-500 mb-1">Kỳ Hạn (Tháng)</label>
+                        <input type="number" id="${prefix}-term" placeholder="VD: 12" class="w-full border border-slate-200 p-2 rounded-xl text-xs">
+                    </div>
+                `;
             } else if (channel === 'TIENMAT') {
-                container.innerHTML = `<div class="sm:col-span-3"><label class="block text-[10px] font-bold text-gray-500 mb-1">Số Tiền (VNĐ)</label><input type="text" id="${prefix}-capital" oninput="formatNumberInput(this)" placeholder="0" class="w-full border p-1.5 rounded-lg text-xs"></div>`;
+                container.innerHTML = `
+                    <div class="md:col-span-3">
+                        <label class="block text-[11px] font-bold text-gray-500 mb-1">Số Tiền (VNĐ)</label>
+                        <input type="text" id="${prefix}-capital" oninput="formatNumberInput(this)" placeholder="0" class="w-full border border-slate-200 p-2 rounded-xl text-xs">
+                    </div>
+                `;
             } else if (channel === 'VANG' || channel === 'CK') {
-                container.innerHTML = `<div><label class="block text-[10px] font-bold text-gray-500 mb-1">Số Lượng</label><input type="number" step="any" id="${prefix}-qty" placeholder="0" class="w-full border p-1.5 rounded-lg text-xs"></div><div><label class="block text-[10px] font-bold text-gray-500 mb-1">Giá Đơn Vị</label><input type="text" id="${prefix}-price" oninput="formatNumberInput(this)" placeholder="0" class="w-full border p-1.5 rounded-lg text-xs"></div>`;
+                container.innerHTML = `
+                    <div>
+                        <label class="block text-[11px] font-bold text-gray-500 mb-1">Số Lượng</label>
+                        <input type="number" step="any" id="${prefix}-qty" placeholder="0" class="w-full border border-slate-200 p-2 rounded-xl text-xs">
+                    </div>
+                    <div>
+                        <label class="block text-[11px] font-bold text-gray-500 mb-1">Giá Đơn Vị (đ)</label>
+                        <input type="text" id="${prefix}-price" oninput="formatNumberInput(this)" placeholder="0" class="w-full border border-slate-200 p-2 rounded-xl text-xs">
+                    </div>
+                `;
             } else if (channel === 'CCQ') {
-                container.innerHTML = type === 'SELL' 
-                    ? `<div><label class="block text-[10px] font-bold text-gray-500 mb-1">SL Bán</label><input type="number" step="any" id="${prefix}-qty" placeholder="0" class="w-full border p-1.5 rounded-lg text-xs"></div><div><label class="block text-[10px] font-bold text-gray-500 mb-1">Giá Bán</label><input type="text" id="${prefix}-price" oninput="formatNumberInput(this)" placeholder="0" class="w-full border p-1.5 rounded-lg text-xs"></div>`
-                    : `<div><label class="block text-[10px] font-bold text-gray-500 mb-1">Số Tiền Đầu Tư</label><input type="text" id="${prefix}-capital" oninput="formatNumberInput(this)" placeholder="0" class="w-full border p-1.5 rounded-lg text-xs"></div><div><label class="block text-[10px] font-bold text-gray-500 mb-1">Giá Khớp Đơn Vị</label><input type="text" id="${prefix}-price" oninput="formatNumberInput(this)" placeholder="0" class="w-full border p-1.5 rounded-lg text-xs"></div>`;
+                if (type === 'SELL') {
+                    container.innerHTML = `
+                        <div>
+                            <label class="block text-[11px] font-bold text-gray-500 mb-1">Khối Lượng Bán</label>
+                            <input type="number" step="any" id="${prefix}-qty" placeholder="0" class="w-full border border-slate-200 p-2 rounded-xl text-xs">
+                        </div>
+                        <div>
+                            <label class="block text-[11px] font-bold text-gray-500 mb-1">Giá Khớp Bán (đ)</label>
+                            <input type="text" id="${prefix}-price" oninput="formatNumberInput(this)" placeholder="0" class="w-full border border-slate-200 p-2 rounded-xl text-xs">
+                        </div>
+                    `;
+                } else {
+                    container.innerHTML = `
+                        <div>
+                            <label class="block text-[11px] font-bold text-gray-500 mb-1">Số Tiền Đầu Tư (VNĐ)</label>
+                            <input type="text" id="${prefix}-capital" oninput="formatNumberInput(this)" placeholder="0" class="w-full border border-slate-200 p-2 rounded-xl text-xs">
+                        </div>
+                        <div>
+                            <label class="block text-[11px] font-bold text-gray-500 mb-1">Giá Khớp Đơn Vị (đ)</label>
+                            <input type="text" id="${prefix}-price" oninput="formatNumberInput(this)" placeholder="0" class="w-full border border-slate-200 p-2 rounded-xl text-xs">
+                        </div>
+                    `;
+                }
             }
         }
 
         onTxTypeChange();
-        window.onload = function() { syncFromCloud(); updateAuthUI(); };
+
+        window.onload = function() {
+            syncFromCloud();
+            updateAuthUI();
+        };
 
         function addTransaction() {
             if (!isAdmin) return;
             const type = document.getElementById('tx-type').value;
             const channel = document.getElementById('channel').value;
-            let symbol = type === 'SELL' && channel !== 'TIENMAT' ? document.getElementById('tx-symbol-select')?.value : (channel === 'TIENMAT' ? 'TIEN_MAT' : document.getElementById('tx-symbol')?.value?.trim()?.toUpperCase());
+            let symbol = "";
+            if (type === 'SELL') {
+                if (channel === 'TIENMAT') {
+                    symbol = 'TIEN_MAT';
+                } else {
+                    const selectEl = document.getElementById('tx-symbol-select');
+                    if (selectEl) symbol = selectEl.value;
+                }
+            } else {
+                if (channel === 'TIENMAT') {
+                    symbol = 'TIEN_MAT';
+                } else {
+                    const inputEl = document.getElementById('tx-symbol');
+                    if (inputEl) symbol = inputEl.value.trim().toUpperCase();
+                }
+            }
             const date = document.getElementById('tx-date').value;
 
-            if (!symbol || !date) return alert("Vui lòng điền đủ thông tin!");
+            if (!symbol || !date) {
+                alert("Vui lòng nhập đầy đủ mã tài sản và ngày giao dịch!");
+                return;
+            }
 
             let tx = { type, channel, symbol, date };
+
             if (channel === 'TIETKIEM') {
                 tx.capital = parseFormattedNumber(document.getElementById('tx-capital').value);
                 tx.rate = parseFloat(document.getElementById('tx-rate').value);
                 tx.term = parseInt(document.getElementById('tx-term').value);
-                tx.qty = 1; tx.price = tx.capital;
-                marketPrices[symbol] = tx.capital + (tx.capital * (tx.rate / 100) * (tx.term / 12));
+                if (isNaN(tx.capital) || isNaN(tx.rate) || isNaN(tx.term) || tx.capital <= 0) {
+                    alert("Vui lòng nhập thông tin tiết kiệm hợp lệ!");
+                    return;
+                }
+                tx.qty = 1;
+                tx.price = tx.capital;
+                const interest = tx.capital * (tx.rate / 100) * (tx.term / 12);
+                marketPrices[symbol] = tx.capital + interest;
             } else if (channel === 'TIENMAT') {
                 tx.capital = parseFormattedNumber(document.getElementById('tx-capital').value);
-                tx.qty = tx.capital; tx.price = 1; marketPrices[symbol] = 1;
+                if (isNaN(tx.capital) || tx.capital <= 0) {
+                    alert("Vui lòng nhập số tiền mặt hợp lệ!");
+                    return;
+                }
+                tx.qty = tx.capital;
+                tx.price = 1;
+                marketPrices[symbol] = 1;
             } else if (channel === 'VANG' || channel === 'CK') {
                 tx.qty = parseFloat(document.getElementById('tx-qty').value);
                 tx.price = parseFormattedNumber(document.getElementById('tx-price').value);
-                tx.capital = channel === 'CK' ? tx.qty * tx.price * (type === 'BUY' ? 1.0015 : 0.9975) : tx.qty * tx.price;
+                if (isNaN(tx.qty) || isNaN(tx.price) || tx.qty <= 0 || tx.price <= 0) {
+                    alert("Vui lòng nhập số lượng và giá hợp lệ!");
+                    return;
+                }
+                if (channel === 'CK') {
+                    const feeRate = (type === 'BUY') ? 0.0015 : 0.0025;
+                    tx.capital = tx.qty * tx.price * (type === 'BUY' ? (1 + feeRate) : (1 - feeRate));
+                } else {
+                    tx.capital = tx.qty * tx.price;
+                }
                 if (!marketPrices[symbol]) marketPrices[symbol] = tx.price;
             } else if (channel === 'CCQ') {
                 if (type === 'BUY') {
                     tx.capital = parseFormattedNumber(document.getElementById('tx-capital').value);
                     tx.price = parseFormattedNumber(document.getElementById('tx-price').value);
+                    if (isNaN(tx.capital) || isNaN(tx.price) || tx.capital <= 0 || tx.price <= 0) {
+                        alert("Vui lòng nhập số tiền và giá khớp hợp lệ!");
+                        return;
+                    }
                     tx.qty = parseFloat((tx.capital / tx.price).toFixed(2));
                 } else {
                     tx.qty = parseFloat(document.getElementById('tx-qty').value);
                     tx.price = parseFormattedNumber(document.getElementById('tx-price').value);
-                    tx.capital = tx.qty * tx.price;
+                    if (isNaN(tx.qty) || isNaN(tx.price) || tx.qty <= 0 || tx.price <= 0) {
+                        alert("Vui lòng nhập khối lượng và giá khớp bán hợp lệ!");
+                        return;
+                    }
+                    const assetMap = getCalculatedAssetsMap();
+                    let holdingMonths = 12;
+                    if (assetMap[symbol] && assetMap[symbol].firstBuyDate) {
+                        const firstDate = new Date(assetMap[symbol].firstBuyDate);
+                        const currDate = new Date(date);
+                        const diffTime = currDate - firstDate;
+                        holdingMonths = diffTime / (1000 * 60 * 60 * 24 * 30.44);
+                    }
+
+                    let extraFeePercent = 0;
+                    if (holdingMonths < 12) extraFeePercent = 0.02;
+                    else if (holdingMonths <= 24) extraFeePercent = 0.015;
+                    else extraFeePercent = 0.0;
+
+                    const annualMgmtFee = 0.019 * (holdingMonths / 12);
+                    const totalFeeRate = annualMgmtFee + extraFeePercent;
+                    const rawVal = tx.qty * tx.price;
+                    tx.capital = rawVal * (1 - totalFeeRate);
                 }
                 if (!marketPrices[symbol]) marketPrices[symbol] = tx.price;
             }
 
             if (type === 'BUY' && (channel === 'CK' || channel === 'CCQ')) {
-                const currentCash = (getCalculatedAssetsMap()['TIEN_MAT'] || {}).qty || 0;
-                if (currentCash < tx.capital) return alert(`Số dư tiền mặt không đủ (${formatCurrency(currentCash)})!`);
+                const tempAssetMap = getCalculatedAssetsMap();
+                const currentCash = tempAssetMap['TIEN_MAT'] ? tempAssetMap['TIEN_MAT'].qty : 0;
+                if (currentCash < tx.capital) {
+                    const deficit = tx.capital - currentCash;
+                    alert(`⚠️ CẢNH BÁO: Số dư tiền mặt không đủ để thực hiện lệnh mua này!\n- Số dư hiện có: ${formatCurrency(currentCash)}\n- Giá trị cần mua: ${formatCurrency(tx.capital)}\n👉 Vui lòng nộp thêm ít nhất ${formatCurrency(deficit)} vào danh mục Tiền Mặt trước.`);
+                    return;
+                }
             }
 
             transactions.push(tx);
             saveToCloud();
-            if (type === 'BUY' && channel !== 'TIENMAT') document.getElementById('tx-symbol').value = "";
+            
+            if(type === 'BUY' && channel !== 'TIENMAT') {
+                document.getElementById('tx-symbol').value = "";
+            }
             document.getElementById('tx-date').valueAsDate = new Date();
             onTxTypeChange();
         }
 
         function deleteTransaction(index) {
             if (!isAdmin) return;
-            if (confirm("Xóa giao dịch này?")) { transactions.splice(index, 1); saveToCloud(); }
+            if (confirm("Cảnh báo: Xóa lệnh này có thể ảnh hưởng đến số dư tiền mặt cấn trừ. Bạn có chắc chắn muốn xóa?")) {
+                transactions.splice(index, 1);
+                saveToCloud();
+            }
         }
 
         function openEditModal(index) {
             if (!isAdmin) return;
             const tx = transactions[index];
             document.getElementById('edit-index').value = index;
-            document.getElementById('edit-modal-content').innerHTML = `
-                <div><label class="block font-bold text-gray-500 mb-1">Loại</label><select id="edit-type" class="w-full border p-1.5 rounded-lg"><option value="BUY"${tx.type==='BUY'?' selected':''}>Mua</option><option value="SELL"${tx.type==='SELL'?' selected':''}>Bán</option></select></div>
-                <div><label class="block font-bold text-gray-500 mb-1">Danh Mục</label><select id="edit-channel" onchange="updateFormFields(true, 'edit')" class="w-full border p-1.5 rounded-lg"><option value="TIETKIEM"${tx.channel==='TIETKIEM'?' selected':''}>Tiết Kiệm</option><option value="VANG"${tx.channel==='VANG'?' selected':''}>Vàng</option><option value="CK"${tx.channel==='CK'?' selected':''}>Chứng Khoán</option><option value="CCQ"${tx.channel==='CCQ'?' selected':''}>Quỹ</option><option value="TIENMAT"${tx.channel==='TIENMAT'?' selected':''}>Tiền Mặt</option></select></div>
-                <div><label class="block font-bold text-gray-500 mb-1">Mã</label><input type="text" id="edit-symbol" value="${tx.symbol}" class="w-full border p-1.5 rounded-lg uppercase"></div>
-                <div><label class="block font-bold text-gray-500 mb-1">Ngày</label><input type="date" id="edit-date" value="${tx.date}" class="w-full border p-1.5 rounded-lg"></div>
-                <div id="edit-dynamic-fields" class="space-y-2"></div>`;
+            
+            let modalContent = `
+                <div>
+                    <label class="block text-[11px] font-bold text-gray-500 mb-1">Loại Giao Dịch</label>
+                    <select id="edit-type" class="w-full border border-slate-200 p-2 rounded-xl text-xs bg-slate-50 font-bold">
+                        <option value="BUY" ${tx.type==='BUY'?'selected':''}>Mua</option>
+                        <option value="SELL" ${tx.type==='SELL'?'selected':''}>Bán</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-[11px] font-bold text-gray-500 mb-1">Danh Mục</label>
+                    <select id="edit-channel" onchange="updateFormFields(true, 'edit')" class="w-full border border-slate-200 p-2 rounded-xl text-xs bg-slate-50">
+                        <option value="TIETKIEM" ${tx.channel==='TIETKIEM'?'selected':''}>1. Tiết Kiệm</option>
+                        <option value="VANG" ${tx.channel==='VANG'?'selected':''}>2. Vàng</option>
+                        <option value="CK" ${tx.channel==='CK'?'selected':''}>3. Chứng Khoán</option>
+                        <option value="CCQ" ${tx.channel==='CCQ'?'selected':''}>4. Chứng Chỉ Quỹ</option>
+                        <option value="TIENMAT" ${tx.channel==='TIENMAT'?'selected':''}>5. Tiền Mặt</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-[11px] font-bold text-gray-500 mb-1">Mã Tài Sản</label>
+                    <input type="text" id="edit-symbol" value="${tx.symbol}" class="w-full border border-slate-200 p-2 rounded-xl text-xs uppercase">
+                </div>
+                <div>
+                    <label class="block text-[11px] font-bold text-gray-500 mb-1">Ngày Giao Dịch</label>
+                    <input type="date" id="edit-date" value="${tx.date}" class="w-full border border-slate-200 p-2 rounded-xl text-xs">
+                </div>
+                <div id="edit-dynamic-fields" class="space-y-3"></div>
+            `;
+            document.getElementById('edit-modal-content').innerHTML = modalContent;
             updateFormFields(true, 'edit');
-            if (tx.channel === 'TIETKIEM') document.getElementById('edit-capital').value = tx.capital.toLocaleString('en-US'), document.getElementById('edit-rate').value = tx.rate, document.getElementById('edit-term').value = tx.term;
-            else if (tx.channel === 'TIENMAT') document.getElementById('edit-capital').value = tx.capital.toLocaleString('en-US');
-            else document.getElementById('edit-qty').value = tx.qty, document.getElementById('edit-price').value = (tx.price || 0).toLocaleString('en-US');
+
+            if (tx.channel === 'TIETKIEM') {
+                document.getElementById('edit-capital').value = tx.capital.toLocaleString('en-US');
+                document.getElementById('edit-rate').value = tx.rate;
+                document.getElementById('edit-term').value = tx.term;
+            } else if (tx.channel === 'TIENMAT') {
+                document.getElementById('edit-capital').value = tx.capital.toLocaleString('en-US');
+            } else if (tx.channel === 'VANG' || tx.channel === 'CK') {
+                document.getElementById('edit-qty').value = tx.qty;
+                document.getElementById('edit-price').value = tx.price.toLocaleString('en-US');
+            } else if (tx.channel === 'CCQ') {
+                if (tx.type === 'SELL') {
+                    document.getElementById('edit-qty').value = tx.qty;
+                    document.getElementById('edit-price').value = tx.price.toLocaleString('en-US');
+                } else {
+                    document.getElementById('edit-capital').value = tx.capital.toLocaleString('en-US');
+                    document.getElementById('edit-price').value = tx.price.toLocaleString('en-US');
+                }
+            }
+
             document.getElementById('edit-modal').classList.remove('hidden');
         }
 
-        function closeEditModal() { document.getElementById('edit-modal').classList.add('hidden'); }
+        function closeEditModal() {
+            document.getElementById('edit-modal').classList.add('hidden');
+        }
 
         function saveEditedTransaction() {
             if (!isAdmin) return;
@@ -633,27 +874,55 @@
             if (channel === 'TIENMAT') symbol = 'TIEN_MAT';
             const date = document.getElementById('edit-date').value;
 
+            if (!symbol || !date) {
+                alert("Vui lòng điền đầy đủ thông tin!");
+                return;
+            }
+
             let tx = { type, channel, symbol, date };
+
             if (channel === 'TIETKIEM') {
                 tx.capital = parseFormattedNumber(document.getElementById('edit-capital').value);
                 tx.rate = parseFloat(document.getElementById('edit-rate').value);
                 tx.term = parseInt(document.getElementById('edit-term').value);
-                tx.qty = 1; tx.price = tx.capital;
-                marketPrices[symbol] = tx.capital + (tx.capital * (tx.rate / 100) * (tx.term / 12));
+                tx.qty = 1;
+                tx.price = tx.capital;
+                const interest = tx.capital * (tx.rate / 100) * (tx.term / 12);
+                marketPrices[symbol] = tx.capital + interest;
             } else if (channel === 'TIENMAT') {
                 tx.capital = parseFormattedNumber(document.getElementById('edit-capital').value);
-                tx.qty = tx.capital; tx.price = 1; marketPrices[symbol] = 1;
-            } else {
+                tx.qty = tx.capital;
+                tx.price = 1;
+                marketPrices[symbol] = 1;
+            } else if (channel === 'VANG' || channel === 'CK') {
                 tx.qty = parseFloat(document.getElementById('edit-qty').value);
                 tx.price = parseFormattedNumber(document.getElementById('edit-price').value);
-                tx.capital = channel === 'CK' ? tx.qty * tx.price * (type === 'BUY' ? 1.0015 : 0.9975) : tx.qty * tx.price;
+                if (channel === 'CK') {
+                    const feeRate = (type === 'BUY') ? 0.0015 : 0.0025;
+                    tx.capital = tx.qty * tx.price * (type === 'BUY' ? (1 + feeRate) : (1 - feeRate));
+                } else {
+                    tx.capital = tx.qty * tx.price;
+                }
+            } else if (channel === 'CCQ') {
+                if (type === 'SELL') {
+                    tx.qty = parseFloat(document.getElementById('edit-qty').value);
+                    tx.price = parseFormattedNumber(document.getElementById('edit-price').value);
+                    tx.capital = tx.qty * tx.price;
+                } else {
+                    tx.capital = parseFormattedNumber(document.getElementById('edit-capital').value);
+                    tx.price = parseFormattedNumber(document.getElementById('edit-price').value);
+                    tx.qty = parseFloat((tx.capital / tx.price).toFixed(2));
+                }
             }
+
             transactions[index] = tx;
             closeEditModal();
             saveToCloud();
         }
 
-        function formatCurrency(amount) { return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(amount || 0); }
+        function formatCurrency(amount) {
+            return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(amount);
+        }
 
         function renderDashboard() {
             const txBody = document.getElementById('transactions-table-body');
@@ -661,31 +930,93 @@
             const marketWidget = document.getElementById('market-prices-widget');
             const volumeSummaryBody = document.getElementById('volume-summary-body');
             const profitAlertWidget = document.getElementById('profit-alert-widget');
+            
             if (!txBody || !assetBody || !marketWidget || !volumeSummaryBody || !profitAlertWidget) return;
 
-            txBody.innerHTML = ""; assetBody.innerHTML = ""; marketWidget.innerHTML = ""; volumeSummaryBody.innerHTML = ""; profitAlertWidget.innerHTML = "";
-            let totalPortfolioVal = 0, profitAlerts = [];
+            txBody.innerHTML = "";
+            assetBody.innerHTML = "";
+            marketWidget.innerHTML = "";
+            volumeSummaryBody.innerHTML = "";
+            profitAlertWidget.innerHTML = "";
+
+            let totalPortfolioVal = 0;
+            let profitAlerts = [];
+
             const assetMap = getCalculatedAssetsMap();
-            const cashBalance = (assetMap['TIEN_MAT'] || {}).qty || 0;
+
+            const cashBalance = assetMap['TIEN_MAT'] ? assetMap['TIEN_MAT'].qty : 0;
             document.getElementById('top-cash-balance').innerText = formatCurrency(cashBalance);
 
-            let uniqueMarketSymbols = [...new Set(Object.keys(assetMap).filter(k => assetMap[k].channel !== 'TIETKIEM' && assetMap[k].channel !== 'TIENMAT').map(k => assetMap[k].rawSymbol || k))];
-            if (uniqueMarketSymbols.length === 0) marketWidget.innerHTML = `<p class="text-gray-400 italic text-center py-1">Chưa có mã tài sản.</p>`;
-            else {
+            const marketSymbols = Object.keys(assetMap).filter(key => {
+                const item = assetMap[key];
+                return item.channel !== 'TIETKIEM' && item.channel !== 'TIENMAT';
+            });
+            let uniqueMarketSymbols = [...new Set(marketSymbols.map(k => assetMap[k].rawSymbol || k))];
+
+            if (uniqueMarketSymbols.length === 0) {
+                marketWidget.innerHTML = `<p class="text-gray-400 text-center italic py-1">Chưa có mã tài sản.</p>`;
+            } else {
                 uniqueMarketSymbols.forEach(sym => {
                     const sampleKey = Object.keys(assetMap).find(k => (assetMap[k].rawSymbol || k) === sym);
-                    const curPrice = marketPrices[sym] || (sampleKey ? assetMap[sampleKey].totalCost / assetMap[sampleKey].qty : 0);
-                    marketWidget.innerHTML += `<div class="flex justify-between items-center bg-slate-50 p-1.5 rounded-lg border border-slate-100">${getSymbolBadgeHTML(sym, sampleKey ? assetMap[sampleKey].channel : 'CK')}<div class="flex items-center gap-1"><span class="font-bold">${formatCurrency(curPrice)}</span>${isAdmin ? `<button onclick="updateSingleMarketPrice('${sym}')" class="text-[9px] bg-white border px-1 py-0.5 rounded">Sửa</button>` : ''}</div></div>`;
+                    const sampleChannel = sampleKey ? assetMap[sampleKey].channel : 'CK';
+                    const curPrice = marketPrices[sym] || (sampleKey && assetMap[sampleKey].qty > 0 ? (assetMap[sampleKey].totalCost / assetMap[sampleKey].qty) : 0);
+                    
+                    marketWidget.innerHTML += `
+                        <div class="flex justify-between items-center bg-slate-50 hover:bg-slate-100 p-2 rounded-xl border border-slate-100 transition">
+                            ${getSymbolBadgeHTML(sym, sampleChannel)}
+                            <div class="flex items-center space-x-1.5">
+                                <span class="font-bold text-slate-800">${formatCurrency(curPrice)}</span>
+                                ${isAdmin ? `<button onclick="updateSingleMarketPrice('${sym}')" class="text-[10px] bg-white border border-slate-200 hover:bg-slate-100 px-1.5 py-0.5 rounded shadow-2xs">Sửa</button>` : ''}
+                            </div>
+                        </div>
+                    `;
                 });
             }
 
-            let sortedTransactions = [...transactions].map((tx, origIdx) => ({ ...tx, origIdx })).sort((a, b) => new Date(b.date) - new Date(a.date));
-            sortedTransactions.forEach(tx => {
-                const typeLabel = tx.type === 'BUY' ? '<span class="bg-emerald-100 text-emerald-700 font-bold px-1 py-0.5 rounded text-[9px]">MUA</span>' : '<span class="bg-rose-100 text-rose-700 font-bold px-1 py-0.5 rounded text-[9px]">BÁN</span>';
-                const channelName = { 'TIETKIEM': 'Tiết Kiệm', 'VANG': 'Vàng', 'CK': 'Chứng Khoán', 'CCQ': 'Quỹ', 'TIENMAT': 'Tiền Mặt' }[tx.channel];
-                let detailStr = tx.channel === 'TIETKIEM' ? `${tx.rate}% | ${tx.term}T` : (tx.channel === 'TIENMAT' ? 'Tiền mặt' : `SL: ${tx.qty} | Giá: ${formatCurrency(tx.price)}`);
+            let sortedTransactions = [...transactions].map((tx, origIdx) => ({ ...tx, origIdx }));
+            sortedTransactions.sort((a, b) => new Date(b.date) - new Date(a.date));
 
-                txBody.innerHTML += `<tr class="border-b border-slate-50 hover:bg-slate-50"><td class="p-2">${formatDateDDMMYY(tx.date)}</td><td class="p-2">${typeLabel}</td><td class="p-2">${channelName}</td><td class="p-2">${getSymbolBadgeHTML(tx.symbol, tx.channel)}</td><td class="p-2 text-[10px] text-blue-600 font-bold">${Math.ceil(Math.abs(new Date() - new Date(tx.date)) / (1000 * 60 * 60 * 24))}d</td><td class="p-2 text-[10px] text-gray-500">${detailStr}</td><td class="p-2 font-bold">${formatCurrency(tx.capital)}</td><td class="p-2 text-center">${isAdmin ? `<button onclick="openEditModal(${tx.origIdx})" class="text-blue-600 bg-blue-50 px-1.5 py-0.5 rounded mr-1">Sửa</button><button onclick="deleteTransaction(${tx.origIdx})" class="text-red-600 bg-red-50 px-1.5 py-0.5 rounded">Xóa</button>` : '<span class="text-gray-300 italic">Xem</span>'}</td></tr>`;
+            const today = new Date();
+            sortedTransactions.forEach((tx) => {
+                const txDate = new Date(tx.date);
+                const diffTime = Math.abs(today - txDate);
+                const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+                let typeLabel = tx.type === 'BUY' ? '<span class="bg-emerald-100 text-emerald-700 font-bold px-1.5 py-0.5 rounded text-[10px]">MUA</span>' : '<span class="bg-rose-100 text-rose-700 font-bold px-1.5 py-0.5 rounded text-[10px]">BÁN</span>';
+                let channelName = { 'TIETKIEM': 'Tiết Kiệm', 'VANG': 'Vàng', 'CK': 'Chứng Khoán', 'CCQ': 'Quỹ', 'TIENMAT': 'Tiền Mặt' }[tx.channel];
+
+                let detailStr = "";
+                if (tx.channel === 'TIETKIEM') {
+                    detailStr = `Lãi suất: ${tx.rate}%/năm | Kỳ hạn: ${tx.term} tháng`;
+                } else if (tx.channel === 'TIENMAT') {
+                    detailStr = tx.type === 'BUY' ? `Nạp tiền mặt` : `Rút tiền mặt`;
+                } else if (tx.channel === 'VANG' || tx.channel === 'CK') {
+                    detailStr = `SL: ${tx.qty.toLocaleString()} | Giá: ${formatCurrency(tx.price)}`;
+                } else if (tx.channel === 'CCQ') {
+                    if(tx.type === 'SELL') {
+                        detailStr = `Bán SL: ${tx.qty} | Giá khớp: ${formatCurrency(tx.price)}`;
+                    } else {
+                        detailStr = `Số tiền: ${formatCurrency(tx.capital)} | Giá khớp: ${formatCurrency(tx.price)} (SL: ${tx.qty})`;
+                    }
+                }
+
+                txBody.innerHTML += `
+                    <tr class="border-b border-slate-50 hover:bg-slate-50/50 transition">
+                        <td class="p-3 font-medium text-slate-700">${formatDateDDMMYY(tx.date)}</td>
+                        <td class="p-3">${typeLabel}</td>
+                        <td class="p-3 text-slate-600">${channelName}</td>
+                        <td class="p-3">${getSymbolBadgeHTML(tx.symbol, tx.channel)}</td>
+                        <td class="p-3"><span class="bg-blue-50 text-blue-700 text-[10px] font-bold px-2.5 py-1 rounded-full">${diffDays} ngày</span></td>
+                        <td class="p-3 text-[11px] text-slate-500">${detailStr}</td>
+                        <td class="p-3 font-bold text-slate-700">${formatCurrency(tx.capital)}</td>
+                        <td class="p-3 text-center space-x-1">
+                            ${isAdmin ? `
+                                <button onclick="openEditModal(${tx.origIdx})" class="text-blue-600 hover:text-blue-800 font-semibold text-[10px] bg-blue-50 px-2 py-0.5 rounded-lg">Sửa</button>
+                                <button onclick="deleteTransaction(${tx.origIdx})" class="text-red-600 hover:text-red-800 font-semibold text-[10px] bg-red-50 px-2 py-0.5 rounded-lg">Xóa</button>
+                            ` : `<span class="text-gray-300 italic text-[10px]">Chỉ xem</span>`}
+                        </td>
+                    </tr>
+                `;
             });
 
             let volumeAgg = {};
@@ -693,33 +1024,103 @@
                 const asset = assetMap[key];
                 if (['CK', 'VANG', 'CCQ'].includes(asset.channel)) {
                     let sym = asset.rawSymbol || key;
-                    if (!volumeAgg[sym]) volumeAgg[sym] = { boughtQty: 0, soldQty: 0, qty: 0, channel: asset.channel };
-                    volumeAgg[sym].boughtQty += asset.boughtQty; volumeAgg[sym].soldQty += asset.soldQty; volumeAgg[sym].qty += asset.qty;
+                    if (!volumeAgg[sym]) {
+                        volumeAgg[sym] = { boughtQty: 0, soldQty: 0, qty: 0, channel: asset.channel };
+                    }
+                    volumeAgg[sym].boughtQty += asset.boughtQty;
+                    volumeAgg[sym].soldQty += asset.soldQty;
+                    volumeAgg[sym].qty += asset.qty;
                 }
             });
+
             Object.keys(volumeAgg).forEach(sym => {
                 const item = volumeAgg[sym];
-                volumeSummaryBody.innerHTML += `<tr><td class="p-1 font-bold">${getSymbolBadgeHTML(sym, item.channel)}</td><td class="p-1 text-right">${item.boughtQty.toLocaleString()}</td><td class="p-1 text-right text-rose-500">${item.soldQty.toLocaleString()}</td><td class="p-1 text-right font-bold text-blue-600">${item.qty.toLocaleString()}</td></tr>`;
+                volumeSummaryBody.innerHTML += `
+                    <tr class="hover:bg-slate-50 transition">
+                        <td class="p-2 font-bold">${getSymbolBadgeHTML(sym, item.channel)}</td>
+                        <td class="p-2 text-right font-medium text-slate-600">${item.boughtQty.toLocaleString()}</td>
+                        <td class="p-2 text-right font-medium text-rose-500">${item.soldQty.toLocaleString()}</td>
+                        <td class="p-2 text-right font-bold text-blue-600">${item.qty.toLocaleString()}</td>
+                    </tr>
+                `;
             });
-            if (volumeSummaryBody.innerHTML === "") volumeSummaryBody.innerHTML = `<tr><td colspan="4" class="text-center text-gray-400 italic p-1">Trống.</td></tr>`;
 
-            let calculatedAssets = [], channelTotals = { 'VANG': 0, 'TIETKIEM': 0, 'CK': 0, 'CCQ': 0, 'TIENMAT': cashBalance }, channelInvested = { 'VANG': 0, 'TIETKIEM': 0, 'CK': 0, 'CCQ': 0, 'TIENMAT': cashBalance }, channelProfits = { 'VANG': 0, 'TIETKIEM': 0, 'CK': 0, 'CCQ': 0, 'TIENMAT': 0 };
+            if (volumeSummaryBody.innerHTML === "") {
+                volumeSummaryBody.innerHTML = `<tr><td colspan="4" class="text-center text-gray-400 italic p-2">Chưa có khối lượng.</td></tr>`;
+            }
+
+            let calculatedAssets = [];
+            let channelTotals = { 'VANG': 0, 'TIETKIEM': 0, 'CK': 0, 'CCQ': 0, 'TIENMAT': cashBalance };
+            let channelInvested = { 'VANG': 0, 'TIETKIEM': 0, 'CK': 0, 'CCQ': 0, 'TIENMAT': cashBalance };
+            let channelProfits = { 'VANG': 0, 'TIETKIEM': 0, 'CK': 0, 'CCQ': 0, 'TIENMAT': 0 };
 
             Object.keys(assetMap).forEach(key => {
                 const data = assetMap[key];
-                if (data.channel !== 'TIENMAT' && data.qty > 0) {
+                if (data.channel !== 'TIENMAT' && (data.qty > 0)) {
                     let displayName = data.rawSymbol || key;
-                    if (data.channel === 'TIETKIEM') displayName = `${data.rawSymbol || 'ST'} ${data.term || 0}T`;
-                    const avgPrice = data.totalCost / Math.max(data.qty, 1);
-                    let marketVal = data.channel === 'TIETKIEM' ? data.totalCost + (data.totalCost * (data.rate / 100) * (data.term / 12)) : data.qty * (marketPrices[data.rawSymbol || key] || avgPrice);
-                    let profit = marketVal - data.totalCost, roi = data.totalCost > 0 ? (profit / data.totalCost) * 100 : 0;
-                    totalPortfolioVal += marketVal;
-                    channelTotals[data.channel] = (channelTotals[data.channel] || 0) + marketVal;
-                    channelInvested[data.channel] = (channelInvested[data.channel] || 0) + data.totalCost;
-                    channelProfits[data.channel] = (channelProfits[data.channel] || 0) + profit;
+                    if (data.channel === 'TIETKIEM') {
+                        const shortDate = getShortDateString(data.startDate);
+                        displayName = `${data.rawSymbol || 'ST'} ${data.term || 0}T ${shortDate}`;
+                    }
 
-                    if (roi > 10) profitAlerts.push({ symbol: displayName, roi, profit, channel: data.channel });
-                    calculatedAssets.push({ symbol: displayName, qtyDisplay: data.qty.toLocaleString(), avgPrice, marketPrice: marketPrices[data.rawSymbol || key] || avgPrice, marketVal, profit, roi, channel: data.channel, totalCost: data.totalCost });
+                    const avgPrice = data.totalCost / Math.max(data.qty, 1);
+                    let marketVal = 0;
+                    let profit = 0;
+                    let roi = 0;
+                    let itemInvested = 0;
+
+                    if (data.channel === 'TIETKIEM') {
+                        const interest = data.totalCost * ((data.rate || 0) / 100) * ((data.term || 0) / 12);
+                        marketVal = data.totalCost + interest;
+                        profit = interest;
+                        roi = data.totalCost > 0 ? (profit / data.totalCost) * 100 : 0;
+                        itemInvested = data.totalCost;
+                    } else {
+                        const mPrice = marketPrices[data.rawSymbol || key] || avgPrice;
+                        marketVal = data.qty * mPrice;
+                        profit = marketVal - data.totalCost;
+                        roi = data.totalCost > 0 ? (profit / data.totalCost) * 100 : 0;
+                        itemInvested = data.totalCost;
+                    }
+
+                    totalPortfolioVal += marketVal;
+
+                    if (channelTotals[data.channel] !== undefined) {
+                        channelTotals[data.channel] += marketVal;
+                        channelInvested[data.channel] += itemInvested;
+                        channelProfits[data.channel] += profit;
+                    } else {
+                        channelTotals['CK'] += marketVal;
+                        channelInvested['CK'] += itemInvested;
+                        channelProfits['CK'] += profit;
+                    }
+
+                    if (['VANG', 'CK', 'CCQ'].includes(data.channel) && roi > 10) {
+                        profitAlerts.push({ symbol: displayName, roi, profit, channel: data.channel });
+                    }
+
+                    let qtyDisplay = data.qty.toLocaleString();
+                    if (data.channel === 'TIETKIEM' && data.startDate && data.term) {
+                        const startD = new Date(data.startDate);
+                        const maturityD = new Date(startD);
+                        maturityD.setMonth(maturityD.getMonth() + parseInt(data.term));
+                        const diffTime = maturityD - today;
+                        const remainDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+                        qtyDisplay = remainDays > 0 ? `<span class="text-purple-700 font-bold bg-purple-50 px-2 py-0.5 rounded-full text-[10px]">⏳ Còn ${remainDays} ngày</span>` : `<span class="text-red-600 font-bold text-[10px]">Đã đáo hạn</span>`;
+                    }
+
+                    calculatedAssets.push({ 
+                        symbol: displayName, 
+                        rawSymbol: data.rawSymbol || key,
+                        qtyDisplay, 
+                        avgPrice, 
+                        marketPrice: marketPrices[data.rawSymbol || key] || avgPrice, 
+                        marketVal, 
+                        profit, 
+                        roi, 
+                        channel: data.channel, 
+                        totalCost: data.totalCost 
+                    });
                 }
             });
 
@@ -727,52 +1128,178 @@
             calculatedAssets.sort((a, b) => b.roi - a.roi);
 
             if (profitAlerts.length > 0) {
-                profitAlerts.forEach(a => { profitAlertWidget.innerHTML += `<div class="bg-white p-2 rounded-lg border border-amber-300 flex justify-between items-center"><div>${getSymbolBadgeHTML(a.symbol, a.channel)} <span class="font-extrabold text-emerald-600">+${a.roi.toFixed(1)}%</span></div><span class="text-[9px] font-bold text-amber-700 bg-amber-100 px-1.5 py-0.5 rounded">🎯 Chốt lời</span></div>`; });
-            } else { profitAlertWidget.innerHTML = `<p class="text-gray-400 italic text-center py-1">Chưa có tài sản đạt > 10%.</p>`; }
+                profitAlerts.forEach(alertItem => {
+                    profitAlertWidget.innerHTML += `
+                        <div class="bg-white/90 p-2.5 rounded-xl border border-amber-300 shadow-2xs flex items-center justify-between">
+                            <div>
+                                <div class="flex items-center gap-1.5 mb-0.5">
+                                    ${getSymbolBadgeHTML(alertItem.symbol, alertItem.channel)}
+                                    <span class="font-extrabold text-emerald-600 text-[11px]">+${alertItem.roi.toFixed(1)}%</span>
+                                </div>
+                                <p class="text-[10px] text-gray-500">Lãi: ${formatCurrency(alertItem.profit)}</p>
+                            </div>
+                            <span class="text-[10px] font-bold text-amber-700 bg-amber-100 px-2 py-1 rounded-lg animate-pulse">🎯 Đề xuất chốt lời</span>
+                        </div>
+                    `;
+                });
+            } else {
+                profitAlertWidget.innerHTML = `<p class="text-gray-500 text-[11px] italic text-center py-1">Chưa có tài sản đạt mức ROI > 10%.</p>`;
+            }
 
-            let realTotalInvested = cashBalance;
+            let realTotalInvested = 0;
             calculatedAssets.forEach(a => {
-                assetBody.innerHTML += `<tr class="hover:bg-slate-50 border-b border-slate-50"><td class="p-2 font-bold">${getSymbolBadgeHTML(a.symbol, a.channel)}</td><td class="p-2">${a.qtyDisplay}</td><td class="p-2">${formatCurrency(a.avgPrice)}</td><td class="p-2">${formatCurrency(a.marketPrice)}</td><td class="p-2 font-bold">${formatCurrency(a.marketVal)}</td><td class="p-2">${totalPortfolioVal > 0 ? ((a.marketVal / totalPortfolioVal) * 100).toFixed(1) : 0}%</td><td class="p-2 font-bold ${a.roi >= 0 ? 'text-emerald-600' : 'text-rose-600'}">${a.roi >= 0 ? '+' : ''}${a.roi.toFixed(2)}%</td><td class="p-2 font-bold ${a.profit >= 0 ? 'text-emerald-600' : 'text-rose-600'}">${formatCurrency(a.profit)}</td></tr>`;
-                realTotalInvested += a.totalCost;
+                realTotalInvested += (a.marketVal - a.profit);
             });
-            if (calculatedAssets.length === 0 && cashBalance === 0) assetBody.innerHTML = `<tr><td colspan="8" class="text-center text-gray-400 italic p-3">Chưa có tài sản.</td></tr>`;
+            realTotalInvested += cashBalance;
+            document.getElementById('total-invested').innerText = formatCurrency(realTotalInvested);
+
+            let bubbleData = Object.keys(categoryColors).map(chKey => {
+                const inv = channelInvested[chKey];
+                const prof = channelProfits[chKey];
+                const roiVal = inv > 0 ? (prof / inv) * 100 : 0;
+                return {
+                    x: inv,
+                    y: parseFloat(roiVal.toFixed(2)),
+                    r: Math.max(Math.min(Math.abs(prof) / 1000000 + 6, 22), 6),
+                    symbol: categoryColors[chKey].name,
+                    profit: prof,
+                    channel: chKey
+                };
+            }).filter(d => d.x > 0 || d.channel === 'TIENMAT');
+
+            calculatedAssets.forEach((asset, idx) => {
+                const weight = totalPortfolioVal > 0 ? (asset.marketVal / totalPortfolioVal) * 100 : 0;
+                const rowBg = idx % 2 === 0 ? 'bg-white' : 'bg-slate-50/40';
+
+                let avgPriceHtml = formatCurrency(asset.avgPrice);
+                let marketPriceHtml = formatCurrency(asset.marketPrice);
+                let roiHtml = `${asset.roi >= 0 ? '+' : ''}${asset.roi.toFixed(2)}%`;
+                let profitHtml = formatCurrency(asset.profit);
+
+                if (asset.channel === 'TIETKIEM') {
+                    avgPriceHtml = `<span class="text-slate-600 font-semibold">${formatCurrency(asset.totalCost)}</span>`;
+                    marketPriceHtml = `<span class="text-slate-300">-</span>`;
+                }
+
+                assetBody.innerHTML += `
+                    <tr class="${rowBg} hover:bg-blue-50/30 transition border-b border-slate-50">
+                        <td class="p-3 font-bold">${getSymbolBadgeHTML(asset.symbol, asset.channel)}</td>
+                        <td class="p-3 font-medium text-slate-600">${asset.qtyDisplay}</td>
+                        <td class="p-3 text-slate-600">${avgPriceHtml}</td>
+                        <td class="p-3 font-semibold text-slate-700">${marketPriceHtml}</td>
+                        <td class="p-3 font-bold text-slate-800">${formatCurrency(asset.marketVal)}</td>
+                        <td class="p-3">
+                            <div class="flex items-center space-x-2">
+                                <span class="text-[11px] font-bold w-9 text-slate-600">${weight.toFixed(1)}%</span>
+                                <div class="w-16 bg-slate-100 rounded-full h-1.5 shadow-inner overflow-hidden">
+                                    <div class="bg-blue-600 h-1.5 rounded-full" style="width: ${weight}%"></div>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="p-3 font-extrabold ${asset.roi >= 0 ? 'text-emerald-600' : 'text-rose-600'}">
+                            ${roiHtml}
+                        </td>
+                        <td class="p-3 font-bold ${asset.profit >= 0 ? 'text-emerald-600' : 'text-rose-600'}">
+                            ${profitHtml}
+                        </td>
+                    </tr>
+                `;
+            });
+
+            if (calculatedAssets.length === 0 && cashBalance === 0) {
+                assetBody.innerHTML = `<tr><td colspan="8" class="text-center text-gray-400 italic p-4">Chưa có dữ liệu danh mục đầu tư.</td></tr>`;
+            }
+
+            const totalProfitVal = totalPortfolioVal - realTotalInvested;
+            const totalProfitPercent = realTotalInvested > 0 ? (totalProfitVal / realTotalInvested) * 100 : 0;
 
             document.getElementById('total-portfolio-value').innerText = formatCurrency(totalPortfolioVal);
-            document.getElementById('total-invested').innerText = formatCurrency(realTotalInvested);
-            const totalProfitVal = totalPortfolioVal - realTotalInvested;
-            const profitElem = document.getElementById('total-profit');
-            profitElem.innerText = `${formatCurrency(totalProfitVal)} (${realTotalInvested > 0 ? ((totalProfitVal / realTotalInvested) * 100).toFixed(2) : 0}%)`;
-            profitElem.className = `text-lg font-black mt-0.5 ${totalProfitVal >= 0 ? 'text-emerald-600' : 'text-rose-600'}`;
             document.getElementById('chart-center-total').innerText = formatCurrency(totalPortfolioVal);
+            
+            const profitElem = document.getElementById('total-profit');
+            profitElem.innerText = `${formatCurrency(totalProfitVal)} (${totalProfitPercent.toFixed(2)}%)`;
+            profitElem.className = `text-xl font-black mt-1 ${totalProfitVal >= 0 ? 'text-emerald-600' : 'text-rose-600'}`;
 
             const chartKeys = ['VANG', 'TIETKIEM', 'CK', 'CCQ', 'TIENMAT'];
-            renderChart(chartKeys.map(k => categoryColors[k].name), chartKeys.map(k => channelTotals[k]), chartKeys.map(k => categoryColors[k].hex), totalPortfolioVal, chartKeys);
-            renderBubbleChart(chartKeys.map(k => ({ x: channelInvested[k], y: channelInvested[k] > 0 ? (channelProfits[k] / channelInvested[k]) * 100 : 0, r: 8, symbol: categoryColors[k].name, profit: channelProfits[k], channel: k })));
+            const chartLabels = chartKeys.map(k => categoryColors[k].name);
+            const chartValues = chartKeys.map(k => channelTotals[k]);
+            const bgColors = chartKeys.map(k => categoryColors[k].hex);
+
+            renderChart(chartLabels, chartValues, bgColors, totalPortfolioVal, chartKeys);
+            renderBubbleChart(bubbleData);
             onTxTypeChange();
         }
 
         function updateSingleMarketPrice(symbol) {
             if (!isAdmin) return;
-            const p = prompt(`Giá mới cho ${symbol}:`, marketPrices[symbol] || 0);
-            if (p !== null && !isNaN(parseFormattedNumber(p))) { marketPrices[symbol] = parseFormattedNumber(p); saveToCloud(); }
+            const newPriceStr = prompt(`Nhập giá thị trường mới cho ${symbol}:`, (marketPrices[symbol] || 0).toLocaleString('en-US'));
+            if (newPriceStr !== null) {
+                const newPrice = parseFormattedNumber(newPriceStr);
+                if (!isNaN(newPrice)) {
+                    marketPrices[symbol] = newPrice;
+                    saveToCloud();
+                }
+            }
         }
 
         function renderChart(labels, values, bgColors, totalVal, chartKeys) {
             const canvasEl = document.getElementById('portfolioChart');
             const legendContainer = document.getElementById('custom-chart-legend');
             if (!canvasEl || !legendContainer) return;
+            const ctx = canvasEl.getContext('2d');
+            
             if (chartInstance) chartInstance.destroy();
 
-            chartInstance = new Chart(canvasEl.getContext('2d'), {
+            chartInstance = new Chart(ctx, {
                 type: 'doughnut',
-                data: { labels, datasets: [{ data: values, backgroundColor: bgColors, borderWidth: 2, borderColor: '#fff', borderRadius: 4 }] },
-                options: { responsive: true, maintainAspectRatio: false, cutout: '75%', plugins: { legend: { display: false } } }
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        data: values,
+                        backgroundColor: bgColors,
+                        borderWidth: 3,
+                        borderColor: '#ffffff',
+                        borderRadius: 8,
+                        spacing: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    cutout: '76%',
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    const val = context.raw || 0;
+                                    const pct = totalVal > 0 ? ((val / totalVal) * 100).toFixed(1) : 0;
+                                    return `${context.label}: ${formatCurrency(val)} (${pct}%)`;
+                                }
+                            }
+                        }
+                    }
+                }
             });
 
             legendContainer.innerHTML = "";
             chartKeys.forEach((key, i) => {
-                if (values[i] > 0) {
-                    legendContainer.innerHTML += `<div class="flex items-center justify-between text-[11px] py-0.5"><div class="flex items-center gap-1.5"><span class="w-2 h-2 rounded-full" style="background:${categoryColors[key].hex}"></span><span>${categoryColors[key].name}</span></div><span class="font-bold">${formatCurrency(values[i])}</span></div>`;
+                const val = values[i];
+                if (val > 0) {
+                    const pct = totalVal > 0 ? ((val / totalVal) * 100).toFixed(1) : 0;
+                    const conf = categoryColors[key];
+                    legendContainer.innerHTML += `
+                        <div class="flex items-center justify-between text-xs py-1 px-2 rounded-xl hover:bg-slate-50 transition">
+                            <div class="flex items-center gap-2">
+                                <span class="w-2.5 h-2.5 rounded-full shadow-2xs" style="background-color: ${conf.hex}"></span>
+                                <span class="font-semibold text-slate-700 text-[11px]">${conf.name}</span>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <span class="font-bold text-slate-800 text-[11px]">${formatCurrency(val)}</span>
+                                <span class="text-[10px] font-bold text-slate-400 bg-slate-100 px-1.5 py-0.5 rounded-md">${pct}%</span>
+                            </div>
+                        </div>
+                    `;
                 }
             });
         }
@@ -780,11 +1307,47 @@
         function renderBubbleChart(bubbleData) {
             const canvasEl = document.getElementById('bubbleChart');
             if (!canvasEl) return;
+            const ctx = canvasEl.getContext('2d');
             if (bubbleChartInstance) bubbleChartInstance.destroy();
-            bubbleChartInstance = new Chart(canvasEl.getContext('2d'), {
+
+            bubbleChartInstance = new Chart(ctx, {
                 type: 'bubble',
-                data: { datasets: [{ data: bubbleData, backgroundColor: bubbleData.map(d => categoryColors[d.channel].hex) }] },
-                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { ticks: { font: { size: 7 } } }, y: { ticks: { font: { size: 7 } } } } }
+                data: {
+                    datasets: [{
+                        label: 'Hiệu suất danh mục',
+                        data: bubbleData,
+                        backgroundColor: bubbleData.map(d => (categoryColors[d.channel] || { hex: '#3b82f6' }).hex),
+                        borderColor: '#ffffff',
+                        borderWidth: 1.5,
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    const item = context.raw;
+                                    return `${item.symbol}: Vốn ${formatCurrency(item.x)} | ROI: ${item.y}% | Lãi/Lỗ: ${formatCurrency(item.profit)}`;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: { 
+                            grid: { color: 'rgba(0,0,0,0.02)' },
+                            title: { display: true, text: 'Vốn Đầu Tư', font: { size: 9 } },
+                            ticks: { font: { size: 8 } }
+                        },
+                        y: { 
+                            grid: { color: 'rgba(0,0,0,0.02)' },
+                            title: { display: true, text: 'ROI TB (%)', font: { size: 9 } },
+                            ticks: { font: { size: 8 } }
+                        }
+                    }
+                }
             });
         }
     </script>
