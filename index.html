@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard Quản Lý Đầu Tư - Admin Cloud</title>
+    <title>Dashboard Quản Lý Đầu Tư - Cloud Admin</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Chart.js -->
@@ -11,59 +11,28 @@
 </head>
 <body class="bg-slate-50 font-sans leading-normal tracking-normal text-gray-800 text-sm">
 
-    <!-- MODAL ĐĂNG NHẬP ADMIN -->
-    <div id="auth-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center px-4 z-50">
-        <div class="bg-white rounded-2xl shadow-2xl p-6 max-w-sm w-full border border-slate-100">
-            <div class="text-center mb-4">
-                <span class="text-3xl">🔐</span>
-                <h3 class="text-base font-extrabold text-gray-800 mt-2 uppercase tracking-wide">Đăng Nhập Quản Trị</h3>
-                <p class="text-xs text-slate-400 mt-1">Nhập mật khẩu admin để mở khóa chỉnh sửa</p>
-            </div>
-            <div class="space-y-3">
-                <div>
-                    <label class="block text-[11px] font-bold text-slate-500 mb-1">Mật Khẩu Admin</label>
-                    <input type="password" id="admin-password-input" placeholder="Mật khẩu mặc định: admin123" class="w-full border border-slate-200 p-2.5 rounded-xl text-xs focus:ring-2 focus:ring-blue-500 outline-none">
-                </div>
-                <button onclick="verifyAdminPassword()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2.5 rounded-xl text-xs transition shadow-md shadow-blue-200">Truy Cập Dashboard</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- MODAL CẤU HÌNH JSONBIN -->
-    <div id="config-modal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center px-4 z-50">
-        <div class="bg-white rounded-2xl shadow-2xl p-6 max-w-md w-full border border-slate-100">
-            <div class="flex justify-between items-center mb-3">
-                <h3 class="text-sm font-extrabold text-gray-800 uppercase tracking-wide">⚙️ Cấu Hình JSONBin.io</h3>
-                <button onclick="closeConfigModal()" class="text-slate-400 hover:text-slate-600 font-bold">✕</button>
-            </div>
-            <p class="text-xs text-slate-500 mb-3">Kết nối dữ liệu đám mây để lưu trữ lịch sử giao dịch trực tuyến.</p>
-            <div class="space-y-3 text-xs">
-                <div>
-                    <label class="block font-bold text-slate-500 mb-1">JSONBin Master Key (X-Master-Key)</label>
-                    <input type="text" id="cfg-master-key" placeholder="Nhập API Key của bạn..." class="w-full border border-slate-200 p-2 rounded-xl">
-                </div>
-                <div>
-                    <label class="block font-bold text-slate-500 mb-1">Bin ID</label>
-                    <input type="text" id="cfg-bin-id" placeholder="Nhập Bin ID..." class="w-full border border-slate-200 p-2 rounded-xl">
-                </div>
-                <button onclick="saveCloudConfig()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2.5 rounded-xl transition shadow-md shadow-emerald-200">Lưu & Đồng Bộ Dữ Liệu</button>
-            </div>
-        </div>
-    </div>
-
     <div class="min-h-screen flex flex-col">
         <!-- Header -->
         <header class="bg-white shadow-xs border-b border-slate-100">
-            <div class="max-w-7xl mx-auto px-4 py-3 flex flex-col md:flex-row justify-between items-center gap-2">
-                <div class="flex items-center gap-2">
-                    <h1 class="text-lg font-extrabold text-blue-600 tracking-tight flex items-center gap-2"><span>📊</span> Dashboard Quản Lý Đầu Tư</h1>
-                    <span id="cloud-status" class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-100 text-amber-700">Chưa cấu hình Cloud</span>
+            <div class="max-w-7xl mx-auto px-4 py-3 flex flex-col md:flex-row justify-between items-center gap-3">
+                <div class="flex items-center gap-3 flex-wrap">
+                    <h1 class="text-base font-extrabold text-blue-600 tracking-tight flex items-center gap-1.5"><span>📊</span> Dashboard Quản Lý Đầu Tư</h1>
+                    <span id="cloud-status" class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-100 text-amber-700">Đang kết nối Cloud...</span>
+                    
+                    <!-- Ô NHẬP MẬT KHẨU MỞ KHÓA ADMIN Ở GÓC TRÁI -->
+                    <div id="auth-container" class="flex items-center gap-1 bg-slate-100 p-1 rounded-xl">
+                        <input type="password" id="admin-pwd-input" placeholder="Mật khẩu Admin..." class="bg-white border border-slate-200 px-2 py-1 rounded-lg text-xs w-28 focus:outline-none">
+                        <button onclick="unlockAdmin()" class="bg-blue-600 text-white font-bold px-2.5 py-1 rounded-lg text-xs hover:bg-blue-700 transition">Mở Khóa</button>
+                    </div>
+                    <div id="admin-badge" class="hidden items-center gap-1 bg-emerald-50 text-emerald-700 border border-emerald-200 px-2.5 py-1 rounded-xl text-xs font-bold">
+                        <span>🔓 Đã mở khóa Admin</span>
+                        <button onclick="lockAdmin()" class="text-red-500 hover:underline ml-2 text-[10px]">Khóa lại</button>
+                    </div>
                 </div>
-                <div class="flex items-center space-x-2">
+
+                <div class="flex items-center gap-2">
                     <div id="realtime-clock" class="text-xs font-semibold text-gray-600 bg-slate-100 px-3 py-1 rounded-full shadow-inner"></div>
-                    <button onclick="openConfigModal()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold px-2.5 py-1 rounded-xl transition">⚙️ Cấu Hình Cloud</button>
-                    <button onclick="syncFromCloud()" class="bg-blue-50 hover:bg-blue-100 text-blue-600 text-xs font-bold px-2.5 py-1 rounded-xl border border-blue-200 transition">🔄 Tải Dữ Liệu</button>
-                    <button onclick="clearAllData()" class="bg-red-50 hover:bg-red-100 text-red-600 text-xs font-bold px-2.5 py-1 rounded-xl border border-red-200 transition">🗑️ Xóa</button>
+                    <button onclick="syncFromCloud()" class="bg-blue-50 hover:bg-blue-100 text-blue-600 text-xs font-bold px-3 py-1.5 rounded-xl border border-blue-200 transition">🔄 Đồng Bộ</button>
                 </div>
             </div>
         </header>
@@ -106,7 +75,7 @@
                     <div id="custom-chart-legend" class="w-full mt-4 space-y-1.5 border-t border-slate-50 pt-3"></div>
                 </div>
 
-                <!-- Biểu đồ bong bóng -->
+                <!-- Biểu đồ hiệu suất 5 danh mục -->
                 <div class="bg-white p-4 rounded-2xl shadow-xs border border-slate-100">
                     <h3 class="text-xs font-bold text-gray-700 uppercase tracking-wide mb-1">📈 Hiệu Suất 5 Danh Mục</h3>
                     <p class="text-[10px] text-gray-400 mb-2">X: Vốn | Y: ROI TB (%) | Cỡ: Lãi/Lỗ</p>
@@ -146,7 +115,7 @@
                             <p id="top-cash-balance" class="text-2xl font-black mt-0.5">0 đ</p>
                         </div>
                     </div>
-                    <div class="flex flex-col sm:flex-row items-center gap-2 w-full md:w-auto admin-only">
+                    <div class="flex flex-col sm:flex-row items-center gap-2 w-full md:w-auto admin-only hidden">
                         <input type="number" id="quick-cash-input" placeholder="Nhập số tiền..." class="bg-white/10 border border-white/30 px-3 py-2 rounded-xl text-xs placeholder-teal-200 text-white focus:outline-none focus:bg-white/20 w-full sm:w-40">
                         <div class="flex items-center gap-2 w-full sm:w-auto">
                             <button onclick="quickCashTransaction('BUY')" class="bg-white text-teal-700 hover:bg-teal-50 font-bold px-3 py-2 rounded-xl text-xs shadow transition whitespace-nowrap flex-1 sm:flex-none">+ Nạp Thêm</button>
@@ -171,8 +140,8 @@
                     </div>
                 </div>
 
-                <!-- Form Thêm Giao Dịch Mới (Admin Only) -->
-                <div class="bg-white p-5 rounded-2xl shadow-xs border border-slate-100 admin-only">
+                <!-- Form Thêm Giao Dịch Mới (Ẩn khi chưa đăng nhập admin) -->
+                <div class="bg-white p-5 rounded-2xl shadow-xs border border-slate-100 admin-only hidden">
                     <h3 class="text-xs font-bold text-gray-700 uppercase tracking-wide mb-3">Thêm Giao Dịch Mới</h3>
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-3 mb-3">
                         <div>
@@ -241,7 +210,7 @@
                                 <th class="p-3 font-semibold">Số Ngày ĐT</th>
                                 <th class="p-3 font-semibold">Chi Tiết Thông Số</th>
                                 <th class="p-3 font-semibold">Thành Tiền / Vốn</th>
-                                <th class="p-3 font-semibold text-center rounded-r-xl action-header">Thao Tác</th>
+                                <th class="p-3 font-semibold text-center rounded-r-xl">Thao Tác</th>
                             </tr>
                         </thead>
                         <tbody id="transactions-table-body" class="divide-y divide-slate-50"></tbody>
@@ -265,13 +234,15 @@
     </div>
 
     <script>
-        // Mật khẩu Admin mặc định (có thể đổi tại đây)
-        const ADMIN_PASSWORD_HASH = "admin123"; 
+        // ==========================================
+        // CẤU HÌNH CỨNG JSONBIN VÀ MẬT KHẨU ADMIN
+        // ==========================================
+        const ADMIN_PASSWORD = "admin123";                      // Mật khẩu mở khóa Admin
+        let jsonBinId = "6ad2f0d0ac6210605a38fde4";                     // <-- DÁN BIN ID CỦA BẠN VÀO ĐÂY
+        let jsonBinMasterKey = "$2a$10$IxCWhgMbqo9kEkkwoFa83.dg0TPCFSuhUZw.BkMBRgp2wA3CtqAHi";          // <-- DÁN MASTER KEY CỦA BẠN VÀO ĐÂY
+        // ==========================================
+
         let isAdmin = sessionStorage.getItem('is_admin_logged') === 'true';
-
-        let jsonBinMasterKey = localStorage.getItem('jsonbin_master_key') || '';
-        let jsonBinId = localStorage.getItem('jsonbin_bin_id') || '';
-
         let transactions = [];
         let marketPrices = {};
         let chartInstance = null;
@@ -285,49 +256,47 @@
             'TIENMAT': { bg: 'bg-teal-50', text: 'text-teal-700', border: 'border-teal-200', hex: '#14b8a6', name: 'Tiền Mặt' }
         };
 
-        function verifyAdminPassword() {
-            const pwd = document.getElementById('admin-password-input').value;
-            if (pwd === ADMIN_PASSWORD_HASH) {
+        function unlockAdmin() {
+            const pwd = document.getElementById('admin-pwd-input').value;
+            if (pwd === ADMIN_PASSWORD) {
                 isAdmin = true;
                 sessionStorage.setItem('is_admin_logged', 'true');
-                document.getElementById('auth-modal').classList.add('hidden');
-                applyAuthMode();
+                document.getElementById('admin-pwd-input').value = "";
+                updateAdminUI();
                 renderDashboard();
             } else {
                 alert("Mật khẩu không chính xác!");
             }
         }
 
-        function applyAuthMode() {
+        function lockAdmin() {
+            isAdmin = false;
+            sessionStorage.removeItem('is_admin_logged');
+            updateAdminUI();
+            renderDashboard();
+        }
+
+        function updateAdminUI() {
+            const authContainer = document.getElementById('auth-container');
+            const adminBadge = document.getElementById('admin-badge');
             const adminElements = document.querySelectorAll('.admin-only');
-            adminElements.forEach(el => {
-                if (isAdmin) el.classList.remove('hidden');
-                else el.classList.add('hidden');
-            });
-        }
 
-        function openConfigModal() {
-            document.getElementById('cfg-master-key').value = jsonBinMasterKey;
-            document.getElementById('cfg-bin-id').value = jsonBinId;
-            document.getElementById('config-modal').classList.remove('hidden');
-        }
-
-        function closeConfigModal() {
-            document.getElementById('config-modal').classList.add('hidden');
-        }
-
-        function saveCloudConfig() {
-            jsonBinMasterKey = document.getElementById('cfg-master-key').value.trim();
-            jsonBinId = document.getElementById('cfg-bin-id').value.trim();
-            localStorage.setItem('jsonbin_master_key', jsonBinMasterKey);
-            localStorage.setItem('jsonbin_bin_id', jsonBinId);
-            closeConfigModal();
-            syncFromCloud();
+            if (isAdmin) {
+                authContainer.classList.add('hidden');
+                adminBadge.classList.remove('hidden');
+                adminBadge.classList.add('flex');
+                adminElements.forEach(el => el.classList.remove('hidden'));
+            } else {
+                authContainer.classList.remove('hidden');
+                adminBadge.classList.remove('flex');
+                adminBadge.classList.add('hidden');
+                adminElements.forEach(el => el.classList.add('hidden'));
+            }
         }
 
         async function syncFromCloud() {
-            if (!jsonBinMasterKey || !jsonBinId) {
-                document.getElementById('cloud-status').innerText = "Chưa cấu hình Cloud";
+            if (!jsonBinId || jsonBinId.includes("YOUR_")) {
+                document.getElementById('cloud-status').innerText = "Chưa cấu hình Bin ID";
                 document.getElementById('cloud-status').className = "text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-100 text-amber-700";
                 return;
             }
@@ -344,14 +313,13 @@
                     renderDashboard();
                 }
             } catch (e) {
-                console.error("Lỗi đồng bộ cloud:", e);
                 document.getElementById('cloud-status').innerText = "Lỗi kết nối Cloud";
                 document.getElementById('cloud-status').className = "text-[10px] font-bold px-2 py-0.5 rounded-full bg-rose-100 text-rose-700";
             }
         }
 
         async function saveToCloud() {
-            if (!jsonBinMasterKey || !jsonBinId) return;
+            if (!jsonBinId || jsonBinId.includes("YOUR_")) return;
             try {
                 await fetch(`https://api.jsonbin.io/v3/b/${jsonBinId}`, {
                     method: 'PUT',
@@ -364,22 +332,13 @@
                 document.getElementById('cloud-status').innerText = "Đã lưu Cloud";
                 document.getElementById('cloud-status').className = "text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-700";
             } catch (e) {
-                console.error("Lỗi lưu cloud:", e);
+                console.error(e);
             }
         }
 
         window.onload = function() {
-            if (isAdmin) {
-                document.getElementById('auth-modal').classList.add('hidden');
-            }
-            applyAuthMode();
-            if (jsonBinMasterKey && jsonBinId) {
-                syncFromCloud();
-            } else {
-                transactions = JSON.parse(localStorage.getItem('invest_transactions')) || [];
-                marketPrices = JSON.parse(localStorage.getItem('invest_market_prices')) || {};
-                renderDashboard();
-            }
+            updateAdminUI();
+            syncFromCloud();
         };
 
         function getSymbolBadgeHTML(symbol, channel) {
@@ -454,15 +413,6 @@
                 }
             });
             return assetMap;
-        }
-
-        function clearAllData() {
-            if (!isAdmin) { alert("Cần quyền Admin để xóa dữ liệu!"); return; }
-            if (confirm("Xóa toàn bộ lịch sử giao dịch?")) {
-                transactions = [];
-                marketPrices = {};
-                saveAndRender();
-            }
         }
 
         function quickCashTransaction(type) {
@@ -547,8 +497,6 @@
         }
 
         function saveAndRender() {
-            localStorage.setItem('invest_transactions', JSON.stringify(transactions));
-            localStorage.setItem('invest_market_prices', JSON.stringify(marketPrices));
             saveToCloud();
             renderDashboard();
         }
