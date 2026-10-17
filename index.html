@@ -17,12 +17,12 @@
             <div class="max-w-7xl mx-auto px-4 py-3 flex flex-col md:flex-row justify-between items-center gap-3">
                 <div class="flex items-center gap-3 flex-wrap">
                     <h1 class="text-base font-extrabold text-blue-600 tracking-tight flex items-center gap-1.5"><span>📊</span> Dashboard Quản Lý Đầu Tư</h1>
-                    <span id="cloud-status" class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-100 text-amber-700">Chế độ Nội Địa (Local)</span>
+                    <span id="cloud-status" class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-700">Sẵn sàng nhập liệu</span>
                 </div>
 
                 <div class="flex items-center gap-2">
                     <div id="realtime-clock" class="text-xs font-semibold text-gray-600 bg-slate-100 px-3 py-1 rounded-full shadow-inner"></div>
-                    <button onclick="syncFromCloud()" class="bg-blue-50 hover:bg-blue-100 text-blue-600 text-xs font-bold px-3 py-1.5 rounded-xl border border-blue-200 transition">🔄 Đồng Bổ Cloud</button>
+                    <button onclick="syncFromCloud()" class="bg-blue-50 hover:bg-blue-100 text-blue-600 text-xs font-bold px-3 py-1.5 rounded-xl border border-blue-200 transition">🔄 Đồng Bộ Cloud</button>
                 </div>
             </div>
         </header>
@@ -139,13 +139,14 @@
                         </div>
                     </div>
 
-                    <div class="mb-3" id="symbol-container">
-                        <!-- Được sinh ra động bởi JS -->
-                    </div>
+                    <!-- Vùng chèn Mã/Tên tài sản -->
+                    <div class="mb-3" id="symbol-container"></div>
 
-                    <div id="dynamic-fields" class="grid grid-cols-1 md:grid-cols-3 gap-3 mb-4">
-                        <!-- Được sinh ra động bởi JS -->
-                    </div>
+                    <!-- Vùng chèn các trường dữ liệu tự động -->
+                    <div id="dynamic-fields" class="grid grid-cols-1 md:grid-cols-3 gap-3 mb-3"></div>
+
+                    <!-- Ô hiển thị tính toán tự động -->
+                    <div id="calc-preview" class="mb-4 text-xs font-bold text-blue-600 bg-blue-50 p-2.5 rounded-xl hidden"></div>
 
                     <button onclick="addTransaction()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2.5 rounded-xl text-xs transition shadow-md shadow-blue-200">Xác Nhận Thêm Giao Dịch</button>
                 </div>
@@ -207,10 +208,10 @@
 
     <script>
         // ==========================================
-        // CẤU HÌNH CỨNG JSONBIN.IO (ĐIỀN VÀO ĐÂY)
+        // CẤU HÌNH JSONBIN.IO (ĐIỀN VÀO ĐÂY NẾU MUỐN DÙNG)
         // ==========================================
-        let jsonBinId = "6ad2f0d0ac6210605a38fde4";            // Dán Bin ID của bạn
-        let jsonBinMasterKey = "$2a$10$hbq3EWJ7PXtgYk4Nri7vRue3tWRplWPjAfpjjT2fiyivYWxtWayRG"; // Dán Master Key của bạn
+        let jsonBinId = "6ad2f0d0ac6210605a38fde4";            // Dán Bin ID
+        let jsonBinMasterKey = "$2a$10$hbq3EWJ7PXtgYk4Nri7vRue3tWRplWPjAfpjjT2fiyivYWxtWayRG"; // Dán Master Key
         // ==========================================
 
         let transactions = JSON.parse(localStorage.getItem('invest_tx_local')) || [];
@@ -226,82 +227,26 @@
             'TIENMAT': { bg: 'bg-teal-50', text: 'text-teal-700', border: 'border-teal-200', hex: '#14b8a6', name: 'Tiền Mặt' }
         };
 
-        // Khởi chạy khi DOM sẵn sàng
-        document.addEventListener("DOMContentLoaded", function() {
+        // Khởi động giao diện ngay khi tải trang
+        window.onload = function() {
             const dateInput = document.getElementById('tx-date');
             if (dateInput) dateInput.valueAsDate = new Date();
 
-            // Khởi tạo các trường form nhập liệu ngay lập tức
+            // Khởi tạo form nhập liệu
             onTxTypeChange();
             renderDashboard();
 
-            // Đồng bộ dữ liệu Cloud
+            // Lấy dữ liệu Cloud nếu có cấu hình
             if (jsonBinId && !jsonBinId.includes("YOUR_")) {
                 syncFromCloud();
             }
-        });
+        };
 
         setInterval(() => {
             const now = new Date();
             const clock = document.getElementById('realtime-clock');
             if (clock) clock.innerText = `🕒 ${now.toLocaleDateString('vi-VN')} - ${now.toLocaleTimeString('vi-VN')}`;
         }, 1000);
-
-        async function syncFromCloud() {
-            const statusElem = document.getElementById('cloud-status');
-            if (!jsonBinId || jsonBinId.includes("YOUR_")) return;
-
-            try {
-                const res = await fetch(`https://api.jsonbin.io/v3/b/${jsonBinId}`, {
-                    headers: { 'X-Master-Key': jsonBinMasterKey }
-                });
-                if (!res.ok) throw new Error("Lỗi kết nối");
-                const data = await res.json();
-                if (data && data.record) {
-                    transactions = data.record.transactions || [];
-                    marketPrices = data.record.marketPrices || {};
-                    if (statusElem) {
-                        statusElem.innerText = "Đã đồng bộ Cloud";
-                        statusElem.className = "text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-700";
-                    }
-                    saveLocal();
-                    renderDashboard();
-                }
-            } catch (e) {
-                console.error(e);
-                if (statusElem) {
-                    statusElem.innerText = "Lỗi kết nối Cloud (Chạy Offline)";
-                    statusElem.className = "text-[10px] font-bold px-2 py-0.5 rounded-full bg-rose-100 text-rose-700";
-                }
-            }
-        }
-
-        async function saveToCloud() {
-            saveLocal();
-            if (!jsonBinId || jsonBinId.includes("YOUR_")) return;
-            const statusElem = document.getElementById('cloud-status');
-            try {
-                await fetch(`https://api.jsonbin.io/v3/b/${jsonBinId}`, {
-                    method: 'PUT',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-Master-Key': jsonBinMasterKey
-                    },
-                    body: JSON.stringify({ transactions, marketPrices })
-                });
-                if (statusElem) {
-                    statusElem.innerText = "Đã lưu Cloud";
-                    statusElem.className = "text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-700";
-                }
-            } catch (e) {
-                console.error(e);
-            }
-        }
-
-        function saveLocal() {
-            localStorage.setItem('invest_tx_local', JSON.stringify(transactions));
-            localStorage.setItem('invest_mp_local', JSON.stringify(marketPrices));
-        }
 
         function onTxTypeChange() {
             const typeElem = document.getElementById('tx-type');
@@ -316,8 +261,8 @@
                 const assetMap = getCalculatedAssetsMap();
                 let filtered = Object.keys(assetMap).filter(k => assetMap[k].channel === channel && assetMap[k].qty > 0);
                 symbolContainer.innerHTML = filtered.length === 0 
-                    ? `<label class="block text-[11px] font-bold text-gray-500 mb-1">Mã Tài Sản</label><select class="w-full border p-2 rounded-xl text-xs bg-slate-50 text-red-500 font-bold" disabled><option>Không có tài sản khả dụng</option></select>`
-                    : `<label class="block text-[11px] font-bold text-gray-500 mb-1">Chọn Tài Sản Chốt Lời / Bán</label><select id="tx-symbol-select" onchange="updateFormFields()" class="w-full border p-2 rounded-xl text-xs uppercase bg-blue-50 font-bold text-blue-700">${filtered.map(k => `<option value="${k}">${assetMap[k].rawSymbol \vert{}\vert{} k} (Còn: ${assetMap[k].qty})</option>`).join('')}</select>`;
+                    ? `<label class="block text-[11px] font-bold text-gray-500 mb-1">Mã Tài Sản</label><select class="w-full border p-2 rounded-xl text-xs bg-slate-50 text-red-500 font-bold" disabled><option>Không có tài sản khả dụng để bán</option></select>`
+                    : `<label class="block text-[11px] font-bold text-gray-500 mb-1">Chọn Tài Sản Bán/Rút</label><select id="tx-symbol-select" onchange="updateFormFields()" class="w-full border p-2 rounded-xl text-xs uppercase bg-blue-50 font-bold text-blue-700">${filtered.map(k => `<option value="${k}">${assetMap[k].rawSymbol \vert{}\vert{} k} (Còn: ${assetMap[k].qty})</option>`).join('')}</select>`;
             } else if (channel === 'TIENMAT') {
                 symbolContainer.innerHTML = `<label class="block text-[11px] font-bold text-gray-500 mb-1">Mã Tài Sản</label><input type="text" id="tx-symbol" value="TIEN_MAT" readonly class="w-full border p-2 rounded-xl text-xs bg-slate-100 font-bold text-slate-500">`;
             } else {
@@ -336,11 +281,45 @@
             if (!container) return;
             
             if (channel === 'TIETKIEM') {
-                container.innerHTML = `<div><label class="block text-[11px] font-bold text-gray-500 mb-1">Số Tiền (VNĐ)</label><input type="number" id="${prefix}-capital" placeholder="Nhập số tiền gửi" class="w-full border p-2 rounded-xl text-xs outline-none focus:border-blue-500"></div><div><label class="block text-[11px] font-bold text-gray-500 mb-1">Lãi Suất (%/năm)</label><input type="number" step="0.01" id="${prefix}-rate" placeholder="VD: 6.5" class="w-full border p-2 rounded-xl text-xs outline-none focus:border-blue-500"></div><div><label class="block text-[11px] font-bold text-gray-500 mb-1">Kỳ Hạn (Tháng)</label><input type="number" id="${prefix}-term" placeholder="VD: 12" class="w-full border p-2 rounded-xl text-xs outline-none focus:border-blue-500"></div>`;
+                container.innerHTML = `
+                    <div><label class="block text-[11px] font-bold text-gray-500 mb-1">Số Tiền Gửi (VNĐ)</label><input type="number" id="${prefix}-capital" oninput="autoCalculate()" placeholder="Nhập số tiền..." class="w-full border p-2 rounded-xl text-xs outline-none focus:border-blue-500"></div>
+                    <div><label class="block text-[11px] font-bold text-gray-500 mb-1">Lãi Suất (%/năm)</label><input type="number" step="0.01" id="${prefix}-rate" oninput="autoCalculate()" placeholder="VD: 6.5" class="w-full border p-2 rounded-xl text-xs outline-none focus:border-blue-500"></div>
+                    <div><label class="block text-[11px] font-bold text-gray-500 mb-1">Kỳ Hạn (Tháng)</label><input type="number" id="${prefix}-term" oninput="autoCalculate()" placeholder="VD: 12" class="w-full border p-2 rounded-xl text-xs outline-none focus:border-blue-500"></div>`;
             } else if (channel === 'TIENMAT') {
-                container.innerHTML = `<div class="md:col-span-3"><label class="block text-[11px] font-bold text-gray-500 mb-1">Số Tiền (VNĐ)</label><input type="number" id="${prefix}-capital" placeholder="Nhập số tiền" class="w-full border p-2 rounded-xl text-xs outline-none focus:border-blue-500"></div>`;
+                container.innerHTML = `<div class="md:col-span-3"><label class="block text-[11px] font-bold text-gray-500 mb-1">Số Tiền (VNĐ)</label><input type="number" id="${prefix}-capital" oninput="autoCalculate()" placeholder="Nhập số tiền..." class="w-full border p-2 rounded-xl text-xs outline-none focus:border-blue-500"></div>`;
             } else {
-                container.innerHTML = `<div><label class="block text-[11px] font-bold text-gray-500 mb-1">Số Lượng</label><input type="number" step="any" id="${prefix}-qty" placeholder="Số lượng mua/bán" class="w-full border p-2 rounded-xl text-xs outline-none focus:border-blue-500"></div><div><label class="block text-[11px] font-bold text-gray-500 mb-1">Giá Đơn Vị (VNĐ)</label><input type="number" id="${prefix}-price" placeholder="Giá trên 1 đơn vị" class="w-full border p-2 rounded-xl text-xs outline-none focus:border-blue-500"></div>`;
+                container.innerHTML = `
+                    <div><label class="block text-[11px] font-bold text-gray-500 mb-1">Số Lượng</label><input type="number" step="any" id="${prefix}-qty" oninput="autoCalculate()" placeholder="Nhập số lượng..." class="w-full border p-2 rounded-xl text-xs outline-none focus:border-blue-500"></div>
+                    <div><label class="block text-[11px] font-bold text-gray-500 mb-1">Giá Đơn Vị (VNĐ)</label><input type="number" id="${prefix}-price" oninput="autoCalculate()" placeholder="Giá trên 1 đơn vị..." class="w-full border p-2 rounded-xl text-xs outline-none focus:border-blue-500"></div>`;
+            }
+            autoCalculate();
+        }
+
+        // Tự động tính Thành tiền / Lãi dự kiến ngay khi gõ số
+        function autoCalculate() {
+            const channel = document.getElementById('channel')?.value;
+            const preview = document.getElementById('calc-preview');
+            if (!preview) return;
+
+            if (channel === 'TIETKIEM') {
+                const cap = parseFloat(document.getElementById('tx-capital')?.value || 0);
+                const rate = parseFloat(document.getElementById('tx-rate')?.value || 0);
+                const term = parseInt(document.getElementById('tx-term')?.value || 0);
+                if (cap > 0 && rate > 0 && term > 0) {
+                    const interest = cap * (rate / 100) * (term / 12);
+                    preview.innerText = `💡 Tự động tính: Lãi dự kiến = ${formatCurrency(interest)} (Tổng nhận: ${formatCurrency(cap + interest)})`;
+                    preview.classList.remove('hidden');
+                } else { preview.classList.add('hidden'); }
+            } else if (channel !== 'TIENMAT') {
+                const qty = parseFloat(document.getElementById('tx-qty')?.value || 0);
+                const price = parseFloat(document.getElementById('tx-price')?.value || 0);
+                if (qty > 0 && price > 0) {
+                    const total = qty * price;
+                    preview.innerText = `💡 Tự động tính: Tổng thành tiền = ${formatCurrency(total)}`;
+                    preview.classList.remove('hidden');
+                } else { preview.classList.add('hidden'); }
+            } else {
+                preview.classList.add('hidden');
             }
         }
 
@@ -351,7 +330,7 @@
             if (channel === 'TIENMAT') symbol = 'TIEN_MAT';
             const date = document.getElementById('tx-date').value;
 
-            if (!symbol || !date) { alert("Vui lòng nhập Tên/Mã tài sản và Chọn ngày!"); return; }
+            if (!symbol || !date) { alert("Vui lòng điền đủ Tên/Mã tài sản và Ngày giao dịch!"); return; }
 
             let tx = { type, channel, symbol, date };
             if (channel === 'TIETKIEM') {
@@ -370,7 +349,7 @@
                 if (!marketPrices[symbol]) marketPrices[symbol] = tx.price;
             }
 
-            if (isNaN(tx.capital) || tx.capital <= 0) { alert("Số tiền hoặc số lượng/giá không hợp lệ!"); return; }
+            if (isNaN(tx.capital) || tx.capital <= 0) { alert("Vui lòng nhập số tiền/số lượng hợp lệ!"); return; }
 
             transactions.push(tx);
             saveToCloud();
@@ -378,6 +357,7 @@
 
             const symbolInput = document.getElementById('tx-symbol');
             if (symbolInput && channel !== 'TIENMAT') symbolInput.value = "";
+            document.getElementById('calc-preview')?.classList.add('hidden');
             onTxTypeChange();
         }
 
@@ -394,6 +374,52 @@
             document.getElementById('quick-cash-input').value = "";
             saveToCloud();
             renderDashboard();
+        }
+
+        function saveLocal() {
+            localStorage.setItem('invest_tx_local', JSON.stringify(transactions));
+            localStorage.setItem('invest_mp_local', JSON.stringify(marketPrices));
+        }
+
+        async function saveToCloud() {
+            saveLocal();
+            if (!jsonBinId || jsonBinId.includes("YOUR_")) return;
+            const statusElem = document.getElementById('cloud-status');
+            try {
+                await fetch(`https://api.jsonbin.io/v3/b/${jsonBinId}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Master-Key': jsonBinMasterKey
+                    },
+                    body: JSON.stringify({ transactions, marketPrices })
+                });
+                if (statusElem) {
+                    statusElem.innerText = "Đã đồng bộ Cloud";
+                    statusElem.className = "text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-700";
+                }
+            } catch (e) { console.error(e); }
+        }
+
+        async function syncFromCloud() {
+            if (!jsonBinId || jsonBinId.includes("YOUR_")) return;
+            const statusElem = document.getElementById('cloud-status');
+            try {
+                const res = await fetch(`https://api.jsonbin.io/v3/b/${jsonBinId}`, {
+                    headers: { 'X-Master-Key': jsonBinMasterKey }
+                });
+                const data = await res.json();
+                if (data && data.record) {
+                    transactions = data.record.transactions || [];
+                    marketPrices = data.record.marketPrices || {};
+                    if (statusElem) {
+                        statusElem.innerText = "Đã đồng bộ Cloud";
+                        statusElem.className = "text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-700";
+                    }
+                    saveLocal();
+                    renderDashboard();
+                }
+            } catch (e) { console.error(e); }
         }
 
         function getCalculatedAssetsMap() {
@@ -530,7 +556,7 @@
                     marketSymbols.forEach(sym => {
                         const sampleKey = Object.keys(assetMap).find(k => (assetMap[k].rawSymbol || k) === sym);
                         const curPrice = marketPrices[sym] || (sampleKey && assetMap[sampleKey].qty > 0 ? assetMap[sampleKey].totalCost / assetMap[sampleKey].qty : 0);
-                        marketWidget.innerHTML += `<div class="flex justify-between items-center bg-slate-50 p-2 rounded-xl border">${getSymbolBadgeHTML(sym, sampleKey ? assetMap[sampleKey].channel : 'CK')}<div class="flex items-center gap-1.5"><span class="font-bold">${formatCurrency(curPrice)}</span><button onclick="updateMarketPrice('${sym}')" class="text-[10px] bg-white border px-1.5 py-0.5 rounded shadow-2xs hover:bg-slate-100">Sửa</button></div></div>`;
+                        marketWidget.innerHTML += `<div class="flex justify-between items-center bg-slate-50 p-2 rounded-xl border">${getSymbolBadgeHTML(sym, sampleKey ? assetMap[sampleKey].channel : 'CK')}<div class="flex items-center gap-1.5"><span class="font-bold">${formatCurrency(curPrice)}</span><button onclick="updateMarketPrice('${sym}')" class="text-[10px] bg-white border px-1.5 py-0.5 rounded hover:bg-slate-100">Sửa</button></div></div>`;
                     });
                 }
             }
@@ -609,7 +635,7 @@
             const chartCenter = document.getElementById('chart-center-total');
             if (chartCenter) chartCenter.innerText = formatCurrency(totalPortfolioVal);
 
-            // Chart Render
+            // Render Biểu đồ
             const chartKeys = ['VANG', 'TIETKIEM', 'CK', 'CCQ', 'TIENMAT'];
             renderChart(chartKeys.map(k => categoryColors[k].name), chartKeys.map(k => channelTotals[k]), chartKeys.map(k => categoryColors[k].hex), totalPortfolioVal, chartKeys);
             renderBubbleChart(chartKeys.map(k => ({ x: channelInvested[k], y: channelInvested[k]>0 ? (channelProfits[k]/channelInvested[k])*100 : 0, r: 12, symbol: categoryColors[k].name, profit: channelProfits[k], channel: k })));
