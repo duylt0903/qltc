@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard Quản Lý Đầu Tư - Public Cloud</title>
+    <title>Dashboard Quản Lý Đầu Tư</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Chart.js -->
@@ -17,13 +17,12 @@
             <div class="max-w-7xl mx-auto px-4 py-3 flex flex-col md:flex-row justify-between items-center gap-3">
                 <div class="flex items-center gap-3 flex-wrap">
                     <h1 class="text-base font-extrabold text-blue-600 tracking-tight flex items-center gap-1.5"><span>📊</span> Dashboard Quản Lý Đầu Tư</h1>
-                    <span id="cloud-status" class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-100 text-amber-700">Đang kết nối Cloud...</span>
-                    <span class="text-[10px] font-bold px-2.5 py-1 rounded-xl bg-emerald-50 text-emerald-700 border border-emerald-200">🔓 Chế độ công khai chỉnh sửa</span>
+                    <span id="cloud-status" class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-100 text-amber-700">Chế độ Nội Địa (Local)</span>
                 </div>
 
                 <div class="flex items-center gap-2">
                     <div id="realtime-clock" class="text-xs font-semibold text-gray-600 bg-slate-100 px-3 py-1 rounded-full shadow-inner"></div>
-                    <button onclick="syncFromCloud()" class="bg-blue-50 hover:bg-blue-100 text-blue-600 text-xs font-bold px-3 py-1.5 rounded-xl border border-blue-200 transition">🔄 Đồng Bộ</button>
+                    <button onclick="syncFromCloud()" class="bg-blue-50 hover:bg-blue-100 text-blue-600 text-xs font-bold px-3 py-1.5 rounded-xl border border-blue-200 transition">🔄 Đồng Bổ Cloud</button>
                 </div>
             </div>
         </header>
@@ -74,24 +73,6 @@
                         <canvas id="bubbleChart"></canvas>
                     </div>
                 </div>
-
-                <!-- Tổng hợp khối lượng -->
-                <div class="bg-white p-4 rounded-2xl shadow-xs border border-slate-100">
-                    <h3 class="text-xs font-bold text-gray-700 uppercase tracking-wide mb-2.5">📦 Tổng Hợp Khối Lượng</h3>
-                    <div class="overflow-x-auto">
-                        <table class="w-full text-left text-[11px] whitespace-nowrap">
-                            <thead>
-                                <tr class="bg-slate-50 text-slate-500 border-b border-slate-100">
-                                    <th class="p-1.5 font-semibold">Mã</th>
-                                    <th class="p-1.5 text-right font-semibold">Mua</th>
-                                    <th class="p-1.5 text-right font-semibold">Bán</th>
-                                    <th class="p-1.5 text-right font-semibold">Còn Lại</th>
-                                </tr>
-                            </thead>
-                            <tbody id="volume-summary-body" class="divide-y divide-slate-50"></tbody>
-                        </table>
-                    </div>
-                </div>
             </div>
 
             <!-- CỘT PHẢI -->
@@ -133,7 +114,7 @@
 
                 <!-- FORM THÊM GIAO DỊCH MỚI -->
                 <div class="bg-white p-5 rounded-2xl shadow-xs border border-slate-100">
-                    <h3 class="text-xs font-bold text-gray-700 uppercase tracking-wide mb-3">Thêm Giao Dịch Mới</h3>
+                    <h3 class="text-xs font-bold text-gray-700 uppercase tracking-wide mb-3">➕ Thêm Giao Dịch Mới</h3>
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-3 mb-3">
                         <div>
                             <label class="block text-[11px] font-bold text-gray-500 mb-1">Loại Giao Dịch</label>
@@ -159,11 +140,12 @@
                     </div>
 
                     <div class="mb-3" id="symbol-container">
-                        <label class="block text-[11px] font-bold text-gray-500 mb-1">Mã / Tên Tài Sản</label>
-                        <input type="text" id="tx-symbol" placeholder="VD: SJC, VCB..." class="w-full border border-slate-200 p-2 rounded-xl text-xs uppercase outline-none">
+                        <!-- Được sinh ra động bởi JS -->
                     </div>
 
-                    <div id="dynamic-fields" class="grid grid-cols-1 md:grid-cols-3 gap-3 mb-4"></div>
+                    <div id="dynamic-fields" class="grid grid-cols-1 md:grid-cols-3 gap-3 mb-4">
+                        <!-- Được sinh ra động bởi JS -->
+                    </div>
 
                     <button onclick="addTransaction()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2.5 rounded-xl text-xs transition shadow-md shadow-blue-200">Xác Nhận Thêm Giao Dịch</button>
                 </div>
@@ -225,14 +207,14 @@
 
     <script>
         // ==========================================
-        // CẤU HÌNH CỨNG JSONBIN
+        // CẤU HÌNH CỨNG JSONBIN.IO (ĐIỀN VÀO ĐÂY)
         // ==========================================
-        let jsonBinId = "6ad2f0d0ac6210605a38fde4";                     // <-- DÁN BIN ID MỚI CỦA BẠN VÀO ĐÂY
-        let jsonBinMasterKey = "6ad1eab6ffd5d16053705680";          // <-- DÁN MASTER KEY CỦA BẠN VÀO ĐÂY
+        let jsonBinId = "6ad2f0d0ac6210605a38fde4";            // Dán Bin ID của bạn
+        let jsonBinMasterKey = "$2a$10$hbq3EWJ7PXtgYk4Nri7vRue3tWRplWPjAfpjjT2fiyivYWxtWayRG"; // Dán Master Key của bạn
         // ==========================================
 
-        let transactions = [];
-        let marketPrices = {};
+        let transactions = JSON.parse(localStorage.getItem('invest_tx_local')) || [];
+        let marketPrices = JSON.parse(localStorage.getItem('invest_mp_local')) || {};
         let chartInstance = null;
         let bubbleChartInstance = null;
 
@@ -244,19 +226,36 @@
             'TIENMAT': { bg: 'bg-teal-50', text: 'text-teal-700', border: 'border-teal-200', hex: '#14b8a6', name: 'Tiền Mặt' }
         };
 
+        // Khởi chạy khi DOM sẵn sàng
+        document.addEventListener("DOMContentLoaded", function() {
+            const dateInput = document.getElementById('tx-date');
+            if (dateInput) dateInput.valueAsDate = new Date();
+
+            // Khởi tạo các trường form nhập liệu ngay lập tức
+            onTxTypeChange();
+            renderDashboard();
+
+            // Đồng bộ dữ liệu Cloud
+            if (jsonBinId && !jsonBinId.includes("YOUR_")) {
+                syncFromCloud();
+            }
+        });
+
+        setInterval(() => {
+            const now = new Date();
+            const clock = document.getElementById('realtime-clock');
+            if (clock) clock.innerText = `🕒 ${now.toLocaleDateString('vi-VN')} - ${now.toLocaleTimeString('vi-VN')}`;
+        }, 1000);
+
         async function syncFromCloud() {
             const statusElem = document.getElementById('cloud-status');
-            if (!jsonBinId || jsonBinId.includes("YOUR_")) {
-                if (statusElem) {
-                    statusElem.innerText = "Chưa cấu hình Bin ID";
-                    statusElem.className = "text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-100 text-amber-700";
-                }
-                return;
-            }
+            if (!jsonBinId || jsonBinId.includes("YOUR_")) return;
+
             try {
-                const res = await fetch(`https://api.jsonbin.io/v3/b/${jsonBinId}/latest`, {
+                const res = await fetch(`https://api.jsonbin.io/v3/b/${jsonBinId}`, {
                     headers: { 'X-Master-Key': jsonBinMasterKey }
                 });
+                if (!res.ok) throw new Error("Lỗi kết nối");
                 const data = await res.json();
                 if (data && data.record) {
                     transactions = data.record.transactions || [];
@@ -265,18 +264,20 @@
                         statusElem.innerText = "Đã đồng bộ Cloud";
                         statusElem.className = "text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-700";
                     }
+                    saveLocal();
                     renderDashboard();
                 }
             } catch (e) {
                 console.error(e);
                 if (statusElem) {
-                    statusElem.innerText = "Lỗi kết nối Cloud";
+                    statusElem.innerText = "Lỗi kết nối Cloud (Chạy Offline)";
                     statusElem.className = "text-[10px] font-bold px-2 py-0.5 rounded-full bg-rose-100 text-rose-700";
                 }
             }
         }
 
         async function saveToCloud() {
+            saveLocal();
             if (!jsonBinId || jsonBinId.includes("YOUR_")) return;
             const statusElem = document.getElementById('cloud-status');
             try {
@@ -297,38 +298,103 @@
             }
         }
 
-        window.onload = function() {
-            const dateInput = document.getElementById('tx-date');
-            if (dateInput) dateInput.valueAsDate = new Date();
+        function saveLocal() {
+            localStorage.setItem('invest_tx_local', JSON.stringify(transactions));
+            localStorage.setItem('invest_mp_local', JSON.stringify(marketPrices));
+        }
 
+        function onTxTypeChange() {
+            const typeElem = document.getElementById('tx-type');
+            const channelElem = document.getElementById('channel');
+            const symbolContainer = document.getElementById('symbol-container');
+            if (!typeElem || !channelElem || !symbolContainer) return;
+
+            const type = typeElem.value;
+            const channel = channelElem.value;
+
+            if (type === 'SELL' && channel !== 'TIENMAT') {
+                const assetMap = getCalculatedAssetsMap();
+                let filtered = Object.keys(assetMap).filter(k => assetMap[k].channel === channel && assetMap[k].qty > 0);
+                symbolContainer.innerHTML = filtered.length === 0 
+                    ? `<label class="block text-[11px] font-bold text-gray-500 mb-1">Mã Tài Sản</label><select class="w-full border p-2 rounded-xl text-xs bg-slate-50 text-red-500 font-bold" disabled><option>Không có tài sản khả dụng</option></select>`
+                    : `<label class="block text-[11px] font-bold text-gray-500 mb-1">Chọn Tài Sản Chốt Lời / Bán</label><select id="tx-symbol-select" onchange="updateFormFields()" class="w-full border p-2 rounded-xl text-xs uppercase bg-blue-50 font-bold text-blue-700">${filtered.map(k => `<option value="${k}">${assetMap[k].rawSymbol \vert{}\vert{} k} (Còn: ${assetMap[k].qty})</option>`).join('')}</select>`;
+            } else if (channel === 'TIENMAT') {
+                symbolContainer.innerHTML = `<label class="block text-[11px] font-bold text-gray-500 mb-1">Mã Tài Sản</label><input type="text" id="tx-symbol" value="TIEN_MAT" readonly class="w-full border p-2 rounded-xl text-xs bg-slate-100 font-bold text-slate-500">`;
+            } else {
+                symbolContainer.innerHTML = `<label class="block text-[11px] font-bold text-gray-500 mb-1">Mã / Tên Tài Sản</label><input type="text" id="tx-symbol" placeholder="VD: SJC, VCB, FUESSVFL..." class="w-full border p-2 rounded-xl text-xs uppercase outline-none focus:border-blue-500">`;
+            }
+            updateFormFields();
+        }
+
+        function onChannelChange() { onTxTypeChange(); }
+
+        function updateFormFields(isEdit = false, prefix = 'tx') {
+            const channelElem = document.getElementById(isEdit ? `${prefix}-channel` : 'channel');
+            if (!channelElem) return;
+            const channel = channelElem.value;
+            const container = document.getElementById(isEdit ? `${prefix}-dynamic-fields` : 'dynamic-fields');
+            if (!container) return;
+            
+            if (channel === 'TIETKIEM') {
+                container.innerHTML = `<div><label class="block text-[11px] font-bold text-gray-500 mb-1">Số Tiền (VNĐ)</label><input type="number" id="${prefix}-capital" placeholder="Nhập số tiền gửi" class="w-full border p-2 rounded-xl text-xs outline-none focus:border-blue-500"></div><div><label class="block text-[11px] font-bold text-gray-500 mb-1">Lãi Suất (%/năm)</label><input type="number" step="0.01" id="${prefix}-rate" placeholder="VD: 6.5" class="w-full border p-2 rounded-xl text-xs outline-none focus:border-blue-500"></div><div><label class="block text-[11px] font-bold text-gray-500 mb-1">Kỳ Hạn (Tháng)</label><input type="number" id="${prefix}-term" placeholder="VD: 12" class="w-full border p-2 rounded-xl text-xs outline-none focus:border-blue-500"></div>`;
+            } else if (channel === 'TIENMAT') {
+                container.innerHTML = `<div class="md:col-span-3"><label class="block text-[11px] font-bold text-gray-500 mb-1">Số Tiền (VNĐ)</label><input type="number" id="${prefix}-capital" placeholder="Nhập số tiền" class="w-full border p-2 rounded-xl text-xs outline-none focus:border-blue-500"></div>`;
+            } else {
+                container.innerHTML = `<div><label class="block text-[11px] font-bold text-gray-500 mb-1">Số Lượng</label><input type="number" step="any" id="${prefix}-qty" placeholder="Số lượng mua/bán" class="w-full border p-2 rounded-xl text-xs outline-none focus:border-blue-500"></div><div><label class="block text-[11px] font-bold text-gray-500 mb-1">Giá Đơn Vị (VNĐ)</label><input type="number" id="${prefix}-price" placeholder="Giá trên 1 đơn vị" class="w-full border p-2 rounded-xl text-xs outline-none focus:border-blue-500"></div>`;
+            }
+        }
+
+        function addTransaction() {
+            const type = document.getElementById('tx-type').value;
+            const channel = document.getElementById('channel').value;
+            let symbol = type === 'SELL' && channel !== 'TIENMAT' ? document.getElementById('tx-symbol-select')?.value : document.getElementById('tx-symbol')?.value?.trim()?.toUpperCase();
+            if (channel === 'TIENMAT') symbol = 'TIEN_MAT';
+            const date = document.getElementById('tx-date').value;
+
+            if (!symbol || !date) { alert("Vui lòng nhập Tên/Mã tài sản và Chọn ngày!"); return; }
+
+            let tx = { type, channel, symbol, date };
+            if (channel === 'TIETKIEM') {
+                tx.capital = parseFloat(document.getElementById('tx-capital')?.value || 0);
+                tx.rate = parseFloat(document.getElementById('tx-rate')?.value || 0);
+                tx.term = parseInt(document.getElementById('tx-term')?.value || 0);
+                tx.qty = 1; tx.price = tx.capital;
+                marketPrices[symbol] = tx.capital + (tx.capital * (tx.rate/100) * (tx.term/12));
+            } else if (channel === 'TIENMAT') {
+                tx.capital = parseFloat(document.getElementById('tx-capital')?.value || 0);
+                tx.qty = tx.capital; tx.price = 1;
+            } else {
+                tx.qty = parseFloat(document.getElementById('tx-qty')?.value || 0);
+                tx.price = parseFloat(document.getElementById('tx-price')?.value || 0);
+                tx.capital = channel === 'CK' ? tx.qty * tx.price * (type === 'BUY' ? 1.0015 : 0.9975) : tx.qty * tx.price;
+                if (!marketPrices[symbol]) marketPrices[symbol] = tx.price;
+            }
+
+            if (isNaN(tx.capital) || tx.capital <= 0) { alert("Số tiền hoặc số lượng/giá không hợp lệ!"); return; }
+
+            transactions.push(tx);
+            saveToCloud();
+            renderDashboard();
+
+            const symbolInput = document.getElementById('tx-symbol');
+            if (symbolInput && channel !== 'TIENMAT') symbolInput.value = "";
             onTxTypeChange();
-            syncFromCloud();
-        };
-
-        function getSymbolBadgeHTML(symbol, channel) {
-            const conf = categoryColors[channel] || { bg: 'bg-slate-50', text: 'text-slate-700', border: 'border-slate-200' };
-            return `<span class="px-2.5 py-1 rounded-lg font-bold text-xs border ${conf.bg} ${conf.text} ${conf.border} shadow-2xs">${symbol}</span>`;
         }
 
-        function formatDateDDMMYY(dateString) {
-            if (!dateString) return '';
-            const parts = dateString.split('-');
-            if (parts.length === 3) return `${parts[2]}/${parts[1]}/${parts[0].slice(-2)}`;
-            return dateString;
-        }
+        function quickCashTransaction(type) {
+            const inputVal = parseFloat(document.getElementById('quick-cash-input').value);
+            if (isNaN(inputVal) || inputVal <= 0) { alert("Nhập số tiền hợp lệ!"); return; }
+            
+            const assetMap = getCalculatedAssetsMap();
+            if (type === 'SELL' && (assetMap['TIEN_MAT']?.qty || 0) < inputVal) {
+                alert("Số dư tiền mặt không đủ để rút!"); return;
+            }
 
-        function getShortDateString(dateString) {
-            if (!dateString) return '';
-            const parts = dateString.split('-');
-            if (parts.length === 3) return `${parts[2]}${parts[1]}${parts[0].slice(-2)}`;
-            return dateString;
+            transactions.push({ type, channel: 'TIENMAT', symbol: 'TIEN_MAT', date: new Date().toISOString().split('T')[0], capital: inputVal, qty: inputVal, price: 1 });
+            document.getElementById('quick-cash-input').value = "";
+            saveToCloud();
+            renderDashboard();
         }
-
-        setInterval(() => {
-            const now = new Date();
-            const clock = document.getElementById('realtime-clock');
-            if (clock) clock.innerText = `🕒 ${now.toLocaleDateString('vi-VN')} - ${now.toLocaleTimeString('vi-VN')}`;
-        }, 1000);
 
         function getCalculatedAssetsMap() {
             let assetMap = {};
@@ -346,7 +412,7 @@
 
                 let key = tx.symbol;
                 if (tx.channel === 'TIETKIEM') {
-                    key = `${tx.symbol}_${tx.term || 0}T_${getShortDateString(tx.date)}_${idx}`;
+                    key = `${tx.symbol}_${tx.term || 0}T_${tx.date}_${idx}`;
                 }
 
                 if (!assetMap[key]) {
@@ -380,101 +446,8 @@
             return assetMap;
         }
 
-        function quickCashTransaction(type) {
-            const inputVal = parseFloat(document.getElementById('quick-cash-input').value);
-            if (isNaN(inputVal) || inputVal <= 0) { alert("Nhập số tiền hợp lệ!"); return; }
-            
-            const assetMap = getCalculatedAssetsMap();
-            if (type === 'SELL' && (assetMap['TIEN_MAT']?.qty || 0) < inputVal) {
-                alert("Số dư tiền mặt không đủ để rút!"); return;
-            }
-
-            transactions.push({ type, channel: 'TIENMAT', symbol: 'TIEN_MAT', date: new Date().toISOString().split('T')[0], capital: inputVal, qty: inputVal, price: 1 });
-            document.getElementById('quick-cash-input').value = "";
-            saveAndRender();
-        }
-
-        function onTxTypeChange() {
-            const typeElem = document.getElementById('tx-type');
-            const channelElem = document.getElementById('channel');
-            if (!typeElem || !channelElem) return;
-
-            const type = typeElem.value;
-            const channel = channelElem.value;
-            const symbolContainer = document.getElementById('symbol-container');
-
-            if (type === 'SELL' && channel !== 'TIENMAT') {
-                const assetMap = getCalculatedAssetsMap();
-                let filtered = Object.keys(assetMap).filter(k => assetMap[k].channel === channel && assetMap[k].qty > 0);
-                symbolContainer.innerHTML = filtered.length === 0 
-                    ? `<label class="block text-[11px] font-bold text-gray-500 mb-1">Mã Tài Sản</label><select class="w-full border p-2 rounded-xl text-xs bg-slate-50 text-red-500 font-bold" disabled><option>Không có tài sản khả dụng</option></select>`
-                    : `<label class="block text-[11px] font-bold text-gray-500 mb-1">Chọn Tài Sản</label><select id="tx-symbol-select" onchange="updateFormFields()" class="w-full border p-2 rounded-xl text-xs uppercase bg-blue-50 font-bold text-blue-700">${filtered.map(k => `<option value="${k}">${assetMap[k].rawSymbol \vert{}\vert{} k} (Còn: ${assetMap[k].qty})</option>`).join('')}</select>`;
-            } else {
-                symbolContainer.innerHTML = `<label class="block text-[11px] font-bold text-gray-500 mb-1">Mã / Tên Tài Sản</label><input type="text" id="tx-symbol" placeholder="VD: SJC, VCB..." class="w-full border p-2 rounded-xl text-xs uppercase outline-none">`;
-            }
-            updateFormFields();
-        }
-
-        function onChannelChange() { onTxTypeChange(); }
-
-        function updateFormFields(isEdit = false, prefix = 'tx') {
-            const channelElem = document.getElementById(isEdit ? `${prefix}-channel` : 'channel');
-            if (!channelElem) return;
-            const channel = channelElem.value;
-            const container = document.getElementById(isEdit ? `${prefix}-dynamic-fields` : 'dynamic-fields');
-            if (!container) return;
-            
-            if (channel === 'TIETKIEM') {
-                container.innerHTML = `<div><label class="block text-[11px] font-bold text-gray-500 mb-1">Số Tiền (VNĐ)</label><input type="number" id="${prefix}-capital" class="w-full border p-2 rounded-xl text-xs outline-none"></div><div><label class="block text-[11px] font-bold text-gray-500 mb-1">Lãi Suất (%/năm)</label><input type="number" step="0.01" id="${prefix}-rate" class="w-full border p-2 rounded-xl text-xs outline-none"></div><div><label class="block text-[11px] font-bold text-gray-500 mb-1">Kỳ Hạn (Tháng)</label><input type="number" id="${prefix}-term" class="w-full border p-2 rounded-xl text-xs outline-none"></div>`;
-            } else if (channel === 'TIENMAT') {
-                container.innerHTML = `<div class="md:col-span-3"><label class="block text-[11px] font-bold text-gray-500 mb-1">Số Tiền (VNĐ)</label><input type="number" id="${prefix}-capital" class="w-full border p-2 rounded-xl text-xs outline-none"></div>`;
-            } else {
-                container.innerHTML = `<div><label class="block text-[11px] font-bold text-gray-500 mb-1">Số Lượng</label><input type="number" step="any" id="${prefix}-qty" class="w-full border p-2 rounded-xl text-xs outline-none"></div><div><label class="block text-[11px] font-bold text-gray-500 mb-1">Giá Đơn Vị (VNĐ)</label><input type="number" id="${prefix}-price" class="w-full border p-2 rounded-xl text-xs outline-none"></div>`;
-            }
-        }
-
-        function addTransaction() {
-            const type = document.getElementById('tx-type').value;
-            const channel = document.getElementById('channel').value;
-            let symbol = type === 'SELL' && channel !== 'TIENMAT' ? document.getElementById('tx-symbol-select')?.value : document.getElementById('tx-symbol')?.value?.trim()?.toUpperCase();
-            if (channel === 'TIENMAT') symbol = 'TIEN_MAT';
-            const date = document.getElementById('tx-date').value;
-
-            if (!symbol || !date) { alert("Vui lòng điền đủ thông tin Mã và Ngày!"); return; }
-
-            let tx = { type, channel, symbol, date };
-            if (channel === 'TIETKIEM') {
-                tx.capital = parseFloat(document.getElementById('tx-capital')?.value || 0);
-                tx.rate = parseFloat(document.getElementById('tx-rate')?.value || 0);
-                tx.term = parseInt(document.getElementById('tx-term')?.value || 0);
-                tx.qty = 1; tx.price = tx.capital;
-                marketPrices[symbol] = tx.capital + (tx.capital * (tx.rate/100) * (tx.term/12));
-            } else if (channel === 'TIENMAT') {
-                tx.capital = parseFloat(document.getElementById('tx-capital')?.value || 0);
-                tx.qty = tx.capital; tx.price = 1;
-            } else {
-                tx.qty = parseFloat(document.getElementById('tx-qty')?.value || 0);
-                tx.price = parseFloat(document.getElementById('tx-price')?.value || 0);
-                tx.capital = channel === 'CK' ? tx.qty * tx.price * (type === 'BUY' ? 1.0015 : 0.9975) : tx.qty * tx.price;
-                if (!marketPrices[symbol]) marketPrices[symbol] = tx.price;
-            }
-
-            if (isNaN(tx.capital) || tx.capital <= 0) { alert("Vui lòng nhập số tiền hợp lệ!"); return; }
-
-            transactions.push(tx);
-            saveAndRender();
-            const symbolInput = document.getElementById('tx-symbol');
-            if (symbolInput && type === 'BUY' && channel !== 'TIENMAT') symbolInput.value = "";
-            onTxTypeChange();
-        }
-
-        function saveAndRender() {
-            saveToCloud();
-            renderDashboard();
-        }
-
         function deleteTransaction(index) {
-            if (confirm("Xóa giao dịch này?")) { transactions.splice(index, 1); saveAndRender(); }
+            if (confirm("Xóa giao dịch này?")) { transactions.splice(index, 1); saveToCloud(); renderDashboard(); }
         }
 
         function openEditModal(index) {
@@ -525,7 +498,8 @@
             }
             transactions[index] = tx;
             closeEditModal();
-            saveAndRender();
+            saveToCloud();
+            renderDashboard();
         }
 
         function formatCurrency(amount) { return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(amount || 0); }
@@ -547,7 +521,7 @@
             const cashElem = document.getElementById('top-cash-balance');
             if (cashElem) cashElem.innerText = formatCurrency(cashBalance);
 
-            // Render Market Prices
+            // Bảng Giá Thị Trường
             const marketSymbols = [...new Set(Object.keys(assetMap).filter(k => assetMap[k].channel !== 'TIETKIEM' && assetMap[k].channel !== 'TIENMAT').map(k => assetMap[k].rawSymbol || k))];
             if (marketWidget) {
                 if (marketSymbols.length === 0) {
@@ -561,15 +535,15 @@
                 }
             }
 
-            // Render Transactions History
+            // Lịch sử chi tiết lệnh
             let sortedTransactions = [...transactions].map((tx, origIdx) => ({ ...tx, origIdx })).sort((a,b) => new Date(b.date) - new Date(a.date));
             if (txBody) {
                 sortedTransactions.forEach(tx => {
-                    txBody.innerHTML += `<tr class="border-b hover:bg-slate-50"><td class="p-3">${formatDateDDMMYY(tx.date)}</td><td class="p-3">${tx.type==='BUY'?'<span class="bg-emerald-100 text-emerald-700 px-1.5 py-0.5 rounded text-[10px] font-bold">MUA</span>':'<span class="bg-rose-100 text-rose-700 px-1.5 py-0.5 rounded text-[10px] font-bold">BÁN</span>'}</td><td class="p-3">${tx.channel}</td><td class="p-3">${getSymbolBadgeHTML(tx.symbol, tx.channel)}</td><td class="p-3 text-[11px]">${tx.qty ? 'SL: '+tx.qty+' | Giá: '+formatCurrency(tx.price) : '-'}</td><td class="p-3 font-bold">${formatCurrency(tx.capital)}</td><td class="p-3 text-center"><button onclick="openEditModal(${tx.origIdx})" class="text-blue-600 bg-blue-50 px-2 py-0.5 rounded mr-1">Sửa</button><button onclick="deleteTransaction(${tx.origIdx})" class="text-red-600 bg-red-50 px-2 py-0.5 rounded">Xóa</button></td></tr>`;
+                    txBody.innerHTML += `<tr class="border-b hover:bg-slate-50"><td class="p-3">${tx.date}</td><td class="p-3">${tx.type==='BUY'?'<span class="bg-emerald-100 text-emerald-700 px-1.5 py-0.5 rounded text-[10px] font-bold">MUA</span>':'<span class="bg-rose-100 text-rose-700 px-1.5 py-0.5 rounded text-[10px] font-bold">BÁN</span>'}</td><td class="p-3">${tx.channel}</td><td class="p-3">${getSymbolBadgeHTML(tx.symbol, tx.channel)}</td><td class="p-3 text-[11px]">${tx.qty ? 'SL: '+tx.qty+' | Giá: '+formatCurrency(tx.price) : '-'}</td><td class="p-3 font-bold">${formatCurrency(tx.capital)}</td><td class="p-3 text-center"><button onclick="openEditModal(${tx.origIdx})" class="text-blue-600 bg-blue-50 px-2 py-0.5 rounded mr-1">Sửa</button><button onclick="deleteTransaction(${tx.origIdx})" class="text-red-600 bg-red-50 px-2 py-0.5 rounded">Xóa</button></td></tr>`;
                 });
             }
 
-            // Render Calculated Assets & ROI
+            // Tính toán tổng hợp danh mục
             let calculatedAssets = [];
             let channelTotals = { 'VANG': 0, 'TIETKIEM': 0, 'CK': 0, 'CCQ': 0, 'TIENMAT': cashBalance };
             let channelInvested = { 'VANG': 0, 'TIETKIEM': 0, 'CK': 0, 'CCQ': 0, 'TIENMAT': cashBalance };
@@ -600,7 +574,7 @@
 
             calculatedAssets.sort((a, b) => b.roi - a.roi);
 
-            // Render Profit Alerts
+            // Nhắc nhở chốt lời
             if (profitAlertWidget) {
                 if (profitAlerts.length > 0) {
                     profitAlerts.forEach(a => {
@@ -641,9 +615,14 @@
             renderBubbleChart(chartKeys.map(k => ({ x: channelInvested[k], y: channelInvested[k]>0 ? (channelProfits[k]/channelInvested[k])*100 : 0, r: 12, symbol: categoryColors[k].name, profit: channelProfits[k], channel: k })));
         }
 
+        function getSymbolBadgeHTML(symbol, channel) {
+            const conf = categoryColors[channel] || { bg: 'bg-slate-50', text: 'text-slate-700', border: 'border-slate-200' };
+            return `<span class="px-2.5 py-1 rounded-lg font-bold text-xs border ${conf.bg} ${conf.text} ${conf.border} shadow-2xs">${symbol}</span>`;
+        }
+
         function updateMarketPrice(symbol) {
             const p = prompt(`Nhập giá mới cho ${symbol}:`, marketPrices[symbol] || 0);
-            if (p !== null && !isNaN(p)) { marketPrices[symbol] = parseFloat(p); saveAndRender(); }
+            if (p !== null && !isNaN(p)) { marketPrices[symbol] = parseFloat(p); saveToCloud(); renderDashboard(); }
         }
 
         function renderChart(labels, values, bgColors, totalVal, chartKeys) {
