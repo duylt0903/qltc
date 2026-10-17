@@ -228,10 +228,10 @@
 
     <script>
         // ==========================================
-        // CẤU HÌNH CỨNG JSONBIN.IO (ĐIỀN VÀO ĐÂY)
+        // CẤU HÌNH JSONBIN.IO CỦA BẠN (DÁN VÀO ĐÂY)
         // ==========================================
-        let jsonBinId = "6ad2f0d0ac6210605a38fde4";             // Dán Bin ID của bạn
-        let jsonBinMasterKey = "$2a$10$hbq3EWJ7PXtgYk4Nri7vRue3tWRplWPjAfpjjT2fiyivYWxtWayRG";   // Dán Master Key của bạn
+        let jsonBinId = "6ad31b41ffd5d1605372eb7b";             // Thay bằng Bin ID thực tế
+        let jsonBinMasterKey = "$2a$10$IxCWhgMbqo9kEkkwoFa83.dg0TPCFSuhUZw.BkMBRgp2wA3CtqAHi";   // Thay bằng Master Key thực tế
         // ==========================================
 
         let transactions = JSON.parse(localStorage.getItem('invest_transactions')) || [];
@@ -247,27 +247,28 @@
             'TIENMAT': { bg: 'bg-teal-50', text: 'text-teal-700', border: 'border-teal-200', hex: '#14b8a6', name: 'Tiền Mặt' }
         };
 
-        // KẾT NỐI VÀ ĐỒNG BỘ JSONBIN.IO
+        // KẾT NỐI VÀ ĐỒNG BỘ JSONBIN.IO (AN TOÀN TUYỆT ĐỐI)
         async function syncFromCloud() {
             const statusElem = document.getElementById('cloud-status');
             if (!jsonBinId || jsonBinId.includes("YOUR_")) {
                 if (statusElem) {
-                    statusElem.innerText = "Chế độ Cục bộ (Local)";
+                    statusElem.innerText = "Chế độ Local (Chưa cấu hình Cloud)";
                     statusElem.className = "text-[10px] font-bold px-2 py-0.5 rounded-full bg-slate-100 text-slate-700";
                 }
+                renderDashboard();
                 return;
             }
             try {
                 const res = await fetch(`https://api.jsonbin.io/v3/b/${jsonBinId}/latest`, {
                     headers: { 'X-Master-Key': jsonBinMasterKey }
                 });
-                if (!res.ok) throw new Error("Lỗi kết nối");
+                if (!res.ok) throw new Error("Lỗi kết nối API");
                 const data = await res.json();
                 if (data && data.record) {
                     transactions = data.record.transactions || [];
                     marketPrices = data.record.marketPrices || {};
                     if (statusElem) {
-                        statusElem.innerText = "Đã đồng bộ Cloud";
+                        statusElem.innerText = "Đã kết nối Cloud thành công";
                         statusElem.className = "text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-700";
                     }
                     saveLocal();
@@ -276,18 +277,21 @@
             } catch (e) {
                 console.error(e);
                 if (statusElem) {
-                    statusElem.innerText = "Lỗi kết nối Cloud (Dùng Local)";
+                    statusElem.innerText = "Lỗi kết nối Cloud (Đang dùng dữ liệu Local)";
                     statusElem.className = "text-[10px] font-bold px-2 py-0.5 rounded-full bg-rose-100 text-rose-700";
                 }
+                renderDashboard();
             }
         }
 
         async function saveToCloud() {
             saveLocal();
+            renderDashboard(); // Cập nhật giao diện ngay lập tức
+            
             if (!jsonBinId || jsonBinId.includes("YOUR_")) return;
             const statusElem = document.getElementById('cloud-status');
             try {
-                await fetch(`https://api.jsonbin.io/v3/b/${jsonBinId}`, {
+                const res = await fetch(`https://api.jsonbin.io/v3/b/${jsonBinId}`, {
                     method: 'PUT',
                     headers: {
                         'Content-Type': 'application/json',
@@ -295,12 +299,17 @@
                     },
                     body: JSON.stringify({ transactions, marketPrices })
                 });
+                if (!res.ok) throw new Error("Không thể lưu lên Cloud");
                 if (statusElem) {
-                    statusElem.innerText = "Đã lưu Cloud";
+                    statusElem.innerText = "Đã lưu Cloud thành công";
                     statusElem.className = "text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-700";
                 }
             } catch (e) {
                 console.error(e);
+                if (statusElem) {
+                    statusElem.innerText = "Lỗi ghi dữ liệu lên Cloud";
+                    statusElem.className = "text-[10px] font-bold px-2 py-0.5 rounded-full bg-rose-100 text-rose-700";
+                }
             }
         }
 
@@ -462,7 +471,6 @@
             });
             document.getElementById('quick-cash-input').value = "";
             saveToCloud();
-            renderDashboard();
         }
 
         function onTxTypeChange() {
