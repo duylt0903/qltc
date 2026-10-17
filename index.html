@@ -18,11 +18,16 @@
                 <div class="flex items-center gap-2 flex-wrap">
                     <h1 class="text-lg font-extrabold text-blue-600 tracking-tight flex items-center gap-2"><span>📊</span> Dashboard Quản Lý Đầu Tư Đa Danh Mục</h1>
                     <span id="cloud-status" class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-100 text-amber-700">Đang kết nối Cloud...</span>
+                    <span id="role-badge" class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-slate-100 text-slate-600">👁️ Chế độ Xem</span>
                 </div>
                 <div class="flex items-center space-x-2">
                     <div id="realtime-clock" class="text-xs font-semibold text-gray-600 bg-slate-100 px-3 py-1 rounded-full shadow-inner"></div>
+                    
+                    <!-- Nút Đăng nhập / Đăng xuất Admin -->
+                    <button id="auth-btn" onclick="toggleAdminAuth()" class="bg-amber-500 hover:bg-amber-600 text-white text-xs font-bold px-3 py-1.5 rounded-xl shadow-xs transition">🔒 Đăng nhập Admin</button>
+                    
                     <button onclick="syncFromCloud()" class="bg-blue-50 hover:bg-blue-100 text-blue-600 text-xs font-bold px-2.5 py-1 rounded-xl border border-blue-200 transition">🔄 Đồng Bộ</button>
-                    <button onclick="clearAllData()" class="bg-red-50 hover:bg-red-100 text-red-600 text-xs font-bold px-2.5 py-1 rounded-xl border border-red-200 transition">🗑️ Xóa Dữ Liệu</button>
+                    <button id="btn-clear-data" onclick="clearAllData()" class="bg-red-50 hover:bg-red-100 text-red-600 text-xs font-bold px-2.5 py-1 rounded-xl border border-red-200 transition hidden">🗑️ Xóa Dữ Liệu</button>
                 </div>
             </div>
         </header>
@@ -107,8 +112,8 @@
                             <p id="top-cash-balance" class="text-2xl font-black mt-0.5">0 đ</p>
                         </div>
                     </div>
-                    <div class="flex flex-col sm:flex-row items-center gap-2 w-full md:w-auto">
-                        <input type="number" id="quick-cash-input" placeholder="Nhập số tiền..." class="bg-white/10 border border-white/30 px-3 py-2 rounded-xl text-xs placeholder-teal-200 text-white focus:outline-none focus:bg-white/20 w-full sm:w-40">
+                    <div id="quick-cash-controls" class="flex flex-col sm:flex-row items-center gap-2 w-full md:w-auto hidden">
+                        <input type="text" id="quick-cash-input" placeholder="Nhập số tiền..." oninput="formatNumberInput(this)" class="bg-white/10 border border-white/30 px-3 py-2 rounded-xl text-xs placeholder-teal-200 text-white focus:outline-none focus:bg-white/20 w-full sm:w-40">
                         <div class="flex items-center gap-2 w-full sm:w-auto">
                             <button onclick="quickCashTransaction('BUY')" class="bg-white text-teal-700 hover:bg-teal-50 font-bold px-3 py-2 rounded-xl text-xs shadow transition whitespace-nowrap flex-1 sm:flex-none">+ Nạp Thêm</button>
                             <button onclick="quickCashTransaction('SELL')" class="bg-teal-800 text-white hover:bg-teal-900 font-bold px-3 py-2 rounded-xl text-xs shadow transition whitespace-nowrap flex-1 sm:flex-none">- Rút Tiền</button>
@@ -132,8 +137,8 @@
                     </div>
                 </div>
 
-                <!-- Form Thêm Giao Dịch Mới -->
-                <div class="bg-white p-5 rounded-2xl shadow-xs border border-slate-100">
+                <!-- Form Thêm Giao Dịch Mới (Chỉ hiện khi là Admin) -->
+                <div id="add-tx-form-card" class="bg-white p-5 rounded-2xl shadow-xs border border-slate-100 hidden">
                     <h3 class="text-xs font-bold text-gray-700 uppercase tracking-wide mb-3">Thêm Giao Dịch Mới</h3>
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-3 mb-3">
                         <div>
@@ -167,6 +172,11 @@
                     <div id="dynamic-fields" class="grid grid-cols-1 md:grid-cols-3 gap-3 mb-4"></div>
 
                     <button onclick="addTransaction()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2.5 rounded-xl text-xs transition shadow-md shadow-blue-200">Xác Nhận Thêm Giao Dịch</button>
+                </div>
+
+                <!-- Thông báo nếu chưa Đăng nhập Admin -->
+                <div id="guest-notice" class="bg-blue-50/60 p-4 rounded-2xl border border-blue-100 text-center">
+                    <p class="text-xs font-semibold text-blue-700">🔒 Bạn đang ở chế độ xem. Vui lòng bấm <b>"Đăng nhập Admin"</b> để thực hiện thêm, sửa hoặc xóa giao dịch.</p>
                 </div>
 
                 <!-- Bảng Tổng Hợp Danh Mục & ROI -->
@@ -234,6 +244,9 @@
         let jsonBinMasterKey = "$2a$10$IxCWhgMbqo9kEkkwoFa83.dg0TPCFSuhUZw.BkMBRgp2wA3CtqAHi";   // Thay bằng Master Key thực tế
         // ==========================================
 
+        let isAdmin = false; // Trạng thái Admin
+        const ADMIN_PASS = "090393"; // Mật khẩu Admin
+
         let transactions = JSON.parse(localStorage.getItem('invest_transactions')) || [];
         let marketPrices = JSON.parse(localStorage.getItem('invest_market_prices')) || {};
         let chartInstance = null;
@@ -247,7 +260,68 @@
             'TIENMAT': { bg: 'bg-teal-50', text: 'text-teal-700', border: 'border-teal-200', hex: '#14b8a6', name: 'Tiền Mặt' }
         };
 
-        // KẾT NỐI VÀ ĐỒNG BỘ JSONBIN.IO (AN TOÀN TUYỆT ĐỐI)
+        // HÀM ĐỊNH DẠNG SỐ CÓ DẤU PHẨY TỰ ĐỘNG KHI NHẬP
+        function formatNumberInput(input) {
+            let val = input.value.replace(/,/g, '');
+            if (!isNaN(val) && val.length > 0) {
+                let parts = val.split('.');
+                parts[0] = parseInt(parts[0], 10).toLocaleString('en-US');
+                input.value = parts.join('.');
+            }
+        }
+
+        function parseFormattedNumber(valStr) {
+            if (!valStr) return 0;
+            return parseFloat(valStr.toString().replace(/,/g, '')) || 0;
+        }
+
+        // HÀM ĐĂNG NHẬP / ĐĂNG XUẤT ADMIN
+        function toggleAdminAuth() {
+            if (isAdmin) {
+                isAdmin = false;
+                updateAuthUI();
+            } else {
+                const pass = prompt("Nhập mật khẩu Admin để chỉnh sửa:");
+                if (pass === ADMIN_PASS) {
+                    isAdmin = true;
+                    updateAuthUI();
+                } else if (pass !== null) {
+                    alert("❌ Mật khẩu không chính xác!");
+                }
+            }
+        }
+
+        function updateAuthUI() {
+            const authBtn = document.getElementById('auth-btn');
+            const roleBadge = document.getElementById('role-badge');
+            const addForm = document.getElementById('add-tx-form-card');
+            const guestNotice = document.getElementById('guest-notice');
+            const quickCashControls = document.getElementById('quick-cash-controls');
+            const btnClear = document.getElementById('btn-clear-data');
+
+            if (isAdmin) {
+                authBtn.innerText = "🔓 Đăng xuất Admin";
+                authBtn.className = "bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold px-3 py-1.5 rounded-xl shadow-xs transition";
+                roleBadge.innerText = "⚡ Quyền Admin";
+                roleBadge.className = "text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-700";
+                addForm.classList.remove('hidden');
+                guestNotice.classList.add('hidden');
+                quickCashControls.classList.remove('hidden');
+                btnClear.classList.remove('hidden');
+            } else {
+                authBtn.innerText = "🔒 Đăng nhập Admin";
+                authBtn.className = "bg-amber-500 hover:bg-amber-600 text-white text-xs font-bold px-3 py-1.5 rounded-xl shadow-xs transition";
+                roleBadge.innerText = "👁️ Chế độ Xem";
+                roleBadge.className = "text-[10px] font-bold px-2 py-0.5 rounded-full bg-slate-100 text-slate-600";
+                addForm.classList.add('hidden');
+                guestNotice.classList.remove('hidden');
+                quickCashControls.classList.add('hidden');
+                btnClear.classList.add('hidden');
+            }
+            renderDashboard();
+        }
+
+        // KẾT NỐI VÀ ĐỒNG BỘ JSONBIN.IO
         async function syncFromCloud() {
             const statusElem = document.getElementById('cloud-status');
             if (!jsonBinId || jsonBinId.includes("YOUR_")) {
@@ -268,7 +342,7 @@
                     transactions = data.record.transactions || [];
                     marketPrices = data.record.marketPrices || {};
                     if (statusElem) {
-                        statusElem.innerText = "Đã kết nối Cloud thành công";
+                        statusElem.innerText = "Đã kết nối Cloud";
                         statusElem.className = "text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-700";
                     }
                     saveLocal();
@@ -277,7 +351,7 @@
             } catch (e) {
                 console.error(e);
                 if (statusElem) {
-                    statusElem.innerText = "Lỗi kết nối Cloud (Đang dùng dữ liệu Local)";
+                    statusElem.innerText = "Lỗi Cloud (Đang dùng Local)";
                     statusElem.className = "text-[10px] font-bold px-2 py-0.5 rounded-full bg-rose-100 text-rose-700";
                 }
                 renderDashboard();
@@ -286,7 +360,7 @@
 
         async function saveToCloud() {
             saveLocal();
-            renderDashboard(); // Cập nhật giao diện ngay lập tức
+            renderDashboard();
             
             if (!jsonBinId || jsonBinId.includes("YOUR_")) return;
             const statusElem = document.getElementById('cloud-status');
@@ -301,13 +375,13 @@
                 });
                 if (!res.ok) throw new Error("Không thể lưu lên Cloud");
                 if (statusElem) {
-                    statusElem.innerText = "Đã lưu Cloud thành công";
+                    statusElem.innerText = "Đã lưu Cloud";
                     statusElem.className = "text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-700";
                 }
             } catch (e) {
                 console.error(e);
                 if (statusElem) {
-                    statusElem.innerText = "Lỗi ghi dữ liệu lên Cloud";
+                    statusElem.innerText = "Lỗi ghi dữ liệu Cloud";
                     statusElem.className = "text-[10px] font-bold px-2 py-0.5 rounded-full bg-rose-100 text-rose-700";
                 }
             }
@@ -437,6 +511,7 @@
         }
 
         function clearAllData() {
+            if (!isAdmin) return;
             if (confirm("CẢNH BÁO: Bạn có chắc chắn muốn xóa toàn bộ lịch sử giao dịch không?")) {
                 transactions = [];
                 marketPrices = {};
@@ -445,7 +520,8 @@
         }
 
         function quickCashTransaction(type) {
-            const inputVal = parseFloat(document.getElementById('quick-cash-input').value);
+            if (!isAdmin) return;
+            const inputVal = parseFormattedNumber(document.getElementById('quick-cash-input').value);
             if (isNaN(inputVal) || inputVal <= 0) {
                 alert("Vui lòng nhập số tiền hợp lệ!");
                 return;
@@ -534,7 +610,7 @@
                 container.innerHTML = `
                     <div>
                         <label class="block text-[11px] font-bold text-gray-500 mb-1">Số Tiền Gửi (VNĐ)</label>
-                        <input type="number" id="${prefix}-capital" placeholder="0" class="w-full border border-slate-200 p-2 rounded-xl text-xs">
+                        <input type="text" id="${prefix}-capital" oninput="formatNumberInput(this)" placeholder="0" class="w-full border border-slate-200 p-2 rounded-xl text-xs">
                     </div>
                     <div>
                         <label class="block text-[11px] font-bold text-gray-500 mb-1">Lãi Suất (%/năm)</label>
@@ -549,7 +625,7 @@
                 container.innerHTML = `
                     <div class="md:col-span-3">
                         <label class="block text-[11px] font-bold text-gray-500 mb-1">Số Tiền (VNĐ)</label>
-                        <input type="number" id="${prefix}-capital" placeholder="0" class="w-full border border-slate-200 p-2 rounded-xl text-xs">
+                        <input type="text" id="${prefix}-capital" oninput="formatNumberInput(this)" placeholder="0" class="w-full border border-slate-200 p-2 rounded-xl text-xs">
                     </div>
                 `;
             } else if (channel === 'VANG' || channel === 'CK') {
@@ -560,7 +636,7 @@
                     </div>
                     <div>
                         <label class="block text-[11px] font-bold text-gray-500 mb-1">Giá Đơn Vị (đ)</label>
-                        <input type="number" id="${prefix}-price" placeholder="0" class="w-full border border-slate-200 p-2 rounded-xl text-xs">
+                        <input type="text" id="${prefix}-price" oninput="formatNumberInput(this)" placeholder="0" class="w-full border border-slate-200 p-2 rounded-xl text-xs">
                     </div>
                 `;
             } else if (channel === 'CCQ') {
@@ -572,18 +648,18 @@
                         </div>
                         <div>
                             <label class="block text-[11px] font-bold text-gray-500 mb-1">Giá Khớp Bán (đ)</label>
-                            <input type="number" id="${prefix}-price" placeholder="0" class="w-full border border-slate-200 p-2 rounded-xl text-xs">
+                            <input type="text" id="${prefix}-price" oninput="formatNumberInput(this)" placeholder="0" class="w-full border border-slate-200 p-2 rounded-xl text-xs">
                         </div>
                     `;
                 } else {
                     container.innerHTML = `
                         <div>
                             <label class="block text-[11px] font-bold text-gray-500 mb-1">Số Tiền Đầu Tư (VNĐ)</label>
-                            <input type="number" id="${prefix}-capital" placeholder="0" class="w-full border border-slate-200 p-2 rounded-xl text-xs">
+                            <input type="text" id="${prefix}-capital" oninput="formatNumberInput(this)" placeholder="0" class="w-full border border-slate-200 p-2 rounded-xl text-xs">
                         </div>
                         <div>
                             <label class="block text-[11px] font-bold text-gray-500 mb-1">Giá Khớp Đơn Vị (đ)</label>
-                            <input type="number" id="${prefix}-price" placeholder="0" class="w-full border border-slate-200 p-2 rounded-xl text-xs">
+                            <input type="text" id="${prefix}-price" oninput="formatNumberInput(this)" placeholder="0" class="w-full border border-slate-200 p-2 rounded-xl text-xs">
                         </div>
                     `;
                 }
@@ -594,9 +670,11 @@
 
         window.onload = function() {
             syncFromCloud();
+            updateAuthUI();
         };
 
         function addTransaction() {
+            if (!isAdmin) return;
             const type = document.getElementById('tx-type').value;
             const channel = document.getElementById('channel').value;
             let symbol = "";
@@ -625,7 +703,7 @@
             let tx = { type, channel, symbol, date };
 
             if (channel === 'TIETKIEM') {
-                tx.capital = parseFloat(document.getElementById('tx-capital').value);
+                tx.capital = parseFormattedNumber(document.getElementById('tx-capital').value);
                 tx.rate = parseFloat(document.getElementById('tx-rate').value);
                 tx.term = parseInt(document.getElementById('tx-term').value);
                 if (isNaN(tx.capital) || isNaN(tx.rate) || isNaN(tx.term) || tx.capital <= 0) {
@@ -637,7 +715,7 @@
                 const interest = tx.capital * (tx.rate / 100) * (tx.term / 12);
                 marketPrices[symbol] = tx.capital + interest;
             } else if (channel === 'TIENMAT') {
-                tx.capital = parseFloat(document.getElementById('tx-capital').value);
+                tx.capital = parseFormattedNumber(document.getElementById('tx-capital').value);
                 if (isNaN(tx.capital) || tx.capital <= 0) {
                     alert("Vui lòng nhập số tiền mặt hợp lệ!");
                     return;
@@ -647,7 +725,7 @@
                 marketPrices[symbol] = 1;
             } else if (channel === 'VANG' || channel === 'CK') {
                 tx.qty = parseFloat(document.getElementById('tx-qty').value);
-                tx.price = parseFloat(document.getElementById('tx-price').value);
+                tx.price = parseFormattedNumber(document.getElementById('tx-price').value);
                 if (isNaN(tx.qty) || isNaN(tx.price) || tx.qty <= 0 || tx.price <= 0) {
                     alert("Vui lòng nhập số lượng và giá hợp lệ!");
                     return;
@@ -661,8 +739,8 @@
                 if (!marketPrices[symbol]) marketPrices[symbol] = tx.price;
             } else if (channel === 'CCQ') {
                 if (type === 'BUY') {
-                    tx.capital = parseFloat(document.getElementById('tx-capital').value);
-                    tx.price = parseFloat(document.getElementById('tx-price').value);
+                    tx.capital = parseFormattedNumber(document.getElementById('tx-capital').value);
+                    tx.price = parseFormattedNumber(document.getElementById('tx-price').value);
                     if (isNaN(tx.capital) || isNaN(tx.price) || tx.capital <= 0 || tx.price <= 0) {
                         alert("Vui lòng nhập số tiền và giá khớp hợp lệ!");
                         return;
@@ -670,7 +748,7 @@
                     tx.qty = parseFloat((tx.capital / tx.price).toFixed(2));
                 } else {
                     tx.qty = parseFloat(document.getElementById('tx-qty').value);
-                    tx.price = parseFloat(document.getElementById('tx-price').value);
+                    tx.price = parseFormattedNumber(document.getElementById('tx-price').value);
                     if (isNaN(tx.qty) || isNaN(tx.price) || tx.qty <= 0 || tx.price <= 0) {
                         alert("Vui lòng nhập khối lượng và giá khớp bán hợp lệ!");
                         return;
@@ -718,6 +796,7 @@
         }
 
         function deleteTransaction(index) {
+            if (!isAdmin) return;
             if (confirm("Cảnh báo: Xóa lệnh này có thể ảnh hưởng đến số dư tiền mặt cấn trừ. Bạn có chắc chắn muốn xóa?")) {
                 transactions.splice(index, 1);
                 saveToCloud();
@@ -725,6 +804,7 @@
         }
 
         function openEditModal(index) {
+            if (!isAdmin) return;
             const tx = transactions[index];
             document.getElementById('edit-index').value = index;
             
@@ -760,21 +840,21 @@
             updateFormFields(true, 'edit');
 
             if (tx.channel === 'TIETKIEM') {
-                document.getElementById('edit-capital').value = tx.capital;
+                document.getElementById('edit-capital').value = tx.capital.toLocaleString('en-US');
                 document.getElementById('edit-rate').value = tx.rate;
                 document.getElementById('edit-term').value = tx.term;
             } else if (tx.channel === 'TIENMAT') {
-                document.getElementById('edit-capital').value = tx.capital;
+                document.getElementById('edit-capital').value = tx.capital.toLocaleString('en-US');
             } else if (tx.channel === 'VANG' || tx.channel === 'CK') {
                 document.getElementById('edit-qty').value = tx.qty;
-                document.getElementById('edit-price').value = tx.price;
+                document.getElementById('edit-price').value = tx.price.toLocaleString('en-US');
             } else if (tx.channel === 'CCQ') {
                 if (tx.type === 'SELL') {
                     document.getElementById('edit-qty').value = tx.qty;
-                    document.getElementById('edit-price').value = tx.price;
+                    document.getElementById('edit-price').value = tx.price.toLocaleString('en-US');
                 } else {
-                    document.getElementById('edit-capital').value = tx.capital;
-                    document.getElementById('edit-price').value = tx.price;
+                    document.getElementById('edit-capital').value = tx.capital.toLocaleString('en-US');
+                    document.getElementById('edit-price').value = tx.price.toLocaleString('en-US');
                 }
             }
 
@@ -786,6 +866,7 @@
         }
 
         function saveEditedTransaction() {
+            if (!isAdmin) return;
             const index = parseInt(document.getElementById('edit-index').value);
             const type = document.getElementById('edit-type').value;
             const channel = document.getElementById('edit-channel').value;
@@ -801,7 +882,7 @@
             let tx = { type, channel, symbol, date };
 
             if (channel === 'TIETKIEM') {
-                tx.capital = parseFloat(document.getElementById('edit-capital').value);
+                tx.capital = parseFormattedNumber(document.getElementById('edit-capital').value);
                 tx.rate = parseFloat(document.getElementById('edit-rate').value);
                 tx.term = parseInt(document.getElementById('edit-term').value);
                 tx.qty = 1;
@@ -809,13 +890,13 @@
                 const interest = tx.capital * (tx.rate / 100) * (tx.term / 12);
                 marketPrices[symbol] = tx.capital + interest;
             } else if (channel === 'TIENMAT') {
-                tx.capital = parseFloat(document.getElementById('edit-capital').value);
+                tx.capital = parseFormattedNumber(document.getElementById('edit-capital').value);
                 tx.qty = tx.capital;
                 tx.price = 1;
                 marketPrices[symbol] = 1;
             } else if (channel === 'VANG' || channel === 'CK') {
                 tx.qty = parseFloat(document.getElementById('edit-qty').value);
-                tx.price = parseFloat(document.getElementById('edit-price').value);
+                tx.price = parseFormattedNumber(document.getElementById('edit-price').value);
                 if (channel === 'CK') {
                     const feeRate = (type === 'BUY') ? 0.0015 : 0.0025;
                     tx.capital = tx.qty * tx.price * (type === 'BUY' ? (1 + feeRate) : (1 - feeRate));
@@ -825,11 +906,11 @@
             } else if (channel === 'CCQ') {
                 if (type === 'SELL') {
                     tx.qty = parseFloat(document.getElementById('edit-qty').value);
-                    tx.price = parseFloat(document.getElementById('edit-price').value);
+                    tx.price = parseFormattedNumber(document.getElementById('edit-price').value);
                     tx.capital = tx.qty * tx.price;
                 } else {
-                    tx.capital = parseFloat(document.getElementById('edit-capital').value);
-                    tx.price = parseFloat(document.getElementById('edit-price').value);
+                    tx.capital = parseFormattedNumber(document.getElementById('edit-capital').value);
+                    tx.price = parseFormattedNumber(document.getElementById('edit-price').value);
                     tx.qty = parseFloat((tx.capital / tx.price).toFixed(2));
                 }
             }
@@ -885,7 +966,7 @@
                             ${getSymbolBadgeHTML(sym, sampleChannel)}
                             <div class="flex items-center space-x-1.5">
                                 <span class="font-bold text-slate-800">${formatCurrency(curPrice)}</span>
-                                <button onclick="updateSingleMarketPrice('${sym}')" class="text-[10px] bg-white border border-slate-200 hover:bg-slate-100 px-1.5 py-0.5 rounded shadow-2xs">Sửa</button>
+                                ${isAdmin ? `<button onclick="updateSingleMarketPrice('${sym}')" class="text-[10px] bg-white border border-slate-200 hover:bg-slate-100 px-1.5 py-0.5 rounded shadow-2xs">Sửa</button>` : ''}
                             </div>
                         </div>
                     `;
@@ -929,8 +1010,10 @@
                         <td class="p-3 text-[11px] text-slate-500">${detailStr}</td>
                         <td class="p-3 font-bold text-slate-700">${formatCurrency(tx.capital)}</td>
                         <td class="p-3 text-center space-x-1">
-                            <button onclick="openEditModal(${tx.origIdx})" class="text-blue-600 hover:text-blue-800 font-semibold text-[10px] bg-blue-50 px-2 py-0.5 rounded-lg">Sửa</button>
-                            <button onclick="deleteTransaction(${tx.origIdx})" class="text-red-600 hover:text-red-800 font-semibold text-[10px] bg-red-50 px-2 py-0.5 rounded-lg">Xóa</button>
+                            ${isAdmin ? `
+                                <button onclick="openEditModal(${tx.origIdx})" class="text-blue-600 hover:text-blue-800 font-semibold text-[10px] bg-blue-50 px-2 py-0.5 rounded-lg">Sửa</button>
+                                <button onclick="deleteTransaction(${tx.origIdx})" class="text-red-600 hover:text-red-800 font-semibold text-[10px] bg-red-50 px-2 py-0.5 rounded-lg">Xóa</button>
+                            ` : `<span class="text-gray-300 italic text-[10px]">Chỉ xem</span>`}
                         </td>
                     </tr>
                 `;
@@ -1148,10 +1231,14 @@
         }
 
         function updateSingleMarketPrice(symbol) {
-            const newPrice = prompt(`Nhập giá thị trường mới cho ${symbol}:`, marketPrices[symbol] || 0);
-            if (newPrice !== null && !isNaN(newPrice)) {
-                marketPrices[symbol] = parseFloat(newPrice);
-                saveToCloud();
+            if (!isAdmin) return;
+            const newPriceStr = prompt(`Nhập giá thị trường mới cho ${symbol}:`, (marketPrices[symbol] || 0).toLocaleString('en-US'));
+            if (newPriceStr !== null) {
+                const newPrice = parseFormattedNumber(newPriceStr);
+                if (!isNaN(newPrice)) {
+                    marketPrices[symbol] = newPrice;
+                    saveToCloud();
+                }
             }
         }
 
