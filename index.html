@@ -19,7 +19,7 @@
                     <h1 class="text-base font-extrabold text-blue-600 tracking-tight flex items-center gap-1.5"><span>📊</span> Dashboard Quản Lý Đầu Tư</h1>
                     <span id="cloud-status" class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-100 text-amber-700">Đang kết nối Cloud...</span>
                     
-                    <!-- Ô NHẬP MẬT KHẨU MỞ KHÓA ADMIN Ở GÓC TRÁI -->
+                    <!-- Ô NHẬP MẬT KHẨU MỞ KHÓA ADMIN -->
                     <div id="auth-container" class="flex items-center gap-1 bg-slate-100 p-1 rounded-xl">
                         <input type="password" id="admin-pwd-input" placeholder="Mật khẩu Admin..." class="bg-white border border-slate-200 px-2 py-1 rounded-lg text-xs w-28 focus:outline-none">
                         <button onclick="unlockAdmin()" class="bg-blue-600 text-white font-bold px-2.5 py-1 rounded-lg text-xs hover:bg-blue-700 transition">Mở Khóa</button>
@@ -140,7 +140,7 @@
                     </div>
                 </div>
 
-                <!-- Form Thêm Giao Dịch Mới (Ẩn khi chưa đăng nhập admin) -->
+                <!-- Form Thêm Giao Dịch Mới -->
                 <div class="bg-white p-5 rounded-2xl shadow-xs border border-slate-100 admin-only hidden">
                     <h3 class="text-xs font-bold text-gray-700 uppercase tracking-wide mb-3">Thêm Giao Dịch Mới</h3>
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-3 mb-3">
@@ -184,7 +184,7 @@
                         <thead>
                             <tr class="bg-slate-50 text-slate-500 uppercase border-b border-slate-100 text-[11px]">
                                 <th class="p-3 font-semibold rounded-l-xl">Mã Tài Sản</th>
-                                <th class="p-3 font-semibold">Khối Lượng / Thời Gian</th>
+                                <th class="p-3 font-semibold">Khối Lượng</th>
                                 <th class="p-3 font-semibold">Giá Vốn TB</th>
                                 <th class="p-3 font-semibold">Giá Thị Trường</th>
                                 <th class="p-3 font-semibold">Thành Giá Trị</th>
@@ -207,7 +207,6 @@
                                 <th class="p-3 font-semibold">Loại</th>
                                 <th class="p-3 font-semibold">Danh Mục</th>
                                 <th class="p-3 font-semibold">Mã</th>
-                                <th class="p-3 font-semibold">Số Ngày ĐT</th>
                                 <th class="p-3 font-semibold">Chi Tiết Thông Số</th>
                                 <th class="p-3 font-semibold">Thành Tiền / Vốn</th>
                                 <th class="p-3 font-semibold text-center rounded-r-xl">Thao Tác</th>
@@ -237,8 +236,8 @@
         // ==========================================
         // CẤU HÌNH CỨNG JSONBIN VÀ MẬT KHẨU ADMIN
         // ==========================================
-        const ADMIN_PASSWORD = "admin123";                      // Mật khẩu mở khóa Admin
-        let jsonBinId = "6ad2f0d0ac6210605a38fde4";                     // <-- DÁN BIN ID CỦA BẠN VÀO ĐÂY
+        const ADMIN_PASSWORD = "admin123";                      // Mật khẩu Admin
+        let jsonBinId = "6ad2f0d0ac6210605a38fde4";                     // <-- DÁN BIN ID MỚI CỦA BẠN VÀO ĐÂY
         let jsonBinMasterKey = "$2a$10$hbq3EWJ7PXtgYk4Nri7vRue3tWRplWPjAfpjjT2fiyivYWxtWayRG";          // <-- DÁN MASTER KEY CỦA BẠN VÀO ĐÂY
         // ==========================================
 
@@ -257,11 +256,12 @@
         };
 
         function unlockAdmin() {
-            const pwd = document.getElementById('admin-pwd-input').value;
+            const pwdInput = document.getElementById('admin-pwd-input');
+            const pwd = pwdInput ? pwdInput.value.trim() : "";
             if (pwd === ADMIN_PASSWORD) {
                 isAdmin = true;
                 sessionStorage.setItem('is_admin_logged', 'true');
-                document.getElementById('admin-pwd-input').value = "";
+                if (pwdInput) pwdInput.value = "";
                 updateAdminUI();
                 renderDashboard();
             } else {
@@ -282,22 +282,29 @@
             const adminElements = document.querySelectorAll('.admin-only');
 
             if (isAdmin) {
-                authContainer.classList.add('hidden');
-                adminBadge.classList.remove('hidden');
-                adminBadge.classList.add('flex');
+                if (authContainer) authContainer.classList.add('hidden');
+                if (adminBadge) {
+                    adminBadge.classList.remove('hidden');
+                    adminBadge.classList.add('flex');
+                }
                 adminElements.forEach(el => el.classList.remove('hidden'));
             } else {
-                authContainer.classList.remove('hidden');
-                adminBadge.classList.remove('flex');
-                adminBadge.classList.add('hidden');
+                if (authContainer) authContainer.classList.remove('hidden');
+                if (adminBadge) {
+                    adminBadge.classList.remove('flex');
+                    adminBadge.classList.add('hidden');
+                }
                 adminElements.forEach(el => el.classList.add('hidden'));
             }
         }
 
         async function syncFromCloud() {
+            const statusElem = document.getElementById('cloud-status');
             if (!jsonBinId || jsonBinId.includes("YOUR_")) {
-                document.getElementById('cloud-status').innerText = "Chưa cấu hình Bin ID";
-                document.getElementById('cloud-status').className = "text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-100 text-amber-700";
+                if (statusElem) {
+                    statusElem.innerText = "Chưa cấu hình Bin ID";
+                    statusElem.className = "text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-100 text-amber-700";
+                }
                 return;
             }
             try {
@@ -308,18 +315,24 @@
                 if (data && data.record) {
                     transactions = data.record.transactions || [];
                     marketPrices = data.record.marketPrices || {};
-                    document.getElementById('cloud-status').innerText = "Đã đồng bộ Cloud";
-                    document.getElementById('cloud-status').className = "text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-700";
+                    if (statusElem) {
+                        statusElem.innerText = "Đã đồng bộ Cloud";
+                        statusElem.className = "text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-700";
+                    }
                     renderDashboard();
                 }
             } catch (e) {
-                document.getElementById('cloud-status').innerText = "Lỗi kết nối Cloud";
-                document.getElementById('cloud-status').className = "text-[10px] font-bold px-2 py-0.5 rounded-full bg-rose-100 text-rose-700";
+                console.error(e);
+                if (statusElem) {
+                    statusElem.innerText = "Lỗi kết nối Cloud";
+                    statusElem.className = "text-[10px] font-bold px-2 py-0.5 rounded-full bg-rose-100 text-rose-700";
+                }
             }
         }
 
         async function saveToCloud() {
             if (!jsonBinId || jsonBinId.includes("YOUR_")) return;
+            const statusElem = document.getElementById('cloud-status');
             try {
                 await fetch(`https://api.jsonbin.io/v3/b/${jsonBinId}`, {
                     method: 'PUT',
@@ -329,15 +342,28 @@
                     },
                     body: JSON.stringify({ transactions, marketPrices })
                 });
-                document.getElementById('cloud-status').innerText = "Đã lưu Cloud";
-                document.getElementById('cloud-status').className = "text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-700";
+                if (statusElem) {
+                    statusElem.innerText = "Đã lưu Cloud";
+                    statusElem.className = "text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-700";
+                }
             } catch (e) {
                 console.error(e);
             }
         }
 
         window.onload = function() {
+            const pwdInput = document.getElementById('admin-pwd-input');
+            if (pwdInput) {
+                pwdInput.addEventListener('keypress', function(e) {
+                    if (e.key === 'Enter') unlockAdmin();
+                });
+            }
+            
+            const dateInput = document.getElementById('tx-date');
+            if (dateInput) dateInput.valueAsDate = new Date();
+
             updateAdminUI();
+            onTxTypeChange();
             syncFromCloud();
         };
 
@@ -362,24 +388,22 @@
 
         setInterval(() => {
             const now = new Date();
-            document.getElementById('realtime-clock').innerText = `🕒 ${now.toLocaleDateString('vi-VN')} - ${now.toLocaleTimeString('vi-VN')}`;
+            const clock = document.getElementById('realtime-clock');
+            if (clock) clock.innerText = `🕒 ${now.toLocaleDateString('vi-VN')} - ${now.toLocaleTimeString('vi-VN')}`;
         }, 1000);
-
-        document.getElementById('tx-date').valueAsDate = new Date();
 
         function getCalculatedAssetsMap() {
             let assetMap = {};
-            const today = new Date();
             assetMap['TIEN_MAT'] = { qty: 0, totalCost: 0, boughtQty: 0, soldQty: 0, channel: 'TIENMAT', startDate: new Date().toISOString().split('T')[0] };
 
             transactions.forEach((tx, idx) => {
                 if (tx.type === 'SELL' && tx.channel !== 'TIENMAT') {
-                    assetMap['TIEN_MAT'].qty += tx.capital;
-                    assetMap['TIEN_MAT'].totalCost += tx.capital;
+                    assetMap['TIEN_MAT'].qty += (tx.capital || 0);
+                    assetMap['TIEN_MAT'].totalCost += (tx.capital || 0);
                 }
                 if (tx.type === 'BUY' && (tx.channel === 'CK' || tx.channel === 'CCQ')) {
-                    assetMap['TIEN_MAT'].qty -= tx.capital;
-                    assetMap['TIEN_MAT'].totalCost -= tx.capital;
+                    assetMap['TIEN_MAT'].qty -= (tx.capital || 0);
+                    assetMap['TIEN_MAT'].totalCost -= (tx.capital || 0);
                 }
 
                 let key = tx.symbol;
@@ -395,19 +419,22 @@
                 assetMap[key].rate = tx.rate || assetMap[key].rate;
                 assetMap[key].startDate = tx.date;
 
+                const q = parseFloat(tx.qty) || 0;
+                const c = parseFloat(tx.capital) || 0;
+
                 if (tx.type === 'BUY') {
-                    assetMap[key].qty += tx.qty;
-                    assetMap[key].boughtQty += tx.qty;
-                    assetMap[key].totalCost += tx.capital;
+                    assetMap[key].qty += q;
+                    assetMap[key].boughtQty += q;
+                    assetMap[key].totalCost += c;
                 } else {
-                    assetMap[key].soldQty += tx.qty;
+                    assetMap[key].soldQty += q;
                     if (tx.channel === 'TIENMAT') {
-                        assetMap[key].qty -= tx.qty;
-                        assetMap[key].totalCost -= tx.capital;
+                        assetMap[key].qty -= q;
+                        assetMap[key].totalCost -= c;
                     } else if (assetMap[key].qty > 0) {
                         const avgCost = assetMap[key].totalCost / assetMap[key].qty;
-                        assetMap[key].qty -= tx.qty;
-                        assetMap[key].totalCost -= tx.qty * avgCost;
+                        assetMap[key].qty -= q;
+                        assetMap[key].totalCost -= q * avgCost;
                         if (assetMap[key].qty <= 0) { assetMap[key].qty = 0; assetMap[key].totalCost = 0; }
                     }
                 }
@@ -431,8 +458,12 @@
         }
 
         function onTxTypeChange() {
-            const type = document.getElementById('tx-type').value;
-            const channel = document.getElementById('channel').value;
+            const typeElem = document.getElementById('tx-type');
+            const channelElem = document.getElementById('channel');
+            if (!typeElem || !channelElem) return;
+
+            const type = typeElem.value;
+            const channel = channelElem.value;
             const symbolContainer = document.getElementById('symbol-container');
 
             if (type === 'SELL' && channel !== 'TIENMAT') {
@@ -442,7 +473,7 @@
                     ? `<label class="block text-[11px] font-bold text-gray-500 mb-1">Mã Tài Sản</label><select class="w-full border p-2 rounded-xl text-xs bg-slate-50 text-red-500 font-bold" disabled><option>Không có tài sản khả dụng</option></select>`
                     : `<label class="block text-[11px] font-bold text-gray-500 mb-1">Chọn Tài Sản</label><select id="tx-symbol-select" onchange="updateFormFields()" class="w-full border p-2 rounded-xl text-xs uppercase bg-blue-50 font-bold text-blue-700">${filtered.map(k => `<option value="${k}">${assetMap[k].rawSymbol \vert{}\vert{} k} (Còn: ${assetMap[k].qty})</option>`).join('')}</select>`;
             } else {
-                symbolContainer.innerHTML = `<label class="block text-[11px] font-bold text-gray-500 mb-1">Mã / Tên Tài Sản</label><input type="text" id="tx-symbol" placeholder="VD: SJC, VCB..." class="w-full border p-2 rounded-xl text-xs uppercase">`;
+                symbolContainer.innerHTML = `<label class="block text-[11px] font-bold text-gray-500 mb-1">Mã / Tên Tài Sản</label><input type="text" id="tx-symbol" placeholder="VD: SJC, VCB..." class="w-full border p-2 rounded-xl text-xs uppercase outline-none">`;
             }
             updateFormFields();
         }
@@ -450,18 +481,20 @@
         function onChannelChange() { onTxTypeChange(); }
 
         function updateFormFields(isEdit = false, prefix = 'tx') {
-            const channel = document.getElementById(isEdit ? `${prefix}-channel` : 'channel').value;
+            const channelElem = document.getElementById(isEdit ? `${prefix}-channel` : 'channel');
+            if (!channelElem) return;
+            const channel = channelElem.value;
             const container = document.getElementById(isEdit ? `${prefix}-dynamic-fields` : 'dynamic-fields');
+            if (!container) return;
             
             if (channel === 'TIETKIEM') {
-                container.innerHTML = `<div><label class="block text-[11px] font-bold text-gray-500 mb-1">Số Tiền (VNĐ)</label><input type="number" id="${prefix}-capital" class="w-full border p-2 rounded-xl text-xs"></div><div><label class="block text-[11px] font-bold text-gray-500 mb-1">Lãi Suất (%/năm)</label><input type="number" step="0.01" id="${prefix}-rate" class="w-full border p-2 rounded-xl text-xs"></div><div><label class="block text-[11px] font-bold text-gray-500 mb-1">Kỳ Hạn (Tháng)</label><input type="number" id="${prefix}-term" class="w-full border p-2 rounded-xl text-xs"></div>`;
+                container.innerHTML = `<div><label class="block text-[11px] font-bold text-gray-500 mb-1">Số Tiền (VNĐ)</label><input type="number" id="${prefix}-capital" class="w-full border p-2 rounded-xl text-xs outline-none"></div><div><label class="block text-[11px] font-bold text-gray-500 mb-1">Lãi Suất (%/năm)</label><input type="number" step="0.01" id="${prefix}-rate" class="w-full border p-2 rounded-xl text-xs outline-none"></div><div><label class="block text-[11px] font-bold text-gray-500 mb-1">Kỳ Hạn (Tháng)</label><input type="number" id="${prefix}-term" class="w-full border p-2 rounded-xl text-xs outline-none"></div>`;
             } else if (channel === 'TIENMAT') {
-                container.innerHTML = `<div class="md:col-span-3"><label class="block text-[11px] font-bold text-gray-500 mb-1">Số Tiền (VNĐ)</label><input type="number" id="${prefix}-capital" class="w-full border p-2 rounded-xl text-xs"></div>`;
+                container.innerHTML = `<div class="md:col-span-3"><label class="block text-[11px] font-bold text-gray-500 mb-1">Số Tiền (VNĐ)</label><input type="number" id="${prefix}-capital" class="w-full border p-2 rounded-xl text-xs outline-none"></div>`;
             } else {
-                container.innerHTML = `<div><label class="block text-[11px] font-bold text-gray-500 mb-1">Số Lượng</label><input type="number" step="any" id="${prefix}-qty" class="w-full border p-2 rounded-xl text-xs"></div><div><label class="block text-[11px] font-bold text-gray-500 mb-1">Giá Đơn Vị</label><input type="number" id="${prefix}-price" class="w-full border p-2 rounded-xl text-xs"></div>`;
+                container.innerHTML = `<div><label class="block text-[11px] font-bold text-gray-500 mb-1">Số Lượng</label><input type="number" step="any" id="${prefix}-qty" class="w-full border p-2 rounded-xl text-xs outline-none"></div><div><label class="block text-[11px] font-bold text-gray-500 mb-1">Giá Đơn Vị (VNĐ)</label><input type="number" id="${prefix}-price" class="w-full border p-2 rounded-xl text-xs outline-none"></div>`;
             }
         }
-        onTxTypeChange();
 
         function addTransaction() {
             if (!isAdmin) { alert("Cần quyền Admin!"); return; }
@@ -471,28 +504,31 @@
             if (channel === 'TIENMAT') symbol = 'TIEN_MAT';
             const date = document.getElementById('tx-date').value;
 
-            if (!symbol || !date) { alert("Vui lòng điền đủ thông tin!"); return; }
+            if (!symbol || !date) { alert("Vui lòng điền đủ thông tin Mã và Ngày!"); return; }
 
             let tx = { type, channel, symbol, date };
             if (channel === 'TIETKIEM') {
-                tx.capital = parseFloat(document.getElementById('tx-capital').value);
-                tx.rate = parseFloat(document.getElementById('tx-rate').value);
-                tx.term = parseInt(document.getElementById('tx-term').value);
+                tx.capital = parseFloat(document.getElementById('tx-capital')?.value || 0);
+                tx.rate = parseFloat(document.getElementById('tx-rate')?.value || 0);
+                tx.term = parseInt(document.getElementById('tx-term')?.value || 0);
                 tx.qty = 1; tx.price = tx.capital;
                 marketPrices[symbol] = tx.capital + (tx.capital * (tx.rate/100) * (tx.term/12));
             } else if (channel === 'TIENMAT') {
-                tx.capital = parseFloat(document.getElementById('tx-capital').value);
+                tx.capital = parseFloat(document.getElementById('tx-capital')?.value || 0);
                 tx.qty = tx.capital; tx.price = 1;
             } else {
-                tx.qty = parseFloat(document.getElementById('tx-qty').value);
-                tx.price = parseFloat(document.getElementById('tx-price').value);
+                tx.qty = parseFloat(document.getElementById('tx-qty')?.value || 0);
+                tx.price = parseFloat(document.getElementById('tx-price')?.value || 0);
                 tx.capital = channel === 'CK' ? tx.qty * tx.price * (type === 'BUY' ? 1.0015 : 0.9975) : tx.qty * tx.price;
                 if (!marketPrices[symbol]) marketPrices[symbol] = tx.price;
             }
 
+            if (isNaN(tx.capital) || tx.capital <= 0) { alert("Vui lòng nhập số tiền hợp lệ!"); return; }
+
             transactions.push(tx);
             saveAndRender();
-            if (type === 'BUY' && channel !== 'TIENMAT') document.getElementById('tx-symbol').value = "";
+            const symbolInput = document.getElementById('tx-symbol');
+            if (symbolInput && type === 'BUY' && channel !== 'TIENMAT') symbolInput.value = "";
             onTxTypeChange();
         }
 
@@ -517,9 +553,16 @@
                 <div><label class="block font-bold text-slate-500 mb-1">Ngày</label><input type="date" id="edit-date" value="${tx.date}" class="w-full border p-2 rounded-xl"></div>
                 <div id="edit-dynamic-fields" class="space-y-2"></div>`;
             updateFormFields(true, 'edit');
-            if (tx.channel === 'TIETKIEM') { document.getElementById('edit-capital').value = tx.capital; document.getElementById('edit-rate').value = tx.rate; document.getElementById('edit-term').value = tx.term; }
-            else if (tx.channel === 'TIENMAT') { document.getElementById('edit-capital').value = tx.capital; }
-            else { document.getElementById('edit-qty').value = tx.qty; document.getElementById('edit-price').value = tx.price; }
+            if (tx.channel === 'TIETKIEM') { 
+                if (document.getElementById('edit-capital')) document.getElementById('edit-capital').value = tx.capital; 
+                if (document.getElementById('edit-rate')) document.getElementById('edit-rate').value = tx.rate; 
+                if (document.getElementById('edit-term')) document.getElementById('edit-term').value = tx.term; 
+            } else if (tx.channel === 'TIENMAT') { 
+                if (document.getElementById('edit-capital')) document.getElementById('edit-capital').value = tx.capital; 
+            } else { 
+                if (document.getElementById('edit-qty')) document.getElementById('edit-qty').value = tx.qty; 
+                if (document.getElementById('edit-price')) document.getElementById('edit-price').value = tx.price; 
+            }
             document.getElementById('edit-modal').classList.remove('hidden');
         }
 
@@ -534,16 +577,16 @@
 
             let tx = { type, channel, symbol, date };
             if (channel === 'TIETKIEM') {
-                tx.capital = parseFloat(document.getElementById('edit-capital').value);
-                tx.rate = parseFloat(document.getElementById('edit-rate').value);
-                tx.term = parseInt(document.getElementById('edit-term').value);
+                tx.capital = parseFloat(document.getElementById('edit-capital')?.value || 0);
+                tx.rate = parseFloat(document.getElementById('edit-rate')?.value || 0);
+                tx.term = parseInt(document.getElementById('edit-term')?.value || 0);
                 tx.qty = 1; tx.price = tx.capital;
             } else if (channel === 'TIENMAT') {
-                tx.capital = parseFloat(document.getElementById('edit-capital').value);
+                tx.capital = parseFloat(document.getElementById('edit-capital')?.value || 0);
                 tx.qty = tx.capital; tx.price = 1;
             } else {
-                tx.qty = parseFloat(document.getElementById('edit-qty').value);
-                tx.price = parseFloat(document.getElementById('edit-price').value);
+                tx.qty = parseFloat(document.getElementById('edit-qty')?.value || 0);
+                tx.price = parseFloat(document.getElementById('edit-price')?.value || 0);
                 tx.capital = channel === 'CK' ? tx.qty * tx.price * (type === 'BUY' ? 1.0015 : 0.9975) : tx.qty * tx.price;
             }
             transactions[index] = tx;
@@ -551,35 +594,46 @@
             saveAndRender();
         }
 
-        function formatCurrency(amount) { return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(amount); }
+        function formatCurrency(amount) { return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(amount || 0); }
 
         function renderDashboard() {
             const txBody = document.getElementById('transactions-table-body');
             const assetBody = document.getElementById('assets-table-body');
             const marketWidget = document.getElementById('market-prices-widget');
-            const volumeBody = document.getElementById('volume-summary-body');
             const profitAlertWidget = document.getElementById('profit-alert-widget');
 
-            txBody.innerHTML = ""; assetBody.innerHTML = ""; marketWidget.innerHTML = ""; volumeBody.innerHTML = ""; profitAlerts = []; profitAlertWidget.innerHTML = "";
+            if (txBody) txBody.innerHTML = ""; 
+            if (assetBody) assetBody.innerHTML = ""; 
+            if (marketWidget) marketWidget.innerHTML = ""; 
+            if (profitAlertWidget) profitAlertWidget.innerHTML = ""; 
+            let profitAlerts = [];
 
             const assetMap = getCalculatedAssetsMap();
             const cashBalance = assetMap['TIEN_MAT'] ? assetMap['TIEN_MAT'].qty : 0;
-            document.getElementById('top-cash-balance').innerText = formatCurrency(cashBalance);
+            const cashElem = document.getElementById('top-cash-balance');
+            if (cashElem) cashElem.innerText = formatCurrency(cashBalance);
 
             // Render Market Prices
             const marketSymbols = [...new Set(Object.keys(assetMap).filter(k => assetMap[k].channel !== 'TIETKIEM' && assetMap[k].channel !== 'TIENMAT').map(k => assetMap[k].rawSymbol || k))];
-            if (marketSymbols.length === 0) marketWidget.innerHTML = `<p class="text-gray-400 text-center italic py-1">Chưa có mã tài sản.</p>`;
-            marketSymbols.forEach(sym => {
-                const sampleKey = Object.keys(assetMap).find(k => (assetMap[k].rawSymbol || k) === sym);
-                const curPrice = marketPrices[sym] || (sampleKey && assetMap[sampleKey].qty > 0 ? assetMap[sampleKey].totalCost / assetMap[sampleKey].qty : 0);
-                marketWidget.innerHTML += `<div class="flex justify-between items-center bg-slate-50 p-2 rounded-xl border">${getSymbolBadgeHTML(sym, sampleKey ? assetMap[sampleKey].channel : 'CK')}<div class="flex items-center gap-1.5"><span class="font-bold">${formatCurrency(curPrice)}</span>${isAdmin ? `<button onclick="updateMarketPrice('${sym}')" class="text-[10px] bg-white border px-1.5 py-0.5 rounded">Sửa</button>` : ''}</div></div>`;
-            });
+            if (marketWidget) {
+                if (marketSymbols.length === 0) {
+                    marketWidget.innerHTML = `<p class="text-gray-400 text-center italic py-1">Chưa có mã tài sản.</p>`;
+                } else {
+                    marketSymbols.forEach(sym => {
+                        const sampleKey = Object.keys(assetMap).find(k => (assetMap[k].rawSymbol || k) === sym);
+                        const curPrice = marketPrices[sym] || (sampleKey && assetMap[sampleKey].qty > 0 ? assetMap[sampleKey].totalCost / assetMap[sampleKey].qty : 0);
+                        marketWidget.innerHTML += `<div class="flex justify-between items-center bg-slate-50 p-2 rounded-xl border">${getSymbolBadgeHTML(sym, sampleKey ? assetMap[sampleKey].channel : 'CK')}<div class="flex items-center gap-1.5"><span class="font-bold">${formatCurrency(curPrice)}</span>${isAdmin ? `<button onclick="updateMarketPrice('${sym}')" class="text-[10px] bg-white border px-1.5 py-0.5 rounded shadow-2xs hover:bg-slate-100">Sửa</button>` : ''}</div></div>`;
+                    });
+                }
+            }
 
             // Render Transactions History
             let sortedTransactions = [...transactions].map((tx, origIdx) => ({ ...tx, origIdx })).sort((a,b) => new Date(b.date) - new Date(a.date));
-            sortedTransactions.forEach(tx => {
-                txBody.innerHTML += `<tr class="border-b hover:bg-slate-50"><td class="p-3">${formatDateDDMMYY(tx.date)}</td><td class="p-3">${tx.type==='BUY'?'<span class="bg-emerald-100 text-emerald-700 px-1.5 py-0.5 rounded text-[10px] font-bold">MUA</span>':'<span class="bg-rose-100 text-rose-700 px-1.5 py-0.5 rounded text-[10px] font-bold">BÁN</span>'}</td><td class="p-3">${tx.channel}</td><td class="p-3">${getSymbolBadgeHTML(tx.symbol, tx.channel)}</td><td class="p-3">-</td><td class="p-3 text-[11px]">${tx.qty ? 'SL: '+tx.qty+' | Giá: '+formatCurrency(tx.price) : ''}</td><td class="p-3 font-bold">${formatCurrency(tx.capital)}</td><td class="p-3 text-center">${isAdmin ? `<button onclick="openEditModal(${tx.origIdx})" class="text-blue-600 bg-blue-50 px-2 py-0.5 rounded mr-1">Sửa</button><button onclick="deleteTransaction(${tx.origIdx})" class="text-red-600 bg-red-50 px-2 py-0.5 rounded">Xóa</button>` : '<span class="text-slate-300">Chỉ xem</span>'}</td></tr>`;
-            });
+            if (txBody) {
+                sortedTransactions.forEach(tx => {
+                    txBody.innerHTML += `<tr class="border-b hover:bg-slate-50"><td class="p-3">${formatDateDDMMYY(tx.date)}</td><td class="p-3">${tx.type==='BUY'?'<span class="bg-emerald-100 text-emerald-700 px-1.5 py-0.5 rounded text-[10px] font-bold">MUA</span>':'<span class="bg-rose-100 text-rose-700 px-1.5 py-0.5 rounded text-[10px] font-bold">BÁN</span>'}</td><td class="p-3">${tx.channel}</td><td class="p-3">${getSymbolBadgeHTML(tx.symbol, tx.channel)}</td><td class="p-3 text-[11px]">${tx.qty ? 'SL: '+tx.qty+' | Giá: '+formatCurrency(tx.price) : '-'}</td><td class="p-3 font-bold">${formatCurrency(tx.capital)}</td><td class="p-3 text-center">${isAdmin ? `<button onclick="openEditModal(${tx.origIdx})" class="text-blue-600 bg-blue-50 px-2 py-0.5 rounded mr-1">Sửa</button><button onclick="deleteTransaction(${tx.origIdx})" class="text-red-600 bg-red-50 px-2 py-0.5 rounded">Xóa</button>` : '<span class="text-slate-300">Chỉ xem</span>'}</td></tr>`;
+                });
+            }
 
             // Render Calculated Assets & ROI
             let calculatedAssets = [];
@@ -598,9 +652,11 @@
                     const roi = data.totalCost > 0 ? (profit / data.totalCost) * 100 : 0;
                     totalPortfolioVal += marketVal;
 
-                    channelTotals[data.channel] += marketVal;
-                    channelInvested[data.channel] += data.totalCost;
-                    channelProfits[data.channel] += profit;
+                    if (channelTotals[data.channel] !== undefined) {
+                        channelTotals[data.channel] += marketVal;
+                        channelInvested[data.channel] += data.totalCost;
+                        channelProfits[data.channel] += profit;
+                    }
 
                     if (roi > 10) profitAlerts.push({ symbol: data.rawSymbol || key, roi, profit, channel: data.channel });
 
@@ -611,28 +667,39 @@
             calculatedAssets.sort((a, b) => b.roi - a.roi);
 
             // Render Profit Alerts
-            if (profitAlerts.length > 0) {
-                profitAlerts.forEach(a => {
-                    profitAlertWidget.innerHTML += `<div class="bg-white p-2 rounded-xl border border-amber-300 flex justify-between items-center"><div>${getSymbolBadgeHTML(a.symbol, a.channel)} <span class="font-bold text-emerald-600">+${a.roi.toFixed(1)}%</span></div><span class="text-[10px] font-bold text-amber-700 bg-amber-100 px-2 py-0.5 rounded">🎯 Chốt lời</span></div>`;
-                });
-            } else {
-                profitAlertWidget.innerHTML = `<p class="text-gray-400 text-center italic py-1">Chưa có tài sản đạt ROI > 10%.</p>`;
+            if (profitAlertWidget) {
+                if (profitAlerts.length > 0) {
+                    profitAlerts.forEach(a => {
+                        profitAlertWidget.innerHTML += `<div class="bg-white p-2 rounded-xl border border-amber-300 flex justify-between items-center"><div>${getSymbolBadgeHTML(a.symbol, a.channel)} <span class="font-bold text-emerald-600">+${a.roi.toFixed(1)}%</span></div><span class="text-[10px] font-bold text-amber-700 bg-amber-100 px-2 py-0.5 rounded">🎯 Chốt lời</span></div>`;
+                    });
+                } else {
+                    profitAlertWidget.innerHTML = `<p class="text-gray-400 text-center italic py-1">Chưa có tài sản đạt ROI > 10%.</p>`;
+                }
             }
 
             let realTotalInvested = cashBalance;
-            calculatedAssets.forEach(a => {
-                assetBody.innerHTML += `<tr class="border-b hover:bg-slate-50"><td class="p-3">${getSymbolBadgeHTML(a.symbol, a.channel)}</td><td class="p-3">${a.qtyDisplay}</td><td class="p-3">${formatCurrency(a.avgPrice)}</td><td class="p-3">${formatCurrency(a.marketPrice)}</td><td class="p-3 font-bold">${formatCurrency(a.marketVal)}</td><td class="p-3">${((a.marketVal/totalPortfolioVal)*100).toFixed(1)}%</td><td class="p-3 font-extrabold ${a.roi>=0?'text-emerald-600':'text-rose-600'}">${a.roi>=0?'+':''}${a.roi.toFixed(2)}%</td><td class="p-3 font-bold ${a.profit>=0?'text-emerald-600':'text-rose-600'}">${formatCurrency(a.profit)}</td></tr>`;
-                realTotalInvested += a.totalCost;
-            });
+            if (assetBody) {
+                calculatedAssets.forEach(a => {
+                    assetBody.innerHTML += `<tr class="border-b hover:bg-slate-50"><td class="p-3">${getSymbolBadgeHTML(a.symbol, a.channel)}</td><td class="p-3">${a.qtyDisplay}</td><td class="p-3">${formatCurrency(a.avgPrice)}</td><td class="p-3">${formatCurrency(a.marketPrice)}</td><td class="p-3 font-bold">${formatCurrency(a.marketVal)}</td><td class="p-3">${((a.marketVal/totalPortfolioVal)*100).toFixed(1)}%</td><td class="p-3 font-extrabold ${a.roi>=0?'text-emerald-600':'text-rose-600'}">${a.roi>=0?'+':''}${a.roi.toFixed(2)}%</td><td class="p-3 font-bold ${a.profit>=0?'text-emerald-600':'text-rose-600'}">${formatCurrency(a.profit)}</td></tr>`;
+                    realTotalInvested += a.totalCost;
+                });
+            }
 
-            document.getElementById('total-portfolio-value').innerText = formatCurrency(totalPortfolioVal);
-            document.getElementById('total-invested').innerText = formatCurrency(realTotalInvested);
+            const totalPortfolioElem = document.getElementById('total-portfolio-value');
+            if (totalPortfolioElem) totalPortfolioElem.innerText = formatCurrency(totalPortfolioVal);
+            
+            const totalInvestedElem = document.getElementById('total-invested');
+            if (totalInvestedElem) totalInvestedElem.innerText = formatCurrency(realTotalInvested);
+            
             const totalProfit = totalPortfolioVal - realTotalInvested;
             const profitElem = document.getElementById('total-profit');
-            profitElem.innerText = `${formatCurrency(totalProfit)} (${realTotalInvested>0?((totalProfit/realTotalInvested)*100).toFixed(2):0}%)`;
-            profitElem.className = `text-xl font-black mt-1 ${totalProfit>=0?'text-emerald-600':'text-rose-600'}`;
+            if (profitElem) {
+                profitElem.innerText = `${formatCurrency(totalProfit)} (${realTotalInvested>0?((totalProfit/realTotalInvested)*100).toFixed(2):0}%)`;
+                profitElem.className = `text-xl font-black mt-1 ${totalProfit>=0?'text-emerald-600':'text-rose-600'}`;
+            }
 
-            document.getElementById('chart-center-total').innerText = formatCurrency(totalPortfolioVal);
+            const chartCenter = document.getElementById('chart-center-total');
+            if (chartCenter) chartCenter.innerText = formatCurrency(totalPortfolioVal);
 
             // Chart Render
             const chartKeys = ['VANG', 'TIETKIEM', 'CK', 'CCQ', 'TIENMAT'];
@@ -647,7 +714,9 @@
         }
 
         function renderChart(labels, values, bgColors, totalVal, chartKeys) {
-            const ctx = document.getElementById('portfolioChart').getContext('2d');
+            const chartElem = document.getElementById('portfolioChart');
+            if (!chartElem) return;
+            const ctx = chartElem.getContext('2d');
             if (chartInstance) chartInstance.destroy();
             chartInstance = new Chart(ctx, {
                 type: 'doughnut',
@@ -655,16 +724,20 @@
                 options: { responsive: true, maintainAspectRatio: false, cutout: '76%', plugins: { legend: { display: false } } }
             });
             const legend = document.getElementById('custom-chart-legend');
-            legend.innerHTML = "";
-            chartKeys.forEach((k, i) => {
-                if (values[i] > 0) {
-                    legend.innerHTML += `<div class="flex items-center justify-between text-xs py-1 px-2 rounded-xl"><div class="flex items-center gap-2"><span class="w-2.5 h-2.5 rounded-full" style="background:${categoryColors[k].hex}"></span><span>${categoryColors[k].name}</span></div><span class="font-bold">${formatCurrency(values[i])}</span></div>`;
-                }
-            });
+            if (legend) {
+                legend.innerHTML = "";
+                chartKeys.forEach((k, i) => {
+                    if (values[i] > 0) {
+                        legend.innerHTML += `<div class="flex items-center justify-between text-xs py-1 px-2 rounded-xl"><div class="flex items-center gap-2"><span class="w-2.5 h-2.5 rounded-full" style="background:${categoryColors[k].hex}"></span><span>${categoryColors[k].name}</span></div><span class="font-bold">${formatCurrency(values[i])}</span></div>`;
+                    }
+                });
+            }
         }
 
         function renderBubbleChart(bubbleData) {
-            const ctx = document.getElementById('bubbleChart').getContext('2d');
+            const chartElem = document.getElementById('bubbleChart');
+            if (!chartElem) return;
+            const ctx = chartElem.getContext('2d');
             if (bubbleChartInstance) bubbleChartInstance.destroy();
             bubbleChartInstance = new Chart(ctx, {
                 type: 'bubble',
