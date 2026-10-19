@@ -23,17 +23,14 @@
                 <div>
                     <h1 class="text-sm sm:text-base font-black text-slate-900 tracking-tight">Quản lý tài sản cá nhân</h1>
                     <div class="flex items-center gap-2 mt-0.5">
-                        <span id="cloud-status" class="text-[9px] font-bold px-2 py-0.5 rounded-full bg-slate-100 text-slate-600">Sẵn sàng</span>
-                        <span id="role-badge" class="text-[9px] font-bold px-2 py-0.5 rounded-full bg-slate-100 text-slate-600">👁️ Chế độ Xem</span>
+                        <span class="text-[9px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-700">⚡ Toàn quyền Chỉnh sửa</span>
                     </div>
                 </div>
             </div>
             <div class="flex items-center space-x-2">
                 <div id="realtime-clock" class="text-[11px] font-semibold text-gray-500 bg-slate-50 px-3 py-1.5 rounded-xl border border-slate-200 hidden sm:block"></div>
-                <!-- Nút Admin được gán trực tiếp ID và sự kiện an toàn -->
-                <button id="auth-btn" type="button" onclick="toggleAdminAuth()" class="bg-amber-500 hover:bg-amber-600 text-white text-[11px] font-bold px-3 py-1.5 rounded-xl shadow-xs transition flex items-center gap-1 cursor-pointer">🔒 <span>Admin</span></button>
-                <button type="button" onclick="syncFromCloud()" class="bg-blue-50 hover:bg-blue-100 text-blue-600 text-[11px] font-bold px-3 py-1.5 rounded-xl border border-blue-200 transition flex items-center gap-1 cursor-pointer">🔄 <span>Đồng bộ</span></button>
-                <button id="btn-clear-data" type="button" onclick="clearAllData()" class="bg-red-50 hover:bg-red-100 text-red-600 text-[11px] font-bold px-3 py-1.5 rounded-xl border border-red-200 transition hidden flex items-center gap-1 cursor-pointer">🗑️ <span>Xóa</span></button>
+                <button type="button" onclick="syncFromCloud()" class="bg-blue-50 hover:bg-blue-100 text-blue-600 text-[11px] font-bold px-3 py-1.5 rounded-xl border border-blue-200 transition flex items-center gap-1 cursor-pointer">🔄 <span>Đồng bộ Cloud</span></button>
+                <button type="button" onclick="clearAllData()" class="bg-red-50 hover:bg-red-100 text-red-600 text-[11px] font-bold px-3 py-1.5 rounded-xl border border-red-200 transition flex items-center gap-1 cursor-pointer">🗑️ <span>Xóa Tất Cả</span></button>
             </div>
         </header>
 
@@ -49,7 +46,8 @@
                     </div>
                     <p id="top-cash-balance" class="text-lg sm:text-2xl font-black mt-1">0 đ</p>
                 </div>
-                <div id="quick-cash-controls" class="mt-3 pt-2 border-t border-white/20 flex items-center gap-1.5 hidden">
+                <!-- Điều khiển nạp/rút tiền mặt trực tiếp ngay ngoài trang chủ -->
+                <div class="mt-3 pt-2 border-t border-white/20 flex items-center gap-1.5">
                     <input type="text" id="quick-cash-input" placeholder="Số tiền..." oninput="formatNumberInput(this)" class="bg-white/15 border border-white/30 px-2 py-1 rounded-lg text-[11px] placeholder-teal-200 text-white focus:outline-none w-full">
                     <button type="button" onclick="quickCashTransaction('BUY')" title="Nạp thêm" class="bg-white text-teal-700 hover:bg-teal-50 font-bold px-2 py-1 rounded-lg text-xs transition cursor-pointer">📥</button>
                     <button type="button" onclick="quickCashTransaction('SELL')" title="Rút bớt" class="bg-teal-900 text-white hover:bg-teal-950 font-bold px-2 py-1 rounded-lg text-xs transition cursor-pointer">📤</button>
@@ -140,8 +138,8 @@
             <!-- CỘT PHẢI (8 cột) -->
             <div class="lg:col-span-8 space-y-4">
                 
-                <!-- Form Thêm Giao Dịch Mới -->
-                <div id="add-tx-form-card" class="bg-white p-4 sm:p-5 rounded-2xl shadow-xs border border-slate-200 hidden">
+                <!-- Form Thêm Giao Dịch Mới (Hiển thị sẵn sàng) -->
+                <div id="add-tx-form-card" class="bg-white p-4 sm:p-5 rounded-2xl shadow-xs border border-slate-200">
                     <h3 class="text-xs font-bold text-gray-700 uppercase tracking-wide mb-3 flex items-center gap-1.5"><span>✍️</span> Thêm Giao Dịch Tài Sản Mới</h3>
                     <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-3">
                         <div>
@@ -177,11 +175,6 @@
                     <button type="button" onclick="addTransaction()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2.5 rounded-xl text-xs transition shadow-sm flex items-center justify-center gap-1.5 cursor-pointer">
                         <span>✨</span> <span>Xác Nhận Thêm Giao Dịch</span>
                     </button>
-                </div>
-
-                <!-- Thông báo nếu ở chế độ xem -->
-                <div id="guest-notice" class="bg-blue-50/90 p-3.5 rounded-2xl border border-blue-100 text-center">
-                    <p class="text-xs font-semibold text-blue-700">🔒 Bạn đang ở chế độ xem. Bấm nút <b>"Admin"</b> ở góc trên và nhập mật khẩu (<code class="bg-blue-100 px-1.5 py-0.5 rounded font-bold">090393</code>) để mở khóa quyền nhập liệu và chỉnh sửa.</p>
                 </div>
 
                 <!-- Bảng Tổng Hợp Khối Lượng -->
@@ -265,16 +258,12 @@
 
     <script>
         // ==========================================
-        // CẤU HÌNH JSONBIN.IO CỦA BẠN (DÁN VÀO ĐÂY)
+        // CẤU HÌNH JSONBIN.IO (TÙY CHỌN)
         // ==========================================
         let jsonBinId = "6ad31b41ffd5d1605372eb7b";             
         let jsonBinMasterKey = "$2a$10$IxCWhgMbqo9kEkkwoFa83.dg0TPCFSuhUZw.BkMBRgp2wA3CtqAHi";   
         // ==========================================
 
-        let isAdmin = false; 
-        const ADMIN_PASS = "090393"; 
-
-        // Tải dữ liệu từ LocalStorage trước tiên để giao diện luôn mượt mà không bị treo
         let transactions = JSON.parse(localStorage.getItem('invest_transactions')) || [];
         let marketPrices = JSON.parse(localStorage.getItem('invest_market_prices')) || {};
         
@@ -303,79 +292,30 @@
             return parseFloat(valStr.toString().replace(/,/g, '')) || 0;
         }
 
-        // HÀM MỞ KHÓA ADMIN BẢO ĐẢM HOẠT ĐỘNG ĐỘC LẬP
-        function toggleAdminAuth() {
-            if (isAdmin) {
-                isAdmin = false;
-                updateAuthUI();
-                alert("🔒 Đã khóa chế độ Admin.");
-            } else {
-                const pass = prompt("Nhập mật khẩu Admin (090393):");
-                if (pass === ADMIN_PASS) {
-                    isAdmin = true;
-                    updateAuthUI();
-                    alert("🔓 Mở khóa Admin thành công!");
-                } else if (pass !== null) {
-                    alert("❌ Mật khẩu không chính xác!");
-                }
-            }
-        }
-
-        function updateAuthUI() {
-            const authBtn = document.getElementById('auth-btn');
-            const roleBadge = document.getElementById('role-badge');
-            const addForm = document.getElementById('add-tx-form-card');
-            const guestNotice = document.getElementById('guest-notice');
-            const quickCashControls = document.getElementById('quick-cash-controls');
-            const btnClear = document.getElementById('btn-clear-data');
-
-            if (isAdmin) {
-                if (authBtn) authBtn.innerHTML = "🔓 <span>Thoát</span>";
-                if (roleBadge) { roleBadge.innerText = "⚡ Admin"; roleBadge.className = "text-[9px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-700"; }
-                if (addForm) addForm.classList.remove('hidden');
-                if (guestNotice) guestNotice.classList.add('hidden');
-                if (quickCashControls) quickCashControls.classList.remove('hidden');
-                if (btnClear) btnClear.classList.remove('hidden');
-            } else {
-                if (authBtn) authBtn.innerHTML = "🔒 <span>Admin</span>";
-                if (roleBadge) { roleBadge.innerText = "👁️ Xem"; roleBadge.className = "text-[9px] font-bold px-2 py-0.5 rounded-full bg-slate-100 text-slate-600"; }
-                if (addForm) addForm.classList.add('hidden');
-                if (guestNotice) guestNotice.classList.remove('hidden');
-                if (quickCashControls) quickCashControls.classList.add('hidden');
-                if (btnClear) btnClear.classList.add('hidden');
-            }
-            renderDashboard();
-        }
-
-        // ĐỒNG BỘ JSONBIN AN TOÀN TUYỆT ĐỐI (KHÔNG BAO GIỜ TREO TRANG)
         async function syncFromCloud() {
-            const statusElem = document.getElementById('cloud-status');
             if (!jsonBinId || jsonBinId.includes("YOUR_")) {
-                if (statusElem) { statusElem.innerText = "Local Mode"; statusElem.className = "text-[9px] font-bold px-2 py-0.5 rounded-full bg-slate-100 text-slate-700"; }
+                alert("⚠️ Vui lòng cấu hình `jsonBinId` và `jsonBinMasterKey` trong mã nguồn nếu bạn muốn dùng Cloud!");
                 return;
             }
             try {
-                if (statusElem) statusElem.innerText = "Đang tải Cloud...";
                 const res = await fetch(`https://api.jsonbin.io/v3/b/${jsonBinId}/latest`, { 
                     headers: { 'X-Master-Key': jsonBinMasterKey },
                     cache: 'no-cache'
                 });
-                if (!res.ok) throw new Error("Không thể kết nối JSONBin");
+                if (!res.ok) throw new Error("Lỗi kết nối Cloud");
                 const data = await res.json();
-                
                 if (data && data.record) {
-                    // Nếu trên Cloud có dữ liệu thì ưu tiên lấy, ngược lại giữ nguyên Local hiện tại
-                    if (Array.isArray(data.record.transactions) && data.record.transactions.length > 0) {
+                    if (Array.isArray(data.record.transactions)) {
                         transactions = data.record.transactions;
                         marketPrices = data.record.marketPrices || {};
                         saveLocal();
                     }
-                    if (statusElem) { statusElem.innerText = "Đã đồng bộ Cloud"; statusElem.className = "text-[9px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-700"; }
+                    alert("✅ Đồng bộ dữ liệu từ Cloud thành công!");
                     renderDashboard();
                 }
             } catch (e) {
-                console.error("Lỗi sync JSONBin:", e);
-                if (statusElem) { statusElem.innerText = "Lỗi Cloud (Đang dùng Local)"; statusElem.className = "text-[9px] font-bold px-2 py-0.5 rounded-full bg-amber-100 text-amber-700"; }
+                console.error(e);
+                alert("❌ Không thể đồng bộ từ Cloud. Đang dùng dữ liệu Local!");
             }
         }
 
@@ -384,21 +324,14 @@
             renderDashboard();
 
             if (!jsonBinId || jsonBinId.includes("YOUR_")) return;
-            const statusElem = document.getElementById('cloud-status');
             try {
-                const res = await fetch(`https://api.jsonbin.io/v3/b/${jsonBinId}`, {
+                await fetch(`https://api.jsonbin.io/v3/b/${jsonBinId}`, {
                     method: 'PUT',
-                    headers: { 
-                        'Content-Type': 'application/json', 
-                        'X-Master-Key': jsonBinMasterKey 
-                    },
+                    headers: { 'Content-Type': 'application/json', 'X-Master-Key': jsonBinMasterKey },
                     body: JSON.stringify({ transactions, marketPrices })
                 });
-                if (!res.ok) throw new Error("Lưu Cloud thất bại");
-                if (statusElem) { statusElem.innerText = "Đã lưu Cloud"; statusElem.className = "text-[9px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-700"; }
             } catch (e) { 
-                console.error("Lỗi lưu JSONBin:", e);
-                if (statusElem) { statusElem.innerText = "Lỗi lưu Cloud (Đã lưu Local)"; statusElem.className = "text-[9px] font-bold px-2 py-0.5 rounded-full bg-amber-100 text-amber-700"; }
+                console.error("Lỗi lưu Cloud:", e);
             }
         }
 
@@ -437,15 +370,7 @@
         window.onload = function() {
             const dateInput = document.getElementById('tx-date');
             if (dateInput) dateInput.valueAsDate = new Date();
-            
-            // Vẽ giao diện ngay lập tức từ dữ liệu lưu trong máy
             renderDashboard();
-            updateAuthUI();
-
-            // Nếu có cấu hình JSONBin thì gọi đồng bộ ngầm
-            if (jsonBinId && !jsonBinId.includes("YOUR_")) {
-                syncFromCloud();
-            }
         };
 
         function getCalculatedAssetsMap() {
@@ -514,7 +439,6 @@
         }
 
         function clearAllData() {
-            if (!isAdmin) return;
             if (confirm("⚠️ Bạn có chắc chắn muốn xóa toàn bộ dữ liệu không?")) { 
                 transactions = []; 
                 marketPrices = {}; 
@@ -523,7 +447,6 @@
         }
 
         function quickCashTransaction(type) {
-            if (!isAdmin) return;
             const inputVal = parseFormattedNumber(document.getElementById('quick-cash-input').value);
             if (isNaN(inputVal) || inputVal <= 0) return alert("Vui lòng nhập số tiền hợp lệ!");
 
@@ -585,7 +508,6 @@
         }
 
         function addTransaction() {
-            if (!isAdmin) return;
             const type = document.getElementById('tx-type').value;
             const channel = document.getElementById('channel').value;
             let symbol = type === 'SELL' && channel !== 'TIENMAT' ? document.getElementById('tx-symbol-select')?.value : (channel === 'TIENMAT' ? 'TIEN_MAT' : document.getElementById('tx-symbol')?.value?.trim()?.toUpperCase());
@@ -634,7 +556,6 @@
         }
 
         function deleteTransaction(index) {
-            if (!isAdmin) return;
             if (confirm("🗑️ Bạn có muốn xóa giao dịch này không?")) { 
                 transactions.splice(index, 1); 
                 saveToCloud(); 
@@ -642,7 +563,6 @@
         }
 
         function openEditModal(index) {
-            if (!isAdmin) return;
             const tx = transactions[index];
             document.getElementById('edit-index').value = index;
             document.getElementById('edit-modal-content').innerHTML = `
@@ -661,7 +581,6 @@
         function closeEditModal() { document.getElementById('edit-modal').classList.add('hidden'); }
 
         function saveEditedTransaction() {
-            if (!isAdmin) return;
             const index = parseInt(document.getElementById('edit-index').value);
             const type = document.getElementById('edit-type').value;
             const channel = document.getElementById('edit-channel').value;
@@ -711,7 +630,7 @@
                 uniqueMarketSymbols.forEach(sym => {
                     const sampleKey = Object.keys(assetMap).find(k => (assetMap[k].rawSymbol || k) === sym);
                     const curPrice = marketPrices[sym] || (sampleKey ? assetMap[sampleKey].totalCost / assetMap[sampleKey].qty : 0);
-                    marketWidget.innerHTML += `<div class="flex justify-between items-center bg-slate-50 p-2 rounded-xl border border-slate-100">${getSymbolBadgeHTML(sym, sampleKey ? assetMap[sampleKey].channel : 'CK')}<div class="flex items-center gap-1.5"><span class="font-bold">${formatCurrency(curPrice)}</span>${isAdmin ? `<button type="button" onclick="updateSingleMarketPrice('${sym}')" class="text-[10px] bg-white border border-slate-200 hover:bg-slate-100 px-1.5 py-0.5 rounded shadow-2xs cursor-pointer">✏️</button>` : ''}</div></div>`;
+                    marketWidget.innerHTML += `<div class="flex justify-between items-center bg-slate-50 p-2 rounded-xl border border-slate-100">${getSymbolBadgeHTML(sym, sampleKey ? assetMap[sampleKey].channel : 'CK')}<div class="flex items-center gap-1.5"><span class="font-bold">${formatCurrency(curPrice)}</span><button type="button" onclick="updateSingleMarketPrice('${sym}')" class="text-[10px] bg-white border border-slate-200 hover:bg-slate-100 px-1.5 py-0.5 rounded shadow-2xs cursor-pointer">✏️</button></div></div>`;
                 });
             }
 
@@ -721,7 +640,7 @@
                 const channelName = { 'TIETKIEM': 'Tiết Kiệm', 'VANG': 'Vàng', 'CK': 'Chứng Khoán', 'CCQ': 'Quỹ', 'TIENMAT': 'Tiền Mặt' }[tx.channel];
                 let detailStr = tx.channel === 'TIETKIEM' ? `${tx.rate}% | ${tx.term}T` : (tx.channel === 'TIENMAT' ? 'Tiền mặt' : `SL: ${tx.qty} | Giá: ${formatCurrency(tx.price)}`);
 
-                txBody.innerHTML += `<tr class="border-b border-slate-50 hover:bg-slate-50"><td class="p-2.5">${formatDateDDMMYY(tx.date)}</td><td class="p-2.5">${typeLabel}</td><td class="p-2.5">${channelName}</td><td class="p-2.5">${getSymbolBadgeHTML(tx.symbol, tx.channel)}</td><td class="p-2.5 text-[10px] text-blue-600 font-bold">${Math.ceil(Math.abs(new Date() - new Date(tx.date)) / (1000 * 60 * 60 * 24))}d</td><td class="p-2.5 text-[11px] text-gray-500">${detailStr}</td><td class="p-2.5 font-bold">${formatCurrency(tx.capital)}</td><td class="p-2.5 text-center">${isAdmin ? `<button type="button" onclick="openEditModal(${tx.origIdx})" title="Sửa" class="text-blue-600 bg-blue-50 hover:bg-blue-100 px-2 py-1 rounded-lg mr-1 cursor-pointer">✏️</button><button type="button" onclick="deleteTransaction(${tx.origIdx})" title="Xóa" class="text-red-600 bg-red-50 hover:bg-red-100 px-2 py-1 rounded-lg cursor-pointer">🗑️</button>` : '<span class="text-gray-300 italic">Xem</span>'}</td></tr>`;
+                txBody.innerHTML += `<tr class="border-b border-slate-50 hover:bg-slate-50"><td class="p-2.5">${formatDateDDMMYY(tx.date)}</td><td class="p-2.5">${typeLabel}</td><td class="p-2.5">${channelName}</td><td class="p-2.5">${getSymbolBadgeHTML(tx.symbol, tx.channel)}</td><td class="p-2.5 text-[10px] text-blue-600 font-bold">${Math.ceil(Math.abs(new Date() - new Date(tx.date)) / (1000 * 60 * 60 * 24))}d</td><td class="p-2.5 text-[11px] text-gray-500">${detailStr}</td><td class="p-2.5 font-bold">${formatCurrency(tx.capital)}</td><td class="p-2.5 text-center"><button type="button" onclick="openEditModal(${tx.origIdx})" title="Sửa" class="text-blue-600 bg-blue-50 hover:bg-blue-100 px-2 py-1 rounded-lg mr-1 cursor-pointer">✏️</button><button type="button" onclick="deleteTransaction(${tx.origIdx})" title="Xóa" class="text-red-600 bg-red-50 hover:bg-red-100 px-2 py-1 rounded-lg cursor-pointer">🗑️</button></td></tr>`;
             });
 
             let volumeAgg = {};
@@ -788,7 +707,6 @@
         }
 
         function updateSingleMarketPrice(symbol) {
-            if (!isAdmin) return;
             const p = prompt(`Nhập giá thị trường mới cho ${symbol}:`, marketPrices[symbol] || 0);
             if (p !== null && !isNaN(parseFormattedNumber(p))) { marketPrices[symbol] = parseFormattedNumber(p); saveToCloud(); }
         }
