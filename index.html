@@ -12,6 +12,7 @@
         html { scroll-behavior: smooth; }
         body { font-variant-numeric: tabular-nums; }
         button { transition: all .18s ease; }
+        .editor-only.hidden { display: none !important; }
         input, select { min-width: 0; }
         input[inputmode="decimal"] { font-variant-numeric: tabular-nums; }
         /* Tables: aligned columns, compact rows, no unexpected line breaks. */
@@ -91,57 +92,61 @@
                 <h1 class="text-lg font-extrabold text-blue-600 tracking-tight flex items-center gap-2"><span>📊</span> Quản lý tài sản cá nhân</h1>
                 <div class="flex items-center space-x-2">
                     <div id="realtime-clock" class="text-xs font-semibold text-gray-600 bg-slate-100 px-3 py-1 rounded-full shadow-inner"></div>
-                    <button onclick="clearAllData()" class="bg-red-50 hover:bg-red-100 text-red-600 text-xs font-bold px-2.5 py-1 rounded-xl border border-red-200 transition">🗑️ Xóa Dữ Liệu</button>
+                    <span id="role-badge" class="text-[10px] font-bold px-2.5 py-1 rounded-full bg-slate-100 text-slate-600">👁️ Chỉ xem</span>
+                    <button id="login-button" onclick="openLoginModal()" class="bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold px-2.5 py-1.5 rounded-xl transition">🔐 Đăng nhập sửa</button>
+                    <button id="logout-button" onclick="logoutEditor()" class="hidden bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold px-2.5 py-1.5 rounded-xl transition">Đăng xuất</button>
+                    <button data-requires-editor onclick="clearAllData()" class="editor-only hidden bg-red-50 hover:bg-red-100 text-red-600 text-xs font-bold px-2.5 py-1 rounded-xl border border-red-200 transition">🗑️ Xóa Dữ Liệu</button>
                 </div>
             </div>
         </header>
 
-        <!-- Đồng bộ JSONBin: cấu hình lưu riêng trên trình duyệt, không ghi API Key vào source -->
+        <!-- JSONBin config is set in the marked constants near the start of the main script. -->
         <section class="max-w-7xl w-full mx-auto px-4 pt-2">
             <div class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden">
                 <div class="px-3 py-2 flex flex-wrap items-center justify-between gap-2">
                     <div class="flex items-center gap-2 min-w-0">
                         <span id="cloud-status-dot" class="w-2.5 h-2.5 rounded-full bg-slate-300 shrink-0"></span>
                         <div class="min-w-0">
-                            <div class="text-xs font-extrabold text-slate-700">Đồng bộ dữ liệu đám mây</div>
-                            <div id="cloud-status-text" class="text-[10px] text-slate-500">Chưa cấu hình JSONBin · Dữ liệu hiện lưu trên trình duyệt này</div>
+                            <div class="text-xs font-extrabold text-slate-700">Đồng bộ dữ liệu dùng chung</div>
+                            <div id="cloud-status-text" class="text-[10px] text-slate-500">Đang kết nối JSONBin…</div>
                         </div>
                     </div>
                     <div class="flex flex-wrap gap-1.5">
-                        <button onclick="toggleCloudSettings()" class="px-2.5 py-1.5 rounded-lg text-[11px] font-bold border border-slate-200 bg-slate-50 hover:bg-slate-100 text-slate-700">⚙️ Cấu hình</button>
-                        <button onclick="loadFromCloud(true)" class="px-2.5 py-1.5 rounded-lg text-[11px] font-bold border border-blue-200 bg-blue-50 hover:bg-blue-100 text-blue-700">⬇ Tải từ BIN</button>
-                        <button onclick="saveToCloud(true)" class="px-2.5 py-1.5 rounded-lg text-[11px] font-bold bg-blue-600 hover:bg-blue-700 text-white">⬆ Lưu lên BIN</button>
+                        <button onclick="toggleCloudSettings()" class="px-2.5 py-1.5 rounded-lg text-[11px] font-bold border border-slate-200 bg-slate-50 hover:bg-slate-100 text-slate-700">⚙️ Kết nối</button>
+                        <button onclick="loadFromCloud(true)" class="px-2.5 py-1.5 rounded-lg text-[11px] font-bold border border-blue-200 bg-blue-50 hover:bg-blue-100 text-blue-700">⬇ Tải dữ liệu</button>
+                        <button data-requires-editor onclick="saveToCloud(true)" class="editor-only hidden px-2.5 py-1.5 rounded-lg text-[11px] font-bold bg-blue-600 hover:bg-blue-700 text-white">⬆ Lưu dữ liệu</button>
                     </div>
                 </div>
                 <div id="cloud-settings-panel" class="hidden border-t border-slate-100 bg-slate-50/80 p-3">
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-                        <div>
-                            <label for="jsonbin-id" class="block text-[11px] font-bold text-slate-600 mb-1">JSONBin BIN ID</label>
-                            <input id="jsonbin-id" autocomplete="off" spellcheck="false" placeholder="Ví dụ: 671abc..." class="w-full border border-slate-200 bg-white p-2 rounded-lg text-xs focus:ring-2 focus:ring-blue-400 outline-none">
-                        </div>
-                        <div>
-                            <label for="jsonbin-key" class="block text-[11px] font-bold text-slate-600 mb-1">API Key (không nhập vào mã nguồn)</label>
-                            <input id="jsonbin-key" type="password" autocomplete="new-password" spellcheck="false" placeholder="Dán API Key JSONBin tại đây" class="w-full border border-slate-200 bg-white p-2 rounded-lg text-xs focus:ring-2 focus:ring-blue-400 outline-none">
-                        </div>
-                        <div>
-                            <label for="jsonbin-key-type" class="block text-[11px] font-bold text-slate-600 mb-1">Loại khóa</label>
-                            <select id="jsonbin-key-type" class="w-full border border-slate-200 bg-white p-2 rounded-lg text-xs">
-                                <option value="X-Access-Key">Access Key (ưu tiên nếu đã cấp quyền phù hợp)</option>
-                                <option value="X-Master-Key">Master Key</option>
-                            </select>
-                        </div>
-                        <div class="flex flex-wrap items-end gap-2">
-                            <button onclick="saveCloudConfig()" class="px-3 py-2 rounded-lg text-[11px] font-bold bg-slate-800 hover:bg-slate-900 text-white">Lưu cấu hình</button>
-                            <button onclick="testJSONBinConnection()" class="px-3 py-2 rounded-lg text-[11px] font-bold border border-slate-300 bg-white hover:bg-slate-100 text-slate-700">Kiểm tra kết nối</button>
-                            <button onclick="forgetCloudConfig()" class="px-3 py-2 rounded-lg text-[11px] font-bold border border-rose-200 bg-rose-50 hover:bg-rose-100 text-rose-700">Xóa cấu hình</button>
-                        </div>
+                    <div class="rounded-lg border border-blue-200 bg-blue-50 p-3 text-[11px] leading-relaxed text-blue-950">
+                        <div class="font-extrabold mb-1">Cấu hình JSONBin trong file index.html</div>
+                        Mở file và tìm <code>JSONBIN_CONFIG</code> ở đầu phần JavaScript. Dán BIN ID vào <code>binId</code>, API Key vào <code>apiKey</code>. Nếu dùng Master Key, giữ <code>keyHeader: 'X-Master-Key'</code>; nếu dùng Access Key, đổi thành <code>'X-Access-Key'</code>.
+                        <div class="mt-2"><b>Trạng thái:</b> <span id="jsonbin-config-state">Đang kiểm tra cấu hình…</span></div>
+                        <div class="mt-2 text-amber-800"><b>Lưu ý:</b> cấu hình nằm trong file công khai GitHub Pages. Bất kỳ ai xem mã nguồn cũng có thể lấy API Key và vượt qua đăng nhập phía giao diện. Cách này chỉ phù hợp nếu bạn chấp nhận rủi ro đó.</div>
                     </div>
-                    <div class="mt-3 rounded-lg border border-amber-200 bg-amber-50 p-2.5 text-[10px] leading-relaxed text-amber-900">
-                        <b>Lưu ý bảo mật:</b> cấu hình chỉ lưu trong trình duyệt hiện tại. Website GitHub Pages là mã công khai; không đặt API Key trong file HTML/JS. Người được cấp khóa ghi có thể đọc/sửa BIN và người dùng có thể xem khóa trong trình duyệt. Nếu dữ liệu tài chính cần bảo mật với những người truy cập website, hãy dùng backend/proxy có xác thực thay vì chia sẻ một khóa ghi.
+                    <div class="mt-2 flex flex-wrap gap-2">
+                        <button onclick="testJsonBinConnection()" class="px-3 py-2 rounded-lg text-[11px] font-bold border border-slate-300 bg-white hover:bg-slate-100 text-slate-700">Kiểm tra JSONBin</button>
+                        <button onclick="loadFromCloud(true)" class="px-3 py-2 rounded-lg text-[11px] font-bold border border-blue-200 bg-blue-50 hover:bg-blue-100 text-blue-700">Tải lại dữ liệu</button>
                     </div>
                 </div>
             </div>
         </section>
+
+        <!-- Đăng nhập người chỉnh sửa -->
+        <div id="login-modal" class="hidden fixed inset-0 bg-slate-950/50 backdrop-blur-sm flex items-center justify-center px-4 z-[60]">
+            <div class="bg-white rounded-2xl shadow-2xl p-5 max-w-sm w-full border border-slate-100">
+                <div class="flex items-start justify-between gap-3 mb-4">
+                    <div><h3 class="text-base font-extrabold text-slate-800">🔐 Đăng nhập chỉnh sửa</h3><p class="text-xs text-slate-500 mt-1">Chỉ tài khoản quản lý mới được thay đổi dữ liệu.</p></div>
+                    <button onclick="closeLoginModal()" class="text-slate-400 hover:text-slate-700 text-xl" aria-label="Đóng">×</button>
+                </div>
+                <form onsubmit="event.preventDefault(); loginEditor();" class="space-y-3">
+                    <div><label for="editor-username" class="block text-xs font-bold text-slate-600 mb-1">Tài khoản</label><input id="editor-username" autocomplete="username" required class="w-full border border-slate-200 p-2.5 rounded-xl text-sm focus:ring-2 focus:ring-blue-400 outline-none" placeholder="Nhập tài khoản"></div>
+                    <div><label for="editor-password" class="block text-xs font-bold text-slate-600 mb-1">Mật khẩu</label><input id="editor-password" type="password" autocomplete="current-password" required class="w-full border border-slate-200 p-2.5 rounded-xl text-sm focus:ring-2 focus:ring-blue-400 outline-none" placeholder="Nhập mật khẩu"></div>
+                    <p id="login-error" class="hidden text-xs text-rose-600"></p>
+                    <div class="flex justify-end gap-2 pt-1"><button type="button" onclick="closeLoginModal()" class="px-3 py-2 rounded-xl bg-slate-100 text-slate-700 text-xs font-bold">Hủy</button><button type="submit" id="login-submit" class="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold">Đăng nhập</button></div>
+                </form>
+            </div>
+        </div>
 
         <!-- Tổng quan tài sản: các widget quan trọng luôn ở đầu trang -->
         <section class="max-w-7xl w-full mx-auto px-4 pt-4 space-y-3">
@@ -171,7 +176,7 @@
                             <p id="top-cash-balance" class="text-lg sm:text-xl font-black mt-0.5">0 đ</p>
                         </div>
                     </div>
-                    <div class="flex flex-col gap-1.5 w-full">
+                    <div id="quick-cash-controls" data-requires-editor class="editor-only hidden flex flex-col gap-1.5 w-full">
                         <input type="text" inputmode="decimal" id="quick-cash-input" placeholder="Số tiền..." aria-label="Số tiền nạp hoặc rút" class="bg-white/10 border border-white/30 px-2.5 py-1.5 rounded-lg text-xs placeholder-teal-200 text-white focus:outline-none focus:bg-white/20 w-full tabular-nums">
                         <div class="grid grid-cols-2 gap-1.5 w-full">
                             <button onclick="quickCashTransaction('BUY')" class="bg-white text-teal-700 hover:bg-teal-50 font-bold px-2 py-1.5 rounded-lg text-[11px] shadow transition whitespace-nowrap">＋ Nạp</button>
@@ -240,7 +245,7 @@
             <!-- KHU VỰC CHÍNH: CHIẾM 2/3 TRANG, XẾP THEO CHIỀU DỌC -->
             <div class="lg:col-span-2 min-w-0 space-y-4">
                 <!-- Form Thêm Giao Dịch Mới -->
-                <div class="bg-white p-4 sm:p-5 rounded-2xl shadow-xs border border-slate-100">
+                <div id="transaction-entry-panel" data-requires-editor class="editor-only hidden bg-white p-4 sm:p-5 rounded-2xl shadow-xs border border-slate-100">
                     <h3 class="text-sm font-extrabold text-slate-800 uppercase tracking-wide mb-4 flex items-center gap-2"><span class="inline-flex w-9 h-9 items-center justify-center rounded-xl bg-blue-50 text-lg">✨</span> Thêm Giao Dịch</h3>
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-3 mb-3">
                         <div>
@@ -351,9 +356,22 @@
         let transactionSortKey = 'date';
         let transactionSortDirection = 'desc';
 
-        // JSONBin sync: BIN is the shared source of truth when it already contains dashboard data.
-        const JSONBIN_CONFIG_KEY = 'invest_jsonbin_config_v1';
-        const JSONBIN_ENDPOINT = 'https://api.jsonbin.io/v3/b';
+        // ================================================================
+        // JSONBIN CONFIGURATION — DÁN THÔNG TIN CỦA BẠN VÀO ĐÂY
+        // 1) binId: dán BIN ID JSONBin của bạn vào giữa hai dấu nháy.
+        // 2) apiKey: dán API KEY JSONBin của bạn vào giữa hai dấu nháy.
+        // 3) keyHeader: dùng X-Master-Key cho Master Key hoặc X-Access-Key cho Access Key.
+        // CẢNH BÁO: GitHub Pages là website công khai; các giá trị này có thể bị xem trong source.
+        // ================================================================
+        const JSONBIN_CONFIG = {
+            binId: '6ad31b41ffd5d1605372eb7b',       // <<< DÁN BIN ID TẠI ĐÂY
+            apiKey: '$2a$10$IxCWhgMbqo9kEkkwoFa83.dg0TPCFSuhUZw.BkMBRgp2wA3CtqAHi', // <<< DÁN API KEY TẠI ĐÂY
+            keyHeader: 'X-Master-Key'              // hoặc 'X-Access-Key'
+        };
+        const EDITOR_USERNAME = 'DuyLT';            // TÊN ĐĂNG NHẬP
+        const EDITOR_PASSWORD = '090393';           // MẬT KHẨU ĐĂNG NHẬP
+        const EDITOR_TOKEN_KEY = 'invest_dashboard_editor_session_v2';
+        const EDITOR_SESSION_MS = 8 * 60 * 60 * 1000;
         let cloudSyncBusy = false;
         let cloudSyncTimer = null;
         let cloudPollTimer = null;
@@ -362,225 +380,188 @@
         let cloudLastRemoteUpdatedAt = null;
         let cloudLocalRevision = 0;
 
-        function getCloudConfig() {
-            try { return JSON.parse(localStorage.getItem(JSONBIN_CONFIG_KEY) || 'null'); }
-            catch (_) { return null; }
+        function hasJsonBinConfig() {
+            return !!(JSONBIN_CONFIG.binId && JSONBIN_CONFIG.apiKey &&
+                !JSONBIN_CONFIG.binId.includes('PASTE_YOUR') && !JSONBIN_CONFIG.apiKey.includes('PASTE_YOUR'));
         }
-
+        function jsonBinHeaders() {
+            if (!hasJsonBinConfig()) throw new Error('Chưa cấu hình BIN ID/API Key. Mở phần ⚙️ Kết nối và sửa JSONBIN_CONFIG trong file index.html.');
+            return { 'Content-Type': 'application/json', [JSONBIN_CONFIG.keyHeader]: JSONBIN_CONFIG.apiKey };
+        }
+        function jsonBinUrl(latest = true) {
+            if (!hasJsonBinConfig()) throw new Error('Chưa cấu hình BIN ID/API Key trong JSONBIN_CONFIG.');
+            return `https://api.jsonbin.io/v3/b/${encodeURIComponent(JSONBIN_CONFIG.binId)}${latest ? '/latest' : ''}`;
+        }
+        function getEditorSession() {
+            try {
+                const session = JSON.parse(sessionStorage.getItem(EDITOR_TOKEN_KEY) || 'null');
+                if (!session || !session.expiresAt || Date.now() >= session.expiresAt) {
+                    sessionStorage.removeItem(EDITOR_TOKEN_KEY); return null;
+                }
+                return session;
+            } catch (_) { return null; }
+        }
+        function isEditorLoggedIn() { return !!getEditorSession(); }
+        function requireEditor() {
+            if (isEditorLoggedIn()) return true;
+            alert('Bạn đang ở chế độ chỉ xem. Hãy đăng nhập bằng tài khoản quản lý để thay đổi dữ liệu.');
+            return false;
+        }
+        function applyRoleUI() {
+            const editor = isEditorLoggedIn();
+            document.querySelectorAll('[data-requires-editor]').forEach(el => el.classList.toggle('hidden', !editor));
+            document.querySelectorAll('.editor-only').forEach(el => el.classList.toggle('hidden', !editor));
+            const badge = document.getElementById('role-badge');
+            if (badge) {
+                badge.textContent = editor ? '✏️ Quyền chỉnh sửa' : '👁️ Chỉ xem';
+                badge.className = 'text-[10px] font-bold px-2.5 py-1 rounded-full ' + (editor ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-100 text-slate-600');
+            }
+            const loginBtn = document.getElementById('login-button');
+            const logoutBtn = document.getElementById('logout-button');
+            if (loginBtn) loginBtn.classList.toggle('hidden', editor);
+            if (logoutBtn) logoutBtn.classList.toggle('hidden', !editor);
+        }
         function setCloudStatus(message, state = 'idle') {
             const text = document.getElementById('cloud-status-text');
             const dot = document.getElementById('cloud-status-dot');
+            const cfg = document.getElementById('jsonbin-config-state');
             if (text) text.textContent = message;
-            if (dot) {
-                dot.className = 'w-2.5 h-2.5 rounded-full shrink-0 ' + ({ok:'bg-emerald-500',busy:'bg-blue-500 animate-pulse',error:'bg-rose-500',idle:'bg-slate-300',warn:'bg-amber-500'}[state] || 'bg-slate-300');
-            }
+            if (cfg) cfg.textContent = hasJsonBinConfig() ? 'Đã điền BIN ID/API Key (chưa chắc kết nối thành công)' : 'Chưa điền BIN ID hoặc API Key trong JSONBIN_CONFIG.';
+            if (dot) dot.className = 'w-2.5 h-2.5 rounded-full shrink-0 ' + ({ok:'bg-emerald-500',busy:'bg-blue-500 animate-pulse',error:'bg-rose-500',idle:'bg-slate-300',warn:'bg-amber-500'}[state] || 'bg-slate-300');
         }
-
         function toggleCloudSettings() {
-            const panel = document.getElementById('cloud-settings-panel');
-            panel.classList.toggle('hidden');
-            const cfg = getCloudConfig();
-            if (cfg) {
-                document.getElementById('jsonbin-id').value = cfg.binId || '';
-                document.getElementById('jsonbin-key').value = cfg.apiKey || '';
-                document.getElementById('jsonbin-key-type').value = cfg.keyHeader || 'X-Access-Key';
-            }
+            document.getElementById('cloud-settings-panel').classList.toggle('hidden');
+            const cfg = document.getElementById('jsonbin-config-state');
+            if (cfg) cfg.textContent = hasJsonBinConfig() ? 'Đã điền BIN ID/API Key (chưa chắc kết nối thành công)' : 'Chưa điền BIN ID hoặc API Key trong JSONBIN_CONFIG.';
         }
-
-        function saveCloudConfig() {
-            const binId = document.getElementById('jsonbin-id').value.trim();
-            const apiKey = document.getElementById('jsonbin-key').value.trim();
-            const keyHeader = document.getElementById('jsonbin-key-type').value;
-            if (!binId || !apiKey) { alert('Vui lòng nhập cả BIN ID và API Key.'); return; }
-            if (!/^[a-zA-Z0-9_-]+$/.test(binId)) { alert('BIN ID có ký tự không hợp lệ. Hãy sao chép đúng BIN ID từ JSONBin.'); return; }
-            localStorage.setItem(JSONBIN_CONFIG_KEY, JSON.stringify({binId, apiKey, keyHeader}));
-            setCloudStatus('Đã lưu cấu hình trên trình duyệt này · Đang kiểm tra kết nối…', 'busy');
-            testJSONBinConnection();
-        }
-
-        function forgetCloudConfig() {
-            if (!confirm('Xóa BIN ID và API Key đã lưu trên trình duyệt này? Dữ liệu giao dịch cục bộ không bị xóa.')) return;
-            localStorage.removeItem(JSONBIN_CONFIG_KEY);
-            document.getElementById('jsonbin-id').value = '';
-            document.getElementById('jsonbin-key').value = '';
-            setCloudStatus('Đã xóa cấu hình JSONBin · Dữ liệu vẫn lưu trên trình duyệt này', 'idle');
-            if (cloudPollTimer) clearInterval(cloudPollTimer);
-        }
-
-        function cloudHeaders(cfg) {
-            return {'Content-Type':'application/json', [cfg.keyHeader || 'X-Access-Key']: cfg.apiKey};
-        }
-
-        async function jsonBinRequest(method, url, body) {
-            const cfg = getCloudConfig();
-            if (!cfg || !cfg.binId || !cfg.apiKey) throw new Error('Chưa cấu hình BIN ID/API Key. Mở mục Cấu hình để nhập thông tin.');
-            const response = await fetch(url, {method, headers: cloudHeaders(cfg), ...(body === undefined ? {} : {body: JSON.stringify(body)})});
+        async function jsonBinRequest(method = 'GET', payload = null) {
+            const options = { method, headers: jsonBinHeaders() };
+            if (payload !== null) options.body = JSON.stringify(payload);
+            const response = await fetch(jsonBinUrl(method === 'GET'), options);
             const raw = await response.text();
             let data = {};
-            try { data = raw ? JSON.parse(raw) : {}; } catch (_) { data = {message: raw}; }
-            if (!response.ok) {
-                const detail = data.message || data.error || `HTTP ${response.status}`;
-                throw new Error(`${detail}. Kiểm tra BIN ID, loại API Key và quyền truy cập.`);
-            }
+            try { data = raw ? JSON.parse(raw) : {}; } catch (_) { data = {message:raw}; }
+            if (!response.ok) throw new Error(data.message || data.error || `JSONBin HTTP ${response.status}`);
             return data;
         }
-
-        async function testJSONBinConnection() {
-            const idField = document.getElementById('jsonbin-id');
-            const keyField = document.getElementById('jsonbin-key');
-            // Allow testing fields before explicitly saving config.
-            if (idField && keyField && idField.value.trim() && keyField.value.trim()) {
-                localStorage.setItem(JSONBIN_CONFIG_KEY, JSON.stringify({binId:idField.value.trim(), apiKey:keyField.value.trim(), keyHeader:document.getElementById('jsonbin-key-type').value}));
-            }
-            setCloudStatus('Đang kiểm tra JSONBin…', 'busy');
+        async function testJsonBinConnection() {
+            setCloudStatus('Đang kiểm tra kết nối JSONBin…', 'busy');
             try {
-                await jsonBinRequest('GET', `${JSONBIN_ENDPOINT}/${encodeURIComponent(getCloudConfig().binId)}/latest`);
-                setCloudStatus('Kết nối JSONBin thành công · Tự đồng bộ đã sẵn sàng', 'ok');
+                await jsonBinRequest('GET');
+                setCloudStatus('Kết nối JSONBin thành công · Đang tải dữ liệu…', 'ok');
+                await loadFromCloud(false);
                 startCloudPolling();
                 return true;
             } catch (err) {
-                setCloudStatus('Kết nối chưa thành công: ' + err.message, 'error');
-                alert('Không kết nối được JSONBin.\n' + err.message + '\n\nNếu đây là BIN mới, hãy xác nhận BIN đã được tạo và API Key có quyền đọc.');
+                setCloudStatus('Kết nối JSONBin thất bại: ' + err.message, 'error');
+                alert('Không kết nối được JSONBin. Kiểm tra BIN ID, API Key, loại khóa và quyền truy cập BIN.\n\n' + err.message);
                 return false;
             }
         }
-
+        function openLoginModal() {
+            document.getElementById('login-error').classList.add('hidden');
+            document.getElementById('login-modal').classList.remove('hidden');
+            document.getElementById('editor-username').focus();
+        }
+        function closeLoginModal() { document.getElementById('login-modal').classList.add('hidden'); }
+        async function loginEditor() {
+            const username = document.getElementById('editor-username').value.trim();
+            const password = document.getElementById('editor-password').value;
+            const error = document.getElementById('login-error');
+            const submit = document.getElementById('login-submit');
+            submit.disabled = true; submit.textContent = 'Đang xác thực…'; error.classList.add('hidden');
+            try {
+                if (username !== EDITOR_USERNAME || password !== EDITOR_PASSWORD) throw new Error('Tài khoản hoặc mật khẩu không đúng.');
+                sessionStorage.setItem(EDITOR_TOKEN_KEY, JSON.stringify({expiresAt:Date.now() + EDITOR_SESSION_MS}));
+                document.getElementById('editor-password').value = '';
+                closeLoginModal(); applyRoleUI(); renderDashboard();
+                setCloudStatus('Đã đăng nhập quyền chỉnh sửa · Tự đồng bộ đang bật', 'ok');
+                if (cloudLocalDirty) scheduleCloudSync();
+            } catch (err) {
+                error.textContent = err.message || 'Đăng nhập thất bại.';
+                error.classList.remove('hidden');
+            } finally { submit.disabled = false; submit.textContent = 'Đăng nhập'; }
+        }
+        function logoutEditor() {
+            sessionStorage.removeItem(EDITOR_TOKEN_KEY);
+            closeLoginModal(); applyRoleUI(); renderDashboard();
+            setCloudStatus('Đã đăng xuất · Website chuyển về chế độ chỉ xem', 'idle');
+        }
         function getCloudPayload() {
             return {app:'asset-dashboard', schemaVersion:1, transactions, marketPrices, updatedAt:new Date().toISOString()};
         }
-
         function extractCloudRecord(response) {
-            const record = response && Object.prototype.hasOwnProperty.call(response, 'record') ? response.record : response;
+            const record = response && Object.prototype.hasOwnProperty.call(response, 'record') ? response.record : (response && response.data ? response.data : response);
             if (!record || typeof record !== 'object') return null;
-            // Support both this dashboard's wrapped record and a simple legacy object.
             if (Array.isArray(record.transactions) && record.marketPrices && typeof record.marketPrices === 'object') return record;
-            if (Array.isArray(record.invest_transactions) && record.invest_market_prices && typeof record.invest_market_prices === 'object') {
-                return {transactions:record.invest_transactions, marketPrices:record.invest_market_prices, updatedAt:record.updatedAt || null};
-            }
+            if (Array.isArray(record.invest_transactions) && record.invest_market_prices && typeof record.invest_market_prices === 'object') return {transactions:record.invest_transactions, marketPrices:record.invest_market_prices, updatedAt:record.updatedAt || null};
             return null;
         }
-
         async function loadFromCloud(showMessage = false) {
             if (cloudSyncBusy) return;
-            const cfg = getCloudConfig();
-            if (!cfg || !cfg.binId || !cfg.apiKey) {
-                setCloudStatus('Chưa cấu hình JSONBin · Dữ liệu hiện lưu trên trình duyệt này', 'warn');
-                if (showMessage) alert('Hãy mở Cấu hình và nhập BIN ID cùng API Key trước.');
+            if (!hasJsonBinConfig()) {
+                setCloudStatus('Chưa cấu hình BIN ID/API Key · Đang dùng dữ liệu cục bộ trên thiết bị này', 'warn');
+                if (showMessage) alert('Mở phần ⚙️ Kết nối, sau đó dán BIN ID và API Key vào JSONBIN_CONFIG trong file index.html rồi tải lại trang.');
                 return;
             }
-            cloudSyncBusy = true;
-            setCloudStatus('Đang tải dữ liệu từ JSONBin…', 'busy');
+            cloudSyncBusy = true; setCloudStatus('Đang tải dữ liệu dùng chung từ JSONBin…', 'busy');
             try {
-                const response = await jsonBinRequest('GET', `${JSONBIN_ENDPOINT}/${encodeURIComponent(cfg.binId)}/latest`);
+                const response = await jsonBinRequest('GET');
                 const record = extractCloudRecord(response);
-                if (!record) {
-                    setCloudStatus('BIN kết nối được nhưng chưa có dữ liệu dashboard · Bấm “Lưu lên BIN” để khởi tạo', 'warn');
-                    if (showMessage) alert('Đã kết nối BIN nhưng chưa tìm thấy dữ liệu dashboard. Dữ liệu trên trình duyệt được giữ nguyên. Bấm “Lưu lên BIN” để khởi tạo dữ liệu dùng chung.');
-                    return;
-                }
+                if (!record) { setCloudStatus('BIN chưa có dữ liệu dashboard phù hợp', 'warn'); if (showMessage) alert('Không tìm thấy transactions và marketPrices trong record của BIN. Hãy kiểm tra BIN đang lưu dữ liệu dashboard đúng định dạng.'); return; }
                 cloudSuppressAutoSync = true;
-                transactions = record.transactions;
-                marketPrices = record.marketPrices;
+                transactions = record.transactions; marketPrices = record.marketPrices;
                 localStorage.setItem('invest_transactions', JSON.stringify(transactions));
                 localStorage.setItem('invest_market_prices', JSON.stringify(marketPrices));
-                cloudLastRemoteUpdatedAt = record.updatedAt || null;
-                cloudLocalDirty = false;
-                renderDashboard();
-                setCloudStatus('Đã tải dữ liệu dùng chung từ JSONBin' + (cloudLastRemoteUpdatedAt ? ' · ' + new Date(cloudLastRemoteUpdatedAt).toLocaleString('vi-VN') : ''), 'ok');
+                cloudLastRemoteUpdatedAt = record.updatedAt || null; cloudLocalDirty = false;
+                renderDashboard(); applyRoleUI();
+                setCloudStatus('Đã tải dữ liệu JSONBin' + (cloudLastRemoteUpdatedAt ? ' · ' + new Date(cloudLastRemoteUpdatedAt).toLocaleString('vi-VN') : ''), 'ok');
                 if (showMessage) alert('Đã tải dữ liệu từ JSONBin thành công.');
-            } catch (err) {
-                setCloudStatus('Tải dữ liệu thất bại: ' + err.message, 'error');
-                if (showMessage) alert('Không tải được dữ liệu từ JSONBin.\n' + err.message);
-            } finally {
-                cloudSuppressAutoSync = false;
-                cloudSyncBusy = false;
-            }
+            } catch (err) { setCloudStatus('Tải dữ liệu thất bại: ' + err.message, 'error'); if (showMessage) alert('Không tải được dữ liệu từ JSONBin.\n' + err.message); }
+            finally { cloudSuppressAutoSync = false; cloudSyncBusy = false; }
         }
-
         async function saveToCloud(showMessage = false) {
+            if (!requireEditor()) return;
             if (cloudSyncBusy) return;
-            const cfg = getCloudConfig();
-            if (!cfg || !cfg.binId || !cfg.apiKey) {
-                setCloudStatus('Chưa cấu hình JSONBin · Dữ liệu hiện lưu trên trình duyệt này', 'warn');
-                if (showMessage) alert('Hãy mở Cấu hình và nhập BIN ID cùng API Key trước.');
-                return;
-            }
-            cloudSyncBusy = true;
-            const revisionAtStart = cloudLocalRevision;
-            setCloudStatus('Đang lưu dữ liệu lên JSONBin…', 'busy');
+            if (!hasJsonBinConfig()) { setCloudStatus('Chưa cấu hình BIN ID/API Key', 'warn'); if (showMessage) alert('Hãy điền BIN ID/API Key trong JSONBIN_CONFIG của file index.html.'); return; }
+            cloudSyncBusy = true; const revisionAtStart = cloudLocalRevision; setCloudStatus('Đang lưu dữ liệu lên JSONBin…', 'busy');
             try {
-                await jsonBinRequest('PUT', `${JSONBIN_ENDPOINT}/${encodeURIComponent(cfg.binId)}`, getCloudPayload());
-                cloudLocalDirty = cloudLocalRevision !== revisionAtStart;
-                cloudLastRemoteUpdatedAt = new Date().toISOString();
-                setCloudStatus('Đã đồng bộ thành công · ' + new Date().toLocaleTimeString('vi-VN'), 'ok');
+                await jsonBinRequest('PUT', getCloudPayload());
+                cloudLocalDirty = cloudLocalRevision !== revisionAtStart; cloudLastRemoteUpdatedAt = new Date().toISOString();
+                setCloudStatus('Đã đồng bộ JSONBin · ' + new Date().toLocaleTimeString('vi-VN'), 'ok');
                 if (showMessage) alert('Đã lưu dữ liệu lên JSONBin thành công.');
-                if (cloudLocalDirty) {
-                    if (cloudSyncTimer) clearTimeout(cloudSyncTimer);
-                    cloudSyncTimer = setTimeout(() => saveToCloud(false), 800);
-                }
-            } catch (err) {
-                setCloudStatus('Lưu dữ liệu thất bại: ' + err.message, 'error');
-                if (showMessage) alert('Không lưu được dữ liệu lên JSONBin.\n' + err.message);
-            } finally {
-                cloudSyncBusy = false;
-            }
+                if (cloudLocalDirty) { if (cloudSyncTimer) clearTimeout(cloudSyncTimer); cloudSyncTimer = setTimeout(() => saveToCloud(false), 800); }
+            } catch (err) { setCloudStatus('Lưu dữ liệu thất bại: ' + err.message, 'error'); if (showMessage) alert('Không lưu được dữ liệu lên JSONBin.\n' + err.message); }
+            finally { cloudSyncBusy = false; }
         }
-
         function scheduleCloudSync() {
             if (cloudSuppressAutoSync) return;
-            cloudLocalRevision += 1;
-            cloudLocalDirty = true;
-            const cfg = getCloudConfig();
-            if (!cfg || !cfg.binId || !cfg.apiKey) {
-                setCloudStatus('Đã lưu trên trình duyệt này · Nhập JSONBin để bật đồng bộ đám mây', 'warn');
-                return;
-            }
+            cloudLocalRevision += 1; cloudLocalDirty = true;
+            if (!isEditorLoggedIn()) { setCloudStatus('Chỉ lưu cục bộ · Đăng nhập để đồng bộ thay đổi', 'warn'); return; }
+            if (!hasJsonBinConfig()) { setCloudStatus('Đã lưu cục bộ · Chưa cấu hình BIN ID/API Key', 'warn'); return; }
             if (cloudSyncTimer) clearTimeout(cloudSyncTimer);
-            setCloudStatus('Có thay đổi · Tự lưu lên JSONBin sau giây lát…', 'busy');
-            cloudSyncTimer = setTimeout(() => saveToCloud(false), 1200);
+            setCloudStatus('Có thay đổi · Tự lưu lên JSONBin sau giây lát…', 'busy'); cloudSyncTimer = setTimeout(() => saveToCloud(false), 1200);
         }
-
         function startCloudPolling() {
             if (cloudPollTimer) clearInterval(cloudPollTimer);
             cloudPollTimer = setInterval(async () => {
-                if (cloudSyncBusy || cloudLocalDirty || document.hidden) return;
-                const cfg = getCloudConfig();
-                if (!cfg || !cfg.binId || !cfg.apiKey) return;
+                if (cloudSyncBusy || cloudLocalDirty || document.hidden || !hasJsonBinConfig()) return;
                 try {
-                    const response = await jsonBinRequest('GET', `${JSONBIN_ENDPOINT}/${encodeURIComponent(cfg.binId)}/latest`);
-                    const record = extractCloudRecord(response);
-                    if (!record || !record.updatedAt) return;
-                    const remoteTime = new Date(record.updatedAt).getTime();
-                    const knownTime = cloudLastRemoteUpdatedAt ? new Date(cloudLastRemoteUpdatedAt).getTime() : 0;
+                    const response = await jsonBinRequest('GET'); const record = extractCloudRecord(response); if (!record || !record.updatedAt) return;
+                    const remoteTime = new Date(record.updatedAt).getTime(); const knownTime = cloudLastRemoteUpdatedAt ? new Date(cloudLastRemoteUpdatedAt).getTime() : 0;
                     if (remoteTime > knownTime) {
-                        cloudSuppressAutoSync = true;
-                        transactions = record.transactions;
-                        marketPrices = record.marketPrices;
-                        localStorage.setItem('invest_transactions', JSON.stringify(transactions));
-                        localStorage.setItem('invest_market_prices', JSON.stringify(marketPrices));
-                        cloudLastRemoteUpdatedAt = record.updatedAt;
-                        renderDashboard();
-                        setCloudStatus('Đã nhận cập nhật mới từ người dùng khác · ' + new Date(record.updatedAt).toLocaleTimeString('vi-VN'), 'ok');
-                        cloudSuppressAutoSync = false;
+                        cloudSuppressAutoSync = true; transactions = record.transactions; marketPrices = record.marketPrices;
+                        localStorage.setItem('invest_transactions', JSON.stringify(transactions)); localStorage.setItem('invest_market_prices', JSON.stringify(marketPrices));
+                        cloudLastRemoteUpdatedAt = record.updatedAt; renderDashboard(); applyRoleUI();
+                        setCloudStatus('Đã nhận cập nhật mới từ JSONBin · ' + new Date(record.updatedAt).toLocaleTimeString('vi-VN'), 'ok'); cloudSuppressAutoSync = false;
                     }
-                } catch (err) {
-                    // Keep the dashboard usable offline; display a short status but don't interrupt the user.
-                    setCloudStatus('Chưa kiểm tra được cập nhật từ BIN · ' + err.message, 'error');
-                }
+                } catch (err) { setCloudStatus('Chưa kiểm tra được dữ liệu mới · ' + err.message, 'error'); }
             }, 30000);
         }
-
         async function initializeCloudSync() {
-            const cfg = getCloudConfig();
-            if (!cfg || !cfg.binId || !cfg.apiKey) {
-                setCloudStatus('Chưa cấu hình JSONBin · Dữ liệu hiện lưu trên trình duyệt này', 'warn');
-                return;
-            }
-            document.getElementById('jsonbin-id').value = cfg.binId;
-            document.getElementById('jsonbin-key').value = cfg.apiKey;
-            document.getElementById('jsonbin-key-type').value = cfg.keyHeader || 'X-Access-Key';
-            await loadFromCloud(false);
-            startCloudPolling();
+            applyRoleUI();
+            if (!hasJsonBinConfig()) { setCloudStatus('Chưa cấu hình BIN ID/API Key · Đang dùng dữ liệu cục bộ', 'warn'); return; }
+            await loadFromCloud(false); startCloudPolling();
         }
 
         function sortTransactions(key) {
@@ -728,6 +709,7 @@
         }
 
         function clearAllData() {
+            if (!requireEditor()) return;
             if (confirm("CẢNH BÁO: Bạn có chắc chắn muốn xóa toàn bộ lịch sử giao dịch không?")) {
                 transactions = [];
                 marketPrices = {};
@@ -773,6 +755,7 @@
         });
 
         function quickCashTransaction(type) {
+            if (!requireEditor()) return;
             const inputVal = parseFloat(cleanNumericValue(document.getElementById('quick-cash-input').value));
             if (isNaN(inputVal) || inputVal <= 0) {
                 alert("Vui lòng nhập số tiền hợp lệ!");
@@ -945,6 +928,7 @@
         };
 
         function addTransaction() {
+            if (!requireEditor()) return;
             const type = document.getElementById('tx-type').value;
             const channel = document.getElementById('channel').value;
             let symbol = "";
@@ -1073,6 +1057,7 @@
         }
 
         function deleteTransaction(index) {
+            if (!requireEditor()) return;
             if (confirm("Cảnh báo: Xóa lệnh này có thể ảnh hưởng đến số dư tiền mặt cấn trừ. Bạn có chắc chắn muốn xóa?")) {
                 transactions.splice(index, 1);
                 saveAndRender();
@@ -1080,6 +1065,7 @@
         }
 
         function openEditModal(index) {
+            if (!requireEditor()) return;
             const tx = transactions[index];
             document.getElementById('edit-index').value = index;
             
@@ -1141,6 +1127,7 @@
         }
 
         function saveEditedTransaction() {
+            if (!requireEditor()) return;
             const index = parseInt(document.getElementById('edit-index').value);
             const type = document.getElementById('edit-type').value;
             const channel = document.getElementById('edit-channel').value;
@@ -1264,7 +1251,7 @@
                         <article class="market-card space-y-2">
                             <div class="market-topline flex justify-between items-center gap-2">
                                 <div class="min-w-0">${getSymbolBadgeHTML(sym, sampleChannel)}<div class="market-subtitle text-[10px] text-slate-400 mt-1">Theo dõi giá & giá vốn</div></div>
-                                <button title="Cập nhật giá thị trường" aria-label="Cập nhật giá thị trường" onclick="updateSingleMarketPrice('${sym}')" class="market-update-btn shrink-0 inline-flex items-center gap-1.5 text-[10px] font-extrabold text-blue-700 bg-blue-50 hover:bg-blue-100 border border-blue-100 px-3 py-2 rounded-xl transition"><span>✎</span> Cập nhật</button>
+                                <button title="Cập nhật giá thị trường" aria-label="Cập nhật giá thị trường" onclick="updateSingleMarketPrice('${sym}')" data-requires-editor class="editor-only hidden market-update-btn shrink-0 inline-flex items-center gap-1.5 text-[10px] font-extrabold text-blue-700 bg-blue-50 hover:bg-blue-100 border border-blue-100 px-3 py-2 rounded-xl transition"><span>✎</span> Cập nhật</button>
                             </div>
                             <div class="grid grid-cols-2 gap-2">
                                 <div class="market-price-panel">
@@ -1347,10 +1334,7 @@
                         <td class="px-1.5 py-2">${getSymbolBadgeHTML(tx.symbol, tx.channel)}</td>
                         <td class="detail-cell text-[10px] text-slate-500">${detailStr}</td>
                         <td class="px-1.5 py-2 font-bold text-slate-700 money-compact" title="${formatCurrency(tx.capital)}">${formatCurrencyCompact(tx.capital)}</td>
-                        <td class="px-1.5 py-2 text-center space-x-1">
-                            <button title="Sửa giao dịch" aria-label="Sửa giao dịch" onclick="openEditModal(${tx.origIdx})" class="text-blue-600 hover:text-blue-800 text-xs bg-blue-50 hover:bg-blue-100 p-1.5 rounded-lg">✏️</button>
-                            <button title="Xóa giao dịch" aria-label="Xóa giao dịch" onclick="deleteTransaction(${tx.origIdx})" class="text-red-600 hover:text-red-800 text-xs bg-red-50 hover:bg-red-100 p-1.5 rounded-lg">🗑️</button>
-                        </td>
+                        <td class="px-1.5 py-2 text-center space-x-1">${isEditorLoggedIn() ? `<button title="Sửa giao dịch" aria-label="Sửa giao dịch" onclick="openEditModal(${tx.origIdx})" class="text-blue-600 hover:text-blue-800 text-xs bg-blue-50 hover:bg-blue-100 p-1.5 rounded-lg">✏️</button><button title="Xóa giao dịch" aria-label="Xóa giao dịch" onclick="deleteTransaction(${tx.origIdx})" class="text-red-600 hover:text-red-800 text-xs bg-red-50 hover:bg-red-100 p-1.5 rounded-lg">🗑️</button>` : `<span class="text-slate-300" title="Đăng nhập để chỉnh sửa">🔒</span>`}</td>
                     </tr>
                 `;
             });
@@ -1521,9 +1505,11 @@
             renderChart(chartLabels, chartValues, bgColors, chartTotalInvested, chartKeys);
             renderPerformanceChart(chartLabels, chartKeys.map(k => channelProfits[k]), chartKeys.map(k => channelInvested[k] > 0 ? (channelProfits[k] / channelInvested[k]) * 100 : 0), bgColors);
             onTxTypeChange();
+            applyRoleUI();
         }
 
         function updateSingleMarketPrice(symbol) {
+            if (!requireEditor()) return;
             const newPrice = prompt(`Nhập giá thị trường mới cho ${symbol}:`, marketPrices[symbol] || 0);
             if (newPrice !== null && !isNaN(newPrice)) {
                 marketPrices[symbol] = parseFloat(newPrice);
@@ -1688,8 +1674,9 @@
                 }
             });
         }
-        // First render local cache immediately, then replace with shared JSONBin data if configured.
+        // Render local cache immediately, then replace with shared JSONBin data if configured.
         renderDashboard();
+        applyRoleUI();
         initializeCloudSync();
     </script>
 </body>
