@@ -95,42 +95,11 @@
                     <span id="role-badge" class="text-[10px] font-bold px-2.5 py-1 rounded-full bg-slate-100 text-slate-600">👁️ Chỉ xem</span>
                     <button id="login-button" onclick="openLoginModal()" class="bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold px-2.5 py-1.5 rounded-xl transition">🔐 Đăng nhập sửa</button>
                     <button id="logout-button" onclick="logoutEditor()" class="hidden bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold px-2.5 py-1.5 rounded-xl transition">Đăng xuất</button>
+                    <button data-requires-editor onclick="saveToCloud(true)" class="editor-only hidden bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold px-2.5 py-1.5 rounded-xl transition">💾 Lưu ngay</button>
                     <button data-requires-editor onclick="clearAllData()" class="editor-only hidden bg-red-50 hover:bg-red-100 text-red-600 text-xs font-bold px-2.5 py-1 rounded-xl border border-red-200 transition">🗑️ Xóa Dữ Liệu</button>
                 </div>
             </div>
         </header>
-
-        <!-- JSONBin config is set in the marked constants near the start of the main script. -->
-        <section class="max-w-7xl w-full mx-auto px-4 pt-2">
-            <div class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden">
-                <div class="px-3 py-2 flex flex-wrap items-center justify-between gap-2">
-                    <div class="flex items-center gap-2 min-w-0">
-                        <span id="cloud-status-dot" class="w-2.5 h-2.5 rounded-full bg-slate-300 shrink-0"></span>
-                        <div class="min-w-0">
-                            <div class="text-xs font-extrabold text-slate-700">Đồng bộ dữ liệu dùng chung</div>
-                            <div id="cloud-status-text" class="text-[10px] text-slate-500">Đang kết nối JSONBin…</div>
-                        </div>
-                    </div>
-                    <div class="flex flex-wrap gap-1.5">
-                        <button onclick="toggleCloudSettings()" class="px-2.5 py-1.5 rounded-lg text-[11px] font-bold border border-slate-200 bg-slate-50 hover:bg-slate-100 text-slate-700">⚙️ Kết nối</button>
-                        <button onclick="loadFromCloud(true)" class="px-2.5 py-1.5 rounded-lg text-[11px] font-bold border border-blue-200 bg-blue-50 hover:bg-blue-100 text-blue-700">⬇ Tải dữ liệu</button>
-                        <button data-requires-editor onclick="saveToCloud(true)" class="editor-only hidden px-2.5 py-1.5 rounded-lg text-[11px] font-bold bg-blue-600 hover:bg-blue-700 text-white">⬆ Lưu dữ liệu</button>
-                    </div>
-                </div>
-                <div id="cloud-settings-panel" class="hidden border-t border-slate-100 bg-slate-50/80 p-3">
-                    <div class="rounded-lg border border-blue-200 bg-blue-50 p-3 text-[11px] leading-relaxed text-blue-950">
-                        <div class="font-extrabold mb-1">Cấu hình JSONBin trong file index.html</div>
-                        Mở file và tìm <code>JSONBIN_CONFIG</code> ở đầu phần JavaScript. Dán BIN ID vào <code>binId</code>, API Key vào <code>apiKey</code>. Nếu dùng Master Key, giữ <code>keyHeader: 'X-Master-Key'</code>; nếu dùng Access Key, đổi thành <code>'X-Access-Key'</code>.
-                        <div class="mt-2"><b>Trạng thái:</b> <span id="jsonbin-config-state">Đang kiểm tra cấu hình…</span></div>
-                        <div class="mt-2 text-amber-800"><b>Lưu ý:</b> cấu hình nằm trong file công khai GitHub Pages. Bất kỳ ai xem mã nguồn cũng có thể lấy API Key và vượt qua đăng nhập phía giao diện. Cách này chỉ phù hợp nếu bạn chấp nhận rủi ro đó.</div>
-                    </div>
-                    <div class="mt-2 flex flex-wrap gap-2">
-                        <button onclick="testJsonBinConnection()" class="px-3 py-2 rounded-lg text-[11px] font-bold border border-slate-300 bg-white hover:bg-slate-100 text-slate-700">Kiểm tra JSONBin</button>
-                        <button onclick="loadFromCloud(true)" class="px-3 py-2 rounded-lg text-[11px] font-bold border border-blue-200 bg-blue-50 hover:bg-blue-100 text-blue-700">Tải lại dữ liệu</button>
-                    </div>
-                </div>
-            </div>
-        </section>
 
         <!-- Đăng nhập người chỉnh sửa -->
         <div id="login-modal" class="hidden fixed inset-0 bg-slate-950/50 backdrop-blur-sm flex items-center justify-center px-4 z-[60]">
@@ -361,7 +330,6 @@
         // 1) binId: dán BIN ID JSONBin của bạn vào giữa hai dấu nháy.
         // 2) apiKey: dán API KEY JSONBin của bạn vào giữa hai dấu nháy.
         // 3) keyHeader: dùng X-Master-Key cho Master Key hoặc X-Access-Key cho Access Key.
-        // CẢNH BÁO: GitHub Pages là website công khai; các giá trị này có thể bị xem trong source.
         // ================================================================
         const JSONBIN_CONFIG = {
             binId: '6ad31b41ffd5d1605372eb7b',       // <<< DÁN BIN ID TẠI ĐÂY
@@ -385,7 +353,7 @@
                 !JSONBIN_CONFIG.binId.includes('PASTE_YOUR') && !JSONBIN_CONFIG.apiKey.includes('PASTE_YOUR'));
         }
         function jsonBinHeaders() {
-            if (!hasJsonBinConfig()) throw new Error('Chưa cấu hình BIN ID/API Key. Mở phần ⚙️ Kết nối và sửa JSONBIN_CONFIG trong file index.html.');
+            if (!hasJsonBinConfig()) throw new Error('JSONBin chưa được cấu hình.');
             return { 'Content-Type': 'application/json', [JSONBIN_CONFIG.keyHeader]: JSONBIN_CONFIG.apiKey };
         }
         function jsonBinUrl(latest = true) {
@@ -421,19 +389,8 @@
             if (loginBtn) loginBtn.classList.toggle('hidden', editor);
             if (logoutBtn) logoutBtn.classList.toggle('hidden', !editor);
         }
-        function setCloudStatus(message, state = 'idle') {
-            const text = document.getElementById('cloud-status-text');
-            const dot = document.getElementById('cloud-status-dot');
-            const cfg = document.getElementById('jsonbin-config-state');
-            if (text) text.textContent = message;
-            if (cfg) cfg.textContent = hasJsonBinConfig() ? 'Đã điền BIN ID/API Key (chưa chắc kết nối thành công)' : 'Chưa điền BIN ID hoặc API Key trong JSONBIN_CONFIG.';
-            if (dot) dot.className = 'w-2.5 h-2.5 rounded-full shrink-0 ' + ({ok:'bg-emerald-500',busy:'bg-blue-500 animate-pulse',error:'bg-rose-500',idle:'bg-slate-300',warn:'bg-amber-500'}[state] || 'bg-slate-300');
-        }
-        function toggleCloudSettings() {
-            document.getElementById('cloud-settings-panel').classList.toggle('hidden');
-            const cfg = document.getElementById('jsonbin-config-state');
-            if (cfg) cfg.textContent = hasJsonBinConfig() ? 'Đã điền BIN ID/API Key (chưa chắc kết nối thành công)' : 'Chưa điền BIN ID hoặc API Key trong JSONBIN_CONFIG.';
-        }
+        // Đồng bộ chạy nền; không hiển thị bảng trạng thái/cảnh báo trên giao diện.
+        function setCloudStatus(_message, _state = 'idle') { /* intentionally silent */ }
         async function jsonBinRequest(method = 'GET', payload = null) {
             const options = { method, headers: jsonBinHeaders() };
             if (payload !== null) options.body = JSON.stringify(payload);
@@ -443,20 +400,6 @@
             try { data = raw ? JSON.parse(raw) : {}; } catch (_) { data = {message:raw}; }
             if (!response.ok) throw new Error(data.message || data.error || `JSONBin HTTP ${response.status}`);
             return data;
-        }
-        async function testJsonBinConnection() {
-            setCloudStatus('Đang kiểm tra kết nối JSONBin…', 'busy');
-            try {
-                await jsonBinRequest('GET');
-                setCloudStatus('Kết nối JSONBin thành công · Đang tải dữ liệu…', 'ok');
-                await loadFromCloud(false);
-                startCloudPolling();
-                return true;
-            } catch (err) {
-                setCloudStatus('Kết nối JSONBin thất bại: ' + err.message, 'error');
-                alert('Không kết nối được JSONBin. Kiểm tra BIN ID, API Key, loại khóa và quyền truy cập BIN.\n\n' + err.message);
-                return false;
-            }
         }
         function openLoginModal() {
             document.getElementById('login-error').classList.add('hidden');
@@ -501,7 +444,6 @@
             if (cloudSyncBusy) return;
             if (!hasJsonBinConfig()) {
                 setCloudStatus('Chưa cấu hình BIN ID/API Key · Đang dùng dữ liệu cục bộ trên thiết bị này', 'warn');
-                if (showMessage) alert('Mở phần ⚙️ Kết nối, sau đó dán BIN ID và API Key vào JSONBIN_CONFIG trong file index.html rồi tải lại trang.');
                 return;
             }
             cloudSyncBusy = true; setCloudStatus('Đang tải dữ liệu dùng chung từ JSONBin…', 'busy');
