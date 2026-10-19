@@ -23,16 +23,16 @@
                 <div>
                     <h1 class="text-sm sm:text-base font-black text-slate-900 tracking-tight">Quản lý tài sản cá nhân</h1>
                     <div class="flex items-center gap-2 mt-0.5">
-                        <span id="cloud-status" class="text-[9px] font-bold px-2 py-0.5 rounded-full bg-amber-100 text-amber-700">Đang kết nối Cloud...</span>
+                        <span id="cloud-status" class="text-[9px] font-bold px-2 py-0.5 rounded-full bg-slate-100 text-slate-600">Đang khởi tạo...</span>
                         <span id="role-badge" class="text-[9px] font-bold px-2 py-0.5 rounded-full bg-slate-100 text-slate-600">👁️ Chế độ Xem</span>
                     </div>
                 </div>
             </div>
             <div class="flex items-center space-x-2">
                 <div id="realtime-clock" class="text-[11px] font-semibold text-gray-500 bg-slate-50 px-3 py-1.5 rounded-xl border border-slate-200 hidden sm:block"></div>
-                <button id="auth-btn" onclick="toggleAdminAuth()" class="bg-amber-500 hover:bg-amber-600 text-white text-[11px] font-bold px-3 py-1.5 rounded-xl shadow-xs transition flex items-center gap-1">🔒 <span>Admin</span></button>
-                <button onclick="syncFromCloud()" class="bg-blue-50 hover:bg-blue-100 text-blue-600 text-[11px] font-bold px-3 py-1.5 rounded-xl border border-blue-200 transition flex items-center gap-1">🔄 <span>Đồng bộ</span></button>
-                <button id="btn-clear-data" onclick="clearAllData()" class="bg-red-50 hover:bg-red-100 text-red-600 text-[11px] font-bold px-3 py-1.5 rounded-xl border border-red-200 transition hidden flex items-center gap-1">🗑️ <span>Xóa</span></button>
+                <button id="auth-btn" onclick="toggleAdminAuth()" class="bg-amber-500 hover:bg-amber-600 text-white text-[11px] font-bold px-3 py-1.5 rounded-xl shadow-xs transition flex items-center gap-1 cursor-pointer">🔒 <span>Admin</span></button>
+                <button onclick="syncFromCloud()" class="bg-blue-50 hover:bg-blue-100 text-blue-600 text-[11px] font-bold px-3 py-1.5 rounded-xl border border-blue-200 transition flex items-center gap-1 cursor-pointer">🔄 <span>Đồng bộ</span></button>
+                <button id="btn-clear-data" onclick="clearAllData()" class="bg-red-50 hover:bg-red-100 text-red-600 text-[11px] font-bold px-3 py-1.5 rounded-xl border border-red-200 transition hidden flex items-center gap-1 cursor-pointer">🗑️ <span>Xóa</span></button>
             </div>
         </header>
 
@@ -50,8 +50,8 @@
                 </div>
                 <div id="quick-cash-controls" class="mt-3 pt-2 border-t border-white/20 flex items-center gap-1.5 hidden">
                     <input type="text" id="quick-cash-input" placeholder="Số tiền..." oninput="formatNumberInput(this)" class="bg-white/15 border border-white/30 px-2 py-1 rounded-lg text-[11px] placeholder-teal-200 text-white focus:outline-none w-full">
-                    <button onclick="quickCashTransaction('BUY')" title="Nạp thêm" class="bg-white text-teal-700 hover:bg-teal-50 font-bold px-2 py-1 rounded-lg text-xs transition">📥</button>
-                    <button onclick="quickCashTransaction('SELL')" title="Rút bớt" class="bg-teal-900 text-white hover:bg-teal-950 font-bold px-2 py-1 rounded-lg text-xs transition">📤</button>
+                    <button onclick="quickCashTransaction('BUY')" title="Nạp thêm" class="bg-white text-teal-700 hover:bg-teal-50 font-bold px-2 py-1 rounded-lg text-xs transition cursor-pointer">📥</button>
+                    <button onclick="quickCashTransaction('SELL')" title="Rút bớt" class="bg-teal-900 text-white hover:bg-teal-950 font-bold px-2 py-1 rounded-lg text-xs transition cursor-pointer">📤</button>
                 </div>
             </div>
 
@@ -113,7 +113,7 @@
                     <div id="custom-chart-legend" class="w-full mt-3 space-y-1.5 border-t border-slate-100 pt-2.5"></div>
                 </div>
 
-                <!-- Biểu đồ Bar + Line kết hợp (Lợi nhuận VNĐ và ROI %) -->
+                <!-- Biểu đồ Bar + Line kết hợp -->
                 <div class="bg-white p-4 rounded-2xl shadow-xs border border-slate-200">
                     <h3 class="text-xs font-bold text-gray-700 uppercase tracking-wide mb-2 flex items-center gap-1.5"><span>📊</span> Lợi Nhuận & ROI Danh Mục</h3>
                     <div class="w-full h-52">
@@ -173,7 +173,7 @@
 
                     <div id="dynamic-fields" class="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-4"></div>
 
-                    <button onclick="addTransaction()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2.5 rounded-xl text-xs transition shadow-sm flex items-center justify-center gap-1.5">
+                    <button onclick="addTransaction()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2.5 rounded-xl text-xs transition shadow-sm flex items-center justify-center gap-1.5 cursor-pointer">
                         <span>✨</span> <span>Xác Nhận Thêm Giao Dịch</span>
                     </button>
                 </div>
@@ -256,8 +256,8 @@
             <input type="hidden" id="edit-index">
             <div class="space-y-3 text-xs" id="edit-modal-content"></div>
             <div class="flex justify-end space-x-2 mt-4">
-                <button onclick="closeEditModal()" class="bg-gray-100 text-gray-600 px-3 py-2 rounded-xl font-bold hover:bg-gray-200 transition">Hủy</button>
-                <button onclick="saveEditedTransaction()" class="bg-blue-600 text-white px-3 py-2 rounded-xl font-bold hover:bg-blue-700 transition shadow-sm">Lưu</button>
+                <button onclick="closeEditModal()" class="bg-gray-100 text-gray-600 px-3 py-2 rounded-xl font-bold hover:bg-gray-200 transition cursor-pointer">Hủy</button>
+                <button onclick="saveEditedTransaction()" class="bg-blue-600 text-white px-3 py-2 rounded-xl font-bold hover:bg-blue-700 transition shadow-sm cursor-pointer">Lưu</button>
             </div>
         </div>
     </div>
@@ -273,8 +273,10 @@
         let isAdmin = false; 
         const ADMIN_PASS = "090393"; 
 
+        // Khởi tạo dữ liệu từ localStorage ngay lập tức để tránh phụ thuộc hoàn toàn vào Cloud
         let transactions = JSON.parse(localStorage.getItem('invest_transactions')) || [];
         let marketPrices = JSON.parse(localStorage.getItem('invest_market_prices')) || {};
+        
         let chartInstance = null;
         let comboChartInstance = null;
 
@@ -300,6 +302,7 @@
             return parseFloat(valStr.toString().replace(/,/g, '')) || 0;
         }
 
+        // HÀM MỞ KHÓA ADMIN CỰC KỲ AN TOÀN
         function toggleAdminAuth() {
             if (isAdmin) {
                 isAdmin = false;
@@ -309,6 +312,7 @@
                 if (pass === ADMIN_PASS) {
                     isAdmin = true;
                     updateAuthUI();
+                    alert("🔓 Đã mở khóa quyền Admin thành công!");
                 } else if (pass !== null) {
                     alert("❌ Mật khẩu không chính xác!");
                 }
@@ -325,56 +329,58 @@
 
             if (isAdmin) {
                 authBtn.innerHTML = "🔓 <span>Thoát</span>";
-                authBtn.className = "bg-rose-600 hover:bg-rose-700 text-white text-[11px] font-bold px-3 py-1.5 rounded-xl shadow-xs transition flex items-center gap-1";
+                authBtn.className = "bg-rose-600 hover:bg-rose-700 text-white text-[11px] font-bold px-3 py-1.5 rounded-xl shadow-xs transition flex items-center gap-1 cursor-pointer";
                 roleBadge.innerText = "⚡ Admin";
                 roleBadge.className = "text-[9px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-700";
-                addForm.classList.remove('hidden');
-                guestNotice.classList.add('hidden');
-                quickCashControls.classList.remove('hidden');
-                btnClear.classList.remove('hidden');
+                if(addForm) addForm.classList.remove('hidden');
+                if(guestNotice) guestNotice.classList.add('hidden');
+                if(quickCashControls) quickCashControls.classList.remove('hidden');
+                if(btnClear) btnClear.classList.remove('hidden');
             } else {
                 authBtn.innerHTML = "🔒 <span>Admin</span>";
-                authBtn.className = "bg-amber-500 hover:bg-amber-600 text-white text-[11px] font-bold px-3 py-1.5 rounded-xl shadow-xs transition flex items-center gap-1";
+                authBtn.className = "bg-amber-500 hover:bg-amber-600 text-white text-[11px] font-bold px-3 py-1.5 rounded-xl shadow-xs transition flex items-center gap-1 cursor-pointer";
                 roleBadge.innerText = "👁️ Xem";
                 roleBadge.className = "text-[9px] font-bold px-2 py-0.5 rounded-full bg-slate-100 text-slate-600";
-                addForm.classList.add('hidden');
-                guestNotice.classList.remove('hidden');
-                quickCashControls.classList.add('hidden');
-                btnClear.classList.add('hidden');
+                if(addForm) addForm.classList.add('hidden');
+                if(guestNotice) guestNotice.classList.remove('hidden');
+                if(quickCashControls) quickCashControls.classList.add('hidden');
+                if(btnClear)íbrio = btnClear.classList.add('hidden');
             }
             renderDashboard();
         }
 
-        // TẢI DỮ LIỆU TỪ CLOUD (AN TOÀN KHÔNG BỊ VÒNG LẶP)
+        // ĐỒNG BỘ CLOUD AN TOÀN (TỰ ĐỘNG FALLBACK OFFLINE NẾU LỖI MẠNG)
         async function syncFromCloud() {
             const statusElem = document.getElementById('cloud-status');
             if (!jsonBinId || jsonBinId.includes("YOUR_")) {
-                if (statusElem) { statusElem.innerText = "Local (Chưa cấu hình Cloud)"; statusElem.className = "text-[9px] font-bold px-2 py-0.5 rounded-full bg-slate-100 text-slate-700"; }
-                renderDashboard(); return;
+                if (statusElem) { statusElem.innerText = "Dùng Local (Chưa cấu hình Cloud)"; statusElem.className = "text-[9px] font-bold px-2 py-0.5 rounded-full bg-slate-100 text-slate-700"; }
+                renderDashboard(); 
+                return;
             }
             try {
-                const res = await fetch(`https://api.jsonbin.io/v3/b/${jsonBinId}/latest`, { headers: { 'X-Master-Key': jsonBinMasterKey } });
-                if (!res.ok) throw new Error("Lỗi kết nối");
+                if (statusElem) statusElem.innerText = "Đang kết nối Cloud...";
+                const res = await fetch(`https://api.jsonbin.io/v3/b/${jsonBinId}/latest`, { 
+                    headers: { 'X-Master-Key': jsonBinMasterKey },
+                    cache: 'no-cache'
+                });
+                if (!res.ok) throw new Error("Lỗi kết nối Cloud");
                 const data = await res.json();
                 if (data && data.record) {
                     transactions = data.record.transactions || [];
                     marketPrices = data.record.marketPrices || {};
                     if (statusElem) { statusElem.innerText = "Đã đồng bộ Cloud"; statusElem.className = "text-[9px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-700"; }
-                    localStorage.setItem('invest_transactions', JSON.stringify(transactions));
-                    localStorage.setItem('invest_market_prices', JSON.stringify(marketPrices));
+                    saveLocal();
                     renderDashboard();
                 }
             } catch (e) {
-                console.error(e);
-                if (statusElem) { statusElem.innerText = "Lỗi Cloud (Dùng Local)"; statusElem.className = "text-[9px] font-bold px-2 py-0.5 rounded-full bg-rose-100 text-rose-700"; }
+                console.error("Lỗi đồng bộ Cloud:", e);
+                if (statusElem) { statusElem.innerText = "Dùng Local (Mất kết nối Cloud)"; statusElem.className = "text-[9px] font-bold px-2 py-0.5 rounded-full bg-amber-100 text-amber-700"; }
                 renderDashboard();
             }
         }
 
-        // LƯU DỮ LIỆU LÊN CLOUD
         async function saveToCloud() {
-            localStorage.setItem('invest_transactions', JSON.stringify(transactions));
-            localStorage.setItem('invest_market_prices', JSON.stringify(marketPrices));
+            saveLocal(); 
             renderDashboard();
 
             if (!jsonBinId || jsonBinId.includes("YOUR_")) return;
@@ -386,7 +392,15 @@
                     body: JSON.stringify({ transactions, marketPrices })
                 });
                 if (statusElem) { statusElem.innerText = "Đã lưu Cloud"; statusElem.className = "text-[9px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-700"; }
-            } catch (e) { console.error(e); }
+            } catch (e) { 
+                console.error("Lỗi lưu Cloud:", e);
+                if (statusElem) { statusElem.innerText = "Lỗi lưu Cloud (Đã lưu Local)"; statusElem.className = "text-[9px] font-bold px-2 py-0.5 rounded-full bg-amber-100 text-amber-700"; }
+            }
+        }
+
+        function saveLocal() {
+            localStorage.setItem('invest_transactions', JSON.stringify(transactions));
+            localStorage.setItem('invest_market_prices', JSON.stringify(marketPrices));
         }
 
         function getSymbolBadgeHTML(symbol, channel) {
@@ -416,7 +430,8 @@
         setInterval(updateClock, 1000);
         updateClock();
 
-        document.getElementById('tx-date').valueAsDate = new Date();
+        const dateEl = document.getElementById('tx-date');
+        if(dateEl) dateEl.valueAsDate = new Date();
 
         function getCalculatedAssetsMap() {
             let assetMap = {};
@@ -503,14 +518,19 @@
         }
 
         function onTxTypeChange() {
-            const type = document.getElementById('tx-type').value;
+            const typeElem = document.getElementById('tx-type');
             const symbolContainer = document.getElementById('symbol-container');
-            const channel = document.getElementById('channel').value;
+            const channelElem = document.getElementById('channel');
+            if(!typeElem || !symbolContainer || !channelElem) return;
 
-            document.getElementById('channel').querySelector('option[value="TIETKIEM"]').disabled = (type === 'SELL');
-            if (type === 'SELL' && channel === 'TIETKIEM') document.getElementById('channel').value = 'VANG';
+            const type = typeElem.value;
+            const channel = channelElem.value;
 
-            const activeChannel = document.getElementById('channel').value;
+            const tietkiemOpt = channelElem.querySelector('option[value="TIETKIEM"]');
+            if(tietkiemOpt) tietkiemOpt.disabled = (type === 'SELL');
+            if (type === 'SELL' && channel === 'TIETKIEM') channelElem.value = 'VANG';
+
+            const activeChannel = channelElem.value;
             if (type === 'SELL') {
                 const assetMap = getCalculatedAssetsMap();
                 let filteredAssets = Object.keys(assetMap).filter(key => assetMap[key].channel === activeChannel && assetMap[key].qty > 0);
@@ -545,10 +565,13 @@
             }
         }
 
-        onTxTypeChange();
+        // Tải trang lần đầu: hiển thị giao diện ngay từ localStorage, sau đó gọi ngầm sync cloud
         window.onload = function() {
-            syncFromCloud();
+            renderDashboard();
             updateAuthUI();
+            if(jsonBinId && !jsonBinId.includes("YOUR_")) {
+                syncFromCloud();
+            }
         };
 
         function addTransaction() {
@@ -675,7 +698,7 @@
                 uniqueMarketSymbols.forEach(sym => {
                     const sampleKey = Object.keys(assetMap).find(k => (assetMap[k].rawSymbol || k) === sym);
                     const curPrice = marketPrices[sym] || (sampleKey ? assetMap[sampleKey].totalCost / assetMap[sampleKey].qty : 0);
-                    marketWidget.innerHTML += `<div class="flex justify-between items-center bg-slate-50 p-2 rounded-xl border border-slate-100">${getSymbolBadgeHTML(sym, sampleKey ? assetMap[sampleKey].channel : 'CK')}<div class="flex items-center gap-1.5"><span class="font-bold">${formatCurrency(curPrice)}</span>${isAdmin ? `<button onclick="updateSingleMarketPrice('${sym}')" class="text-[10px] bg-white border border-slate-200 hover:bg-slate-100 px-1.5 py-0.5 rounded shadow-2xs">✏️</button>` : ''}</div></div>`;
+                    marketWidget.innerHTML += `<div class="flex justify-between items-center bg-slate-50 p-2 rounded-xl border border-slate-100">${getSymbolBadgeHTML(sym, sampleKey ? assetMap[sampleKey].channel : 'CK')}<div class="flex items-center gap-1.5"><span class="font-bold">${formatCurrency(curPrice)}</span>${isAdmin ? `<button onclick="updateSingleMarketPrice('${sym}')" class="text-[10px] bg-white border border-slate-200 hover:bg-slate-100 px-1.5 py-0.5 rounded shadow-2xs cursor-pointer">✏️</button>` : ''}</div></div>`;
                 });
             }
 
@@ -685,7 +708,7 @@
                 const channelName = { 'TIETKIEM': 'Tiết Kiệm', 'VANG': 'Vàng', 'CK': 'Chứng Khoán', 'CCQ': 'Quỹ', 'TIENMAT': 'Tiền Mặt' }[tx.channel];
                 let detailStr = tx.channel === 'TIETKIEM' ? `${tx.rate}% | ${tx.term}T` : (tx.channel === 'TIENMAT' ? 'Tiền mặt' : `SL: ${tx.qty} | Giá: ${formatCurrency(tx.price)}`);
 
-                txBody.innerHTML += `<tr class="border-b border-slate-50 hover:bg-slate-50"><td class="p-2.5">${formatDateDDMMYY(tx.date)}</td><td class="p-2.5">${typeLabel}</td><td class="p-2.5">${channelName}</td><td class="p-2.5">${getSymbolBadgeHTML(tx.symbol, tx.channel)}</td><td class="p-2.5 text-[10px] text-blue-600 font-bold">${Math.ceil(Math.abs(new Date() - new Date(tx.date)) / (1000 * 60 * 60 * 24))}d</td><td class="p-2.5 text-[11px] text-gray-500">${detailStr}</td><td class="p-2.5 font-bold">${formatCurrency(tx.capital)}</td><td class="p-2.5 text-center">${isAdmin ? `<button onclick="openEditModal(${tx.origIdx})" title="Sửa" class="text-blue-600 bg-blue-50 hover:bg-blue-100 px-2 py-1 rounded-lg mr-1">✏️</button><button onclick="deleteTransaction(${tx.origIdx})" title="Xóa" class="text-red-600 bg-red-50 hover:bg-red-100 px-2 py-1 rounded-lg">🗑️</button>` : '<span class="text-gray-300 italic">Xem</span>'}</td></tr>`;
+                txBody.innerHTML += `<tr class="border-b border-slate-50 hover:bg-slate-50"><td class="p-2.5">${formatDateDDMMYY(tx.date)}</td><td class="p-2.5">${typeLabel}</td><td class="p-2.5">${channelName}</td><td class="p-2.5">${getSymbolBadgeHTML(tx.symbol, tx.channel)}</td><td class="p-2.5 text-[10px] text-blue-600 font-bold">${Math.ceil(Math.abs(new Date() - new Date(tx.date)) / (1000 * 60 * 60 * 24))}d</td><td class="p-2.5 text-[11px] text-gray-500">${detailStr}</td><td class="p-2.5 font-bold">${formatCurrency(tx.capital)}</td><td class="p-2.5 text-center">${isAdmin ? `<button onclick="openEditModal(${tx.origIdx})" title="Sửa" class="text-blue-600 bg-blue-50 hover:bg-blue-100 px-2 py-1 rounded-lg mr-1 cursor-pointer">✏️</button><button onclick="deleteTransaction(${tx.origIdx})" title="Xóa" class="text-red-600 bg-red-50 hover:bg-red-100 px-2 py-1 rounded-lg cursor-pointer">🗑️</button>` : '<span class="text-gray-300 italic">Xem</span>'}</td></tr>`;
             });
 
             let volumeAgg = {};
