@@ -607,12 +607,11 @@
                 } else {
                     assetMap[key].soldQty += tx.qty;
                     if (tx.channel === 'TIENMAT') {
-                        assetMap[key].qty -= tx.qty;
-                        assetMap[key].totalCost -= tx.capital;
-                        if (assetMap[key].qty < 0) {
-                            assetMap[key].qty = 0;
-                            assetMap[key].totalCost = 0;
-                        }
+                        // Ví tiền mặt là sổ dòng tiền: không ép số dư tạm thời về 0.
+                        // Các khoản thu (ví dụ tiền tiết kiệm đáo hạn) có thể được cộng
+                        // ở bước sau; ép về 0 tại đây sẽ làm mất dấu tiền rút trước đó.
+                        assetMap[key].qty -= Number(tx.qty) || 0;
+                        assetMap[key].totalCost -= Number(tx.capital) || 0;
                     } else {
                         if (assetMap[key].qty > 0) {
                             const avgCost = assetMap[key].totalCost / assetMap[key].qty;
