@@ -806,10 +806,15 @@
                     if (assetMap[sym]) maxHint = ` (Số dư: ${assetMap[sym].qty.toLocaleString()} đ)`;
                 }
                 container.innerHTML = `
-                    <div class="md:col-span-3">
+                    <div class="${type === 'SELL' ? 'md:col-span-1' : 'md:col-span-3'}">
                         <label class="block text-[11px] font-bold text-gray-500 mb-1">💵 Số tiền (VNĐ)${maxHint}</label>
                         <input type="text" inputmode="decimal" id="${prefix}-capital" placeholder="0" class="w-full border border-slate-200 p-2 rounded-xl text-xs">
                     </div>
+                    ${type === 'SELL' ? `
+                    <div class="md:col-span-2">
+                        <label class="block text-[11px] font-bold text-gray-500 mb-1">📝 Ghi chú / mục đích rút tiền</label>
+                        <input type="text" id="${prefix}-note" maxlength="240" placeholder="VD: Chi phí sinh hoạt, mua sắm, thanh toán..." class="w-full border border-slate-200 p-2 rounded-xl text-xs">
+                    </div>` : ''}
                 `;
             } else if (channel === 'VANG' || channel === 'CK') {
                 let maxHint = "";
@@ -897,6 +902,9 @@
             }
 
             let tx = { type, channel, symbol, date };
+            if (channel === 'TIENMAT' && type === 'SELL') {
+                tx.note = (document.getElementById('tx-note')?.value || '').trim();
+            }
 
             if (channel === 'TIETKIEM') {
                 tx.capital = parseFloat(cleanNumericValue(document.getElementById('tx-capital').value));
@@ -1048,6 +1056,9 @@
                 document.getElementById('edit-term').value = tx.term;
             } else if (tx.channel === 'TIENMAT') {
                 document.getElementById('edit-capital').value = formatNumericValue(tx.capital);
+                if (tx.type === 'SELL' && document.getElementById('edit-note')) {
+                    document.getElementById('edit-note').value = tx.note || '';
+                }
             } else if (tx.channel === 'VANG' || tx.channel === 'CK') {
                 document.getElementById('edit-qty').value = formatNumericValue(tx.qty);
                 document.getElementById('edit-price').value = formatNumericValue(tx.price);
@@ -1083,6 +1094,9 @@
             }
 
             let tx = { type, channel, symbol, date };
+            if (channel === 'TIENMAT' && type === 'SELL') {
+                tx.note = (document.getElementById('edit-note')?.value || '').trim();
+            }
 
             if (channel === 'TIETKIEM') {
                 tx.capital = parseFloat(cleanNumericValue(document.getElementById('edit-capital').value));
@@ -1131,6 +1145,36 @@
         // Giữ tên hàm để không ảnh hưởng các phần đang gọi hàm này; giá trị hiển thị không còn rút gọn.
         function formatCurrencyCompact(amount) {
             return formatCurrency(amount);
+        }
+
+        // Tạo các dòng lịch sử đáo hạn ảo từ giao dịch tiết kiệm gốc.
+        // Đây chỉ là dòng hiển thị: số dư tiền mặt vẫn được tính bởi getCalculatedAssetsMap(),
+        // nên không ghi thêm vào transactions và không cộng trùng tiền gốc/lãi.
+        function getMaturityHistoryTransactions() {
+            const today = new Date();
+            const maturityRows = [];
+            transactions.forEach((tx, origIdx) => {
+                if (tx.channel !== 'TIETKIEM' || tx.type !== 'BUY' || !tx.date || !(Number(tx.term) > 0)) return;
+                const startDate = new Date(tx.date);
+                if (Number.isNaN(startDate.getTime())) return;
+                const maturityDate = new Date(startDate);
+                maturityDate.setMonth(maturityDate.getMonth() + parseInt(tx.term, 10));
+                if (today < maturityDate) return;
+                const principal = Number(tx.capital) || 0;
+                const interest = principal * ((Number(tx.rate) || 0) / 100) * ((Number(tx.term) || 0) / 12);
+                const total = principal + interest;
+                maturityRows.push({
+                    type: 'MATURITY', channel: 'TIENMAT', symbol: 'TIEN_MAT',
+                    date: maturityDate.toISOString().split('T')[0], capital: total, qty: total, price: 1,
+                    principal, interest, note: `Đáo hạn khoản tiết kiệm ${tx.symbol || ''} — gốc ${formatCurrency(principal)} + lãi ${formatCurrency(interest)}`,
+                    isMaturity: true, sourceIndex: origIdx
+                });
+            });
+            return maturityRows;
+        }
+
+        function escapeHtml(value) {
+            return String(value ?? '').replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
         }
 
         function renderDashboard() {
@@ -1232,7 +1276,10 @@
 
             // Lịch sử giao dịch: hỗ trợ sắp xếp theo các cột phổ biến.
             const channelLabels = { 'TIETKIEM': 'Tiết Kiệm', 'VANG': 'Vàng', 'CK': 'Chứng Khoán', 'CCQ': 'Quỹ', 'TIENMAT': 'Tiền Mặt' };
-            let sortedTransactions = [...transactions].map((tx, origIdx) => ({ ...tx, origIdx }));
+            let sortedTransactions = [
+                ...transactions.map((tx, origIdx) => ({ ...tx, origIdx, isMaturity: false })),
+                ...getMaturityHistoryTransactions()
+            ];
             sortedTransactions.sort((a, b) => {
                 let av, bv;
                 switch (transactionSortKey) {
@@ -1250,14 +1297,18 @@
 
             sortedTransactions.forEach((tx) => {
 
-                let typeLabel = tx.type === 'BUY' ? '<span class="bg-emerald-100 text-emerald-700 font-bold px-1.5 py-0.5 rounded text-[10px]">MUA</span>' : '<span class="bg-rose-100 text-rose-700 font-bold px-1.5 py-0.5 rounded text-[10px]">BÁN</span>';
+                let typeLabel = tx.isMaturity
+                    ? '<span class="bg-emerald-100 text-emerald-800 font-extrabold px-1.5 py-0.5 rounded text-[10px]">ĐÁO HẠN +</span>'
+                    : (tx.type === 'BUY' ? '<span class="bg-emerald-100 text-emerald-700 font-bold px-1.5 py-0.5 rounded text-[10px]">MUA / NẠP</span>' : '<span class="bg-rose-100 text-rose-700 font-bold px-1.5 py-0.5 rounded text-[10px]">BÁN / RÚT</span>');
                 let channelName = channelLabels[tx.channel] || tx.channel || ''; 
 
                 let detailStr = "";
-                if (tx.channel === 'TIETKIEM') {
+                if (tx.isMaturity) {
+                    detailStr = `Đáo hạn tiết kiệm · Gốc: ${formatCurrency(tx.principal)} + Lãi: ${formatCurrency(tx.interest)}`;
+                } else if (tx.channel === 'TIETKIEM') {
                     detailStr = `Lãi suất: ${tx.rate}%/năm | Kỳ hạn: ${tx.term} tháng`;
                 } else if (tx.channel === 'TIENMAT') {
-                    detailStr = tx.type === 'BUY' ? `Nạp tiền mặt` : `Rút tiền mặt`;
+                    detailStr = tx.type === 'BUY' ? `Nạp tiền mặt${tx.note ? ' · ' + escapeHtml(tx.note) : ''}` : `Rút tiền mặt${tx.note ? ' · ' + escapeHtml(tx.note) : ''}`;
                 } else if (tx.channel === 'VANG' || tx.channel === 'CK') {
                     detailStr = `SL: ${tx.qty.toLocaleString()} | Giá: ${formatCurrencyCompact(tx.price)}`;
                 } else if (tx.channel === 'CCQ') {
@@ -1276,7 +1327,7 @@
                         <td class="px-1.5 py-2">${getSymbolBadgeHTML(tx.symbol, tx.channel)}</td>
                         <td class="detail-cell text-[10px] text-slate-500">${detailStr}</td>
                         <td class="px-1.5 py-2 font-bold text-slate-700 money-compact" title="${formatCurrency(tx.capital)}">${formatCurrencyCompact(tx.capital)}</td>
-                        <td class="px-1.5 py-2 text-center space-x-1">${isEditorLoggedIn() ? `<button title="Sửa giao dịch" aria-label="Sửa giao dịch" onclick="openEditModal(${tx.origIdx})" class="text-blue-600 hover:text-blue-800 text-xs bg-blue-50 hover:bg-blue-100 p-1.5 rounded-lg">✏️</button><button title="Xóa giao dịch" aria-label="Xóa giao dịch" onclick="deleteTransaction(${tx.origIdx})" class="text-red-600 hover:text-red-800 text-xs bg-red-50 hover:bg-red-100 p-1.5 rounded-lg">🗑️</button>` : `<span class="text-slate-300" title="Đăng nhập để chỉnh sửa">🔒</span>`}</td>
+                        <td class="px-1.5 py-2 text-center space-x-1">${tx.isMaturity ? `<span class="text-emerald-600 text-[10px] font-bold" title="Dòng đáo hạn được tạo tự động">TỰ ĐỘNG</span>` : (isEditorLoggedIn() ? `<button title="Sửa giao dịch" aria-label="Sửa giao dịch" onclick="openEditModal(${tx.origIdx})" class="text-blue-600 hover:text-blue-800 text-xs bg-blue-50 hover:bg-blue-100 p-1.5 rounded-lg">✏️</button><button title="Xóa giao dịch" aria-label="Xóa giao dịch" onclick="deleteTransaction(${tx.origIdx})" class="text-red-600 hover:text-red-800 text-xs bg-red-50 hover:bg-red-100 p-1.5 rounded-lg">🗑️</button>` : `<span class="text-slate-300" title="Đăng nhập để chỉnh sửa">🔒</span>`)}</td>
                     </tr>
                 `;
             });
