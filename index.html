@@ -30,6 +30,12 @@
         #market-prices-widget > div > div { min-width: 0; }
         #market-prices-widget .font-bold { font-variant-numeric: tabular-nums; white-space: nowrap; }
         .money-compact { white-space: nowrap; font-variant-numeric: tabular-nums; }
+        .ledger-table { width:100%; border-collapse:separate; border-spacing:0; min-width:760px; }
+        .ledger-table th,.ledger-table td { padding:.55rem .65rem; white-space:nowrap; border-bottom:1px solid #eef2f7; }
+        .ledger-table th { font-size:10px; text-transform:uppercase; letter-spacing:.04em; color:#64748b; background:#f8fafc; }
+        .ledger-kpi { border:1px solid #e2e8f0; border-radius:14px; padding:12px; background:linear-gradient(145deg,#fff,#f8fafc); min-width:0; }
+        .ledger-kpi .ledger-label { font-size:10px; font-weight:800; color:#64748b; text-transform:uppercase; letter-spacing:.03em; }
+        .ledger-kpi .ledger-value { font-size:clamp(14px,1.5vw,19px); font-weight:900; margin-top:5px; overflow-wrap:anywhere; }
         /* Dashboard tables: crisp, modern, easy to scan */
         #assets-table { min-width: 690px; border-collapse: separate; border-spacing: 0; }
         #assets-table thead tr { background: linear-gradient(90deg, #eff6ff, #f8fafc); }
@@ -51,6 +57,24 @@
         @media (max-width: 640px) {
             .data-table th, .data-table td { padding: .4rem .45rem; }
         }
+
+        /* Collapsible sections keep the dashboard compact; tables open only on demand. */
+        .dashboard-collapse { min-width: 0; }
+        .dashboard-collapse > summary { list-style: none; }
+        .dashboard-collapse > summary::-webkit-details-marker { display: none; }
+        .dashboard-collapse-summary { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 11px 14px; border: 1px solid #e2e8f0; border-radius: 15px; background: linear-gradient(110deg,#fff 0%,#f8fafc 100%); box-shadow: 0 2px 7px rgba(15,23,42,.035); cursor: pointer; transition: border-color .15s ease, background .15s ease; }
+        .dashboard-collapse-summary:hover { border-color: #bfdbfe; background: #f8fbff; }
+        .collapse-title { display: flex; align-items: center; gap: 10px; min-width: 0; }
+        .collapse-icon { display: inline-flex; align-items: center; justify-content: center; width: 34px; height: 34px; flex: 0 0 34px; border-radius: 11px; background: #eef2ff; font-size: 17px; }
+        .collapse-title strong { display: block; color: #1e293b; font-size: 12px; font-weight: 850; }
+        .collapse-title small { display: block; color: #64748b; font-size: 10px; margin-top: 2px; line-height: 1.35; }
+        .collapse-action { flex: 0 0 auto; color: #2563eb; font-size: 10px; font-weight: 800; white-space: nowrap; background: #eff6ff; padding: 6px 9px; border-radius: 9px; }
+        .dashboard-collapse[open] > .dashboard-collapse-summary { border-color: #bfdbfe; background: #eff6ff; }
+        .dashboard-collapse[open] > .dashboard-collapse-summary .collapse-action { color: #475569; background: #e2e8f0; }
+        .dashboard-collapse[open] > .dashboard-collapse-summary .collapse-action::first-letter { content: '−'; }
+        .dashboard-collapse[open] > .dashboard-collapse-summary .collapse-action { font-size: 0; }
+        .dashboard-collapse[open] > .dashboard-collapse-summary .collapse-action::after { content: '− Thu gọn'; font-size: 10px; }
+        @media (max-width: 480px) { .dashboard-collapse-summary { padding: 9px 10px; } .collapse-title small { max-width: 215px; } }
 
         /* Compact dashboard mode: reduce vertical scrolling while preserving readability. */
         main.max-w-7xl { padding-top: .65rem !important; padding-bottom: .65rem !important; gap: .65rem !important; }
@@ -81,7 +105,124 @@
             #market-prices-widget .market-card { padding: 7px; }
             #market-prices-widget .market-price-value { font-size: 10px; }
         }
-    </style>
+
+
+        /* Visual refresh: restrained, consistent and information-first. */
+        :root { color-scheme: light; }
+        body { background: #f3f6fb !important; color: #172033; letter-spacing: -.012em; }
+        header { background: rgba(255,255,255,.94) !important; border-bottom-color: #e6ebf3 !important; box-shadow: 0 4px 18px rgba(15,23,42,.035) !important; }
+        header > div { min-height: 66px; }
+        header h1 { color: #172f65 !important; font-size: 17px !important; letter-spacing: -.035em !important; }
+        section.max-w-7xl, main.max-w-7xl { max-width: 1480px !important; }
+        section.max-w-7xl { padding-top: 14px !important; }
+        main.max-w-7xl { padding-top: 14px !important; padding-bottom: 22px !important; gap: 14px !important; }
+        main.max-w-7xl > div { gap: 14px !important; }
+        main.max-w-7xl > div > div, section.max-w-7xl .grid > div { border-radius: 18px !important; }
+        main.max-w-7xl > div > div { box-shadow: 0 5px 22px rgba(15,23,42,.035) !important; border-color: #e6ebf3 !important; }
+        section.max-w-7xl .grid { gap: 12px !important; }
+        section.max-w-7xl .grid > div { min-height: 112px; padding: 17px !important; box-shadow: 0 5px 22px rgba(15,23,42,.045) !important; }
+        section.max-w-7xl .grid > div h3 { font-size: 10px !important; letter-spacing: .075em !important; line-height: 1.4; }
+        section.max-w-7xl .grid > div p { font-size: clamp(18px, 1.8vw, 25px) !important; line-height: 1.2; overflow-wrap: anywhere; }
+        section.max-w-7xl .grid > div:first-child { background: linear-gradient(135deg,#173b83 0%,#315ed6 58%,#5269e8 100%) !important; box-shadow: 0 10px 24px rgba(49,94,214,.19) !important; }
+        section.max-w-7xl .grid > div:nth-child(2), section.max-w-7xl .grid > div:nth-child(3) { background: linear-gradient(145deg,#fff 0%,#f9fbff 100%) !important; }
+        section.max-w-7xl .grid > div:nth-child(4) { background: linear-gradient(135deg,#087f8c 0%,#079b83 100%) !important; }
+        section.max-w-7xl .grid > div:nth-child(4) > div:first-child { align-items: center; }
+        section.max-w-7xl .grid > div:nth-child(4) h3 { color: rgba(255,255,255,.8) !important; }
+        section.max-w-7xl .grid > div:nth-child(4) p { font-size: clamp(18px,1.8vw,25px) !important; }
+        /* Capital ledger */
+        body > div > section.max-w-7xl.pt-3, body > div > section.max-w-7xl.w-full.mx-auto.px-4.pt-3 { padding-top: 0 !important; }
+        section.max-w-7xl.pt-3 > div, section.max-w-7xl.w-full.mx-auto.px-4.pt-3 > div { background: #fff; border: 1px solid #e4eaf3 !important; border-radius: 18px !important; padding: 15px !important; box-shadow: 0 5px 22px rgba(15,23,42,.035) !important; }
+        #ledger-external-label, #ledger-realized-label { font-size: 10px; letter-spacing: .075em; }
+        .ledger-kpi { border: 1px solid #e7edf5 !important; border-radius: 14px !important; padding: 14px 16px !important; background: linear-gradient(145deg,#fff,#f8faff) !important; box-shadow: inset 0 1px 0 #fff; }
+        .ledger-kpi:first-child { border-left: 3px solid #64748b !important; }
+        .ledger-kpi:last-child { border-left: 3px solid #10b981 !important; }
+        .ledger-kpi .ledger-value { font-size: clamp(19px,2vw,27px) !important; letter-spacing: -.035em; margin-top: 8px !important; line-height: 1.15; }
+        .dashboard-collapse-summary { border-color: #e5eaf2 !important; background: #f8faff !important; border-radius: 13px !important; padding: 10px 12px !important; box-shadow: none !important; }
+        .collapse-title strong { font-size: 12px !important; }
+        .collapse-title small { display: none !important; }
+        .collapse-icon { background: #eaf0ff !important; border-radius: 10px !important; }
+        .collapse-action { background: #edf3ff !important; color: #315acb !important; }
+        /* Section headings: align scale and reduce visual noise. */
+        main h3 { letter-spacing: -.02em !important; }
+        main .bg-white, main .bg-gradient-to-br { border-radius: 17px !important; }
+        main .bg-white { border-color: #e5eaf2 !important; }
+        #portfolioChart { max-height: 190px; }
+        .performance-chart-wrap { height: 230px !important; }
+        #assets-table thead tr { background: #f5f7fc !important; }
+        #assets-table thead th { background: #f5f7fc !important; color: #66738a !important; border-bottom-color: #e5eaf2 !important; font-size: 9px !important; letter-spacing: .06em !important; }
+        #assets-table tbody td { border-bottom-color: #edf1f6 !important; }
+        #assets-table tbody tr:hover { background: #f5f8ff !important; }
+        .table-scroll { border-color: #e7ecf4 !important; border-radius: 12px !important; }
+        .data-table th, .data-table td { padding-left: 10px !important; padding-right: 10px !important; }
+        #market-prices-widget .market-card { background: #fff !important; border-color: #e5eaf2 !important; box-shadow: 0 3px 10px rgba(15,23,42,.025) !important; }
+        #market-prices-widget .market-price-panel { background: #f4f7fc !important; }
+        #market-prices-widget .market-price-panel.current { background: #edf3ff !important; border-color: #d9e5ff !important; }
+        #profit-alert-widget > div { border-radius: 12px !important; }
+        #transaction-entry-panel { border-color: #dfe7f5 !important; box-shadow: 0 7px 24px rgba(15,23,42,.045) !important; }
+        input, select { border-color: #dce3ed !important; }
+        input:focus, select:focus { border-color: #7295f5 !important; box-shadow: 0 0 0 3px rgba(59,130,246,.1) !important; }
+        button { border-radius: 10px; }
+        #capital-ledger-details .text-slate-500, #capital-ledger-details .text-slate-400 { color: #7b879b; }
+        @media (min-width: 1280px) {
+          /* Six headline metrics: balanced 3 columns x 2 rows on desktop. */
+          section.max-w-7xl .grid { grid-template-columns: repeat(3,minmax(0,1fr)) !important; }
+          section.max-w-7xl .grid > div { min-height: 116px; }
+        }
+        /* Stronger contrast for the six headline metrics. */
+        section.max-w-7xl .grid > div h3 { color: #52627a !important; opacity: 1 !important; }
+        section.max-w-7xl .grid > div p { color: #172033 !important; font-weight: 900 !important; text-shadow: none !important; }
+        section.max-w-7xl .grid > div:first-child h3,
+        section.max-w-7xl .grid > div:first-child p,
+        section.max-w-7xl .grid > div:nth-child(4) h3,
+        section.max-w-7xl .grid > div:nth-child(4) p { color: #ffffff !important; }
+        section.max-w-7xl .grid > div:first-child h3,
+        section.max-w-7xl .grid > div:nth-child(4) h3 { color: #f0f7ff !important; }
+        .ledger-kpi .ledger-label { color: #475569 !important; font-size: 11px !important; font-weight: 800 !important; }
+        .ledger-kpi .ledger-value { color: #172033 !important; }
+        #ledger-realized-profit { color: #047857 !important; }
+        #total-profit { color: #047857 !important; }
+        #total-invested { color: #172033 !important; }
+
+        @media (max-width: 640px) {
+          header > div { padding-top: 12px !important; padding-bottom: 12px !important; }
+          section.max-w-7xl .grid > div { min-height: 98px; padding: 13px !important; }
+          section.max-w-7xl .grid > div p { font-size: 19px !important; }
+          .ledger-kpi { padding: 12px !important; }
+          .ledger-kpi .ledger-value { font-size: 20px !important; }
+          .performance-chart-wrap { height: 205px !important; }
+        }
+
+    
+        /* Six headline cards: requested two-row color system */
+        #top-metrics-grid { display:grid !important; grid-template-columns:repeat(3,minmax(0,1fr)) !important; gap:12px !important; }
+        #top-metrics-grid > .metric-card { position:relative; display:flex; flex-direction:column; justify-content:center; gap:9px; min-height:122px; padding:20px 20px 18px !important; border:1px solid #e1e7f0 !important; border-radius:18px !important; background:#fff !important; box-shadow:0 5px 18px rgba(18,35,67,.055) !important; }
+        #top-metrics-grid > .metric-card h3 { display:flex; align-items:center; gap:8px; margin:0; padding-right:28px; color:#526078 !important; font-size:11px !important; font-weight:850 !important; line-height:1.4 !important; letter-spacing:.045em !important; text-transform:uppercase; }
+        #top-metrics-grid > .metric-card p { margin:0 !important; color:#172033 !important; font-size:clamp(19px,1.7vw,26px) !important; font-weight:900 !important; line-height:1.2 !important; letter-spacing:-.035em !important; overflow-wrap:anywhere; font-variant-numeric:tabular-nums; }
+        #top-metrics-grid > .metric-card .metric-icon { position:absolute; right:16px; top:13px; font-size:22px; opacity:.13; pointer-events:none; }
+        #top-metrics-grid > .metric-portfolio { border-top:3px solid #7754c8 !important; }
+        #top-metrics-grid > .metric-portfolio h3, #top-metrics-grid > .metric-portfolio p { color:#6842b5 !important; }
+        #top-metrics-grid > .metric-invested { border-top:3px solid #2874d0 !important; }
+        #top-metrics-grid > .metric-invested h3, #top-metrics-grid > .metric-invested p { color:#2165b8 !important; }
+        #top-metrics-grid > .metric-profit { border-top:3px solid #d7dee9 !important; }
+        #top-metrics-grid > .metric-profit h3 { color:#526078 !important; }
+        #top-metrics-grid > .metric-profit p { color:#168354 !important; }
+        #top-metrics-grid > .metric-profit p.text-rose-600, #top-metrics-grid > .metric-profit p.text-rose-700 { color:#d12d43 !important; }
+        #top-metrics-grid > .metric-external { background:linear-gradient(135deg,#087b52,#0c9a68) !important; border-color:#087b52 !important; box-shadow:0 8px 20px rgba(8,123,82,.16) !important; }
+        #top-metrics-grid > .metric-external h3, #top-metrics-grid > .metric-external p { color:#fff !important; }
+        #top-metrics-grid > .metric-external h3 { color:rgba(255,255,255,.94) !important; }
+        #top-metrics-grid > .metric-external .metric-icon { opacity:.2; }
+        #top-metrics-grid > .metric-realized { border-top:3px solid #d7dee9 !important; }
+        #top-metrics-grid > .metric-realized h3 { color:#526078 !important; }
+        #top-metrics-grid > .metric-realized p { color:#168354 !important; }
+        #top-metrics-grid > .metric-realized p.text-rose-700, #top-metrics-grid > .metric-realized p.text-rose-600 { color:#d12d43 !important; }
+        #top-metrics-grid > .metric-cash { background:linear-gradient(135deg,#087b52,#0c9a68) !important; border-color:#087b52 !important; box-shadow:0 8px 20px rgba(8,123,82,.16) !important; }
+        #top-metrics-grid > .metric-cash h3, #top-metrics-grid > .metric-cash p { color:#fff !important; }
+        #top-metrics-grid > .metric-cash h3, #top-metrics-grid > .metric-cash p { color:#ffdf55 !important; }
+        #top-metrics-grid > .metric-cash .metric-icon { opacity:.25; }
+        #top-metrics-grid > .metric-cash #quick-cash-controls { margin-top:3px; }
+        @media (min-width:641px) and (max-width:1023px) { #top-metrics-grid { grid-template-columns:repeat(2,minmax(0,1fr)) !important; } }
+        @media (max-width:640px) { #top-metrics-grid { grid-template-columns:1fr !important; gap:9px !important; } #top-metrics-grid > .metric-card { min-height:96px; padding:15px 16px !important; } #top-metrics-grid > .metric-card p { font-size:21px !important; } }
+</style>
 </head>
 <body class="bg-slate-50 font-sans leading-normal tracking-normal text-gray-800 text-sm">
 
@@ -119,42 +260,79 @@
 
         <!-- Tổng quan tài sản: các widget quan trọng luôn ở đầu trang -->
         <section class="max-w-7xl w-full mx-auto px-4 pt-4 space-y-3">
-                <!-- Thống kê tổng quan -->
-                <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-3">
-                    <div class="bg-gradient-to-br from-blue-600 to-indigo-700 p-3 sm:p-4 rounded-2xl shadow-md text-white relative overflow-hidden min-w-0">
-                        <div class="absolute right-3 top-2 text-3xl opacity-20">📊</div>
-                        <h3 class="text-blue-100 text-[11px] font-bold uppercase tracking-wider flex items-center gap-2"><span>💼</span> Tổng Giá Trị Danh Mục</h3>
-                        <p id="total-portfolio-value" class="text-lg sm:text-xl font-black mt-2 tracking-tight break-words">0 đ</p>
+                <!-- Sáu chỉ số tổng quan: bố cục 3 cột x 2 hàng -->
+                <div id="top-metrics-grid" class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-3">
+                    <div class="metric-card metric-portfolio relative overflow-hidden min-w-0">
+                        <div class="metric-icon" aria-hidden="true">📊</div>
+                        <h3><span>💼</span> Tổng giá trị danh mục</h3>
+                        <p id="total-portfolio-value">0 đ</p>
                     </div>
-                    <div class="bg-white p-3 sm:p-4 rounded-2xl shadow-sm border border-slate-100 relative overflow-hidden min-w-0">
-                        <div class="absolute right-3 top-2 text-3xl opacity-15">🏦</div>
-                        <h3 class="text-slate-400 text-[11px] font-bold uppercase tracking-wider flex items-center gap-2"><span>🧾</span> Tổng Vốn Gốc</h3>
-                        <p id="total-invested" class="text-lg sm:text-xl font-black text-slate-800 mt-2 tracking-tight break-words">0 đ</p>
+                    <div class="metric-card metric-invested relative overflow-hidden min-w-0">
+                        <div class="metric-icon" aria-hidden="true">🏦</div>
+                        <h3><span>🧾</span> Tổng vốn gốc</h3>
+                        <p id="total-invested">0 đ</p>
                     </div>
-                    <div class="bg-white p-3 sm:p-4 rounded-2xl shadow-sm border border-slate-100 relative overflow-hidden min-w-0">
-                        <div class="absolute right-3 top-2 text-3xl opacity-15">📈</div>
-                        <h3 class="text-slate-400 text-[11px] font-bold uppercase tracking-wider flex items-center gap-2"><span>💹</span> Lợi Nhuận Ước Tính</h3>
-                        <p id="total-profit" class="text-lg sm:text-xl font-black text-slate-800 mt-2 tracking-tight break-words">0 đ (0%)</p>
+                    <div class="metric-card metric-profit relative overflow-hidden min-w-0">
+                        <div class="metric-icon" aria-hidden="true">📈</div>
+                        <h3><span>💹</span> Lợi nhuận ước tính</h3>
+                        <p id="total-profit">0 đ (0%)</p>
                     </div>
-
-                <div class="bg-gradient-to-r from-teal-600 to-emerald-600 p-3 rounded-2xl shadow-sm text-white flex flex-col justify-between items-stretch gap-2 min-w-0">
-                    <div class="flex items-center gap-2">
-                        <div class="w-9 h-9 bg-white/20 rounded-xl flex items-center justify-center text-xl shadow-inner">💵</div>
-                        <div>
-                            <h3 class="text-xs uppercase font-bold tracking-wider text-teal-100 flex items-center gap-2"><span>💵</span> Ví Tiền Mặt</h3>
-                            <p id="top-cash-balance" class="text-lg sm:text-xl font-black mt-0.5">0 đ</p>
-                        </div>
+                    <div class="metric-card metric-external relative overflow-hidden min-w-0">
+                        <div class="metric-icon" aria-hidden="true">💼</div>
+                        <h3><span>↗</span> <span id="ledger-external-label">Vốn ròng</span></h3>
+                        <p id="ledger-external-capital" class="ledger-value">0</p>
                     </div>
-                    <div id="quick-cash-controls" data-requires-editor class="editor-only hidden flex flex-col gap-1.5 w-full">
-                        <input type="text" inputmode="decimal" id="quick-cash-input" placeholder="Số tiền..." aria-label="Số tiền nạp hoặc rút" class="bg-white/10 border border-white/30 px-2.5 py-1.5 rounded-lg text-xs placeholder-teal-200 text-white focus:outline-none focus:bg-white/20 w-full tabular-nums">
-                        <div class="grid grid-cols-2 gap-1.5 w-full">
-                            <button onclick="quickCashTransaction('BUY')" class="bg-white text-teal-700 hover:bg-teal-50 font-bold px-2 py-1.5 rounded-lg text-[11px] shadow transition whitespace-nowrap">＋ Nạp</button>
-                            <button onclick="quickCashTransaction('SELL')" class="bg-teal-800 text-white hover:bg-teal-900 font-bold px-2 py-1.5 rounded-lg text-[11px] shadow transition whitespace-nowrap">－ Rút</button>
+                    <div class="metric-card metric-realized relative overflow-hidden min-w-0">
+                        <div class="metric-icon" aria-hidden="true">🎯</div>
+                        <h3><span>📊</span> <span id="ledger-realized-label">Lãi/lỗ đã chốt</span></h3>
+                        <p id="ledger-realized-profit" class="ledger-value">0</p>
+                    </div>
+                    <div class="metric-card metric-cash relative overflow-hidden min-w-0">
+                        <div class="metric-icon" aria-hidden="true">💵</div>
+                        <h3><span>💵</span> Ví tiền mặt</h3>
+                        <p id="top-cash-balance">0 đ</p>
+                        <div id="quick-cash-controls" data-requires-editor class="editor-only hidden flex flex-col gap-1.5 w-full">
+                            <input type="text" inputmode="decimal" id="quick-cash-input" placeholder="Số tiền..." aria-label="Số tiền nạp hoặc rút" class="bg-white/10 border border-white/30 px-2.5 py-1.5 rounded-lg text-xs placeholder-yellow-200 text-white focus:outline-none focus:bg-white/20 w-full tabular-nums">
+                            <div class="grid grid-cols-2 gap-1.5 w-full">
+                                <button onclick="quickCashTransaction('BUY')" class="bg-white text-emerald-800 hover:bg-emerald-50 font-bold px-2 py-1.5 rounded-lg text-[11px] shadow transition whitespace-nowrap">＋ Nạp</button>
+                                <button onclick="quickCashTransaction('SELL')" class="bg-emerald-900 text-white hover:bg-emerald-950 font-bold px-2 py-1.5 rounded-lg text-[11px] shadow transition whitespace-nowrap">－ Rút</button>
+                            </div>
                         </div>
                     </div>
                 </div>
-                </div>
 
+        </section>
+
+        <!-- Sổ vốn & lợi nhuận: luôn hiển thị chỉ số tổng hợp, chỉ thu gọn dòng thời gian -->
+        <section class="max-w-7xl w-full mx-auto px-4 pt-3">
+            <div class="bg-white p-3 sm:p-4 rounded-2xl shadow-sm border border-slate-100">
+                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-3">
+                    <div>
+                        <h2 class="text-sm font-extrabold text-slate-800 flex items-center gap-2"><span class="inline-flex w-8 h-8 items-center justify-center rounded-xl bg-indigo-50">🧾</span> Sổ Vốn & Lợi Nhuận Theo Thời Điểm</h2>
+                    </div>
+                </div>
+                <details class="dashboard-collapse" id="capital-ledger-details">
+                    <summary class="dashboard-collapse-summary"><span class="collapse-title"><span class="collapse-icon">🗓️</span><span><strong>Dòng thời gian vốn & lãi</strong><small>Xem các sự kiện và số liệu lũy kế theo ngày</small></span></span><span class="collapse-action">＋ Mở bảng</span></summary>
+                    <div class="mt-2 border border-slate-100 rounded-xl p-3">
+                        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-3">
+                            <p class="text-[10px] text-slate-500">Dữ liệu lịch sử được dựng lại từ giao dịch đã lưu.</p>
+                            <div class="flex items-center gap-2">
+                                <label for="ledger-period" class="text-[10px] font-bold text-slate-500">Khoảng thời gian</label>
+                                <select id="ledger-period" onchange="renderCapitalLedger()" class="border border-slate-200 rounded-lg px-2 py-1.5 text-[11px] bg-slate-50">
+                                    <option value="all">Toàn bộ</option><option value="year">Năm nay</option><option value="month">Tháng này</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="table-scroll rounded-xl border border-slate-100">
+                            <table class="ledger-table text-left text-[10px] sm:text-[11px]">
+                                <thead><tr><th>Ngày</th><th>Sự kiện</th><th>Tác động vốn ròng</th><th>Vốn ròng lũy kế</th><th>Lãi/lỗ thực hiện kỳ này</th><th>Lãi/lỗ thực hiện lũy kế</th></tr></thead>
+                                <tbody id="capital-ledger-body"><tr><td colspan="6" class="text-center text-slate-400 py-5">Đang tổng hợp dữ liệu…</td></tr></tbody>
+                            </table>
+                        </div>
+                        <p class="text-[10px] leading-relaxed text-slate-400 mt-2">Lưu ý: giao dịch cũ chưa có thông tin “tái tục” sẽ được hiểu mặc định là vốn mới. Lãi/lỗ bán vàng, chứng khoán và chứng chỉ quỹ được tính theo giá vốn bình quân trước thời điểm bán; lãi tiết kiệm đáo hạn vẫn được ước tính theo lãi suất và kỳ hạn đã nhập. Giá thị trường lịch sử chưa được lưu trong dữ liệu cũ nên bảng này tái dựng dòng vốn/lãi, không khôi phục được giá thị trường chính xác của từng ngày trong quá khứ.</p>
+                    </div>
+                </details>
+            </div>
         </section>
 
         <!-- Main Content -->
@@ -256,7 +434,6 @@
                 <div class="bg-white p-3 sm:p-4 rounded-2xl shadow-sm border border-slate-100 min-w-0">
                     <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
                         <h3 class="text-sm font-extrabold text-slate-800 flex items-center gap-2"><span class="inline-flex w-8 h-8 items-center justify-center rounded-xl bg-blue-50 text-base">🧮</span> Tổng Hợp Danh Mục & ROI</h3>
-                        <span class="inline-flex items-center gap-1.5 rounded-full bg-slate-50 border border-slate-200 px-2.5 py-1 text-[10px] font-bold text-slate-500"><span class="w-1.5 h-1.5 rounded-full bg-blue-500"></span> Hiệu quả đầu tư</span>
                     </div>
                     <div class="table-scroll rounded-xl border border-slate-100">
                     <table id="assets-table" class="data-table text-left text-[10px] sm:text-[11px]">
@@ -276,9 +453,10 @@
                     </table>
                     </div>
                 </div>
-                <!-- Lịch sử chi tiết từng lệnh -->
-                <div class="bg-white p-3 sm:p-4 rounded-2xl shadow-sm border border-slate-100 min-w-0">
-                    <h3 class="text-sm font-extrabold text-slate-800 mb-3 flex items-center gap-2"><span>📜</span> Lịch Sử Giao Dịch</h3>
+                <!-- Lịch sử chi tiết từng lệnh: thu gọn mặc định -->
+                <details class="dashboard-collapse" id="transaction-history-details">
+                    <summary class="dashboard-collapse-summary"><span class="collapse-title"><span class="collapse-icon">📜</span><span><strong>Lịch Sử Giao Dịch</strong><small>Xem, sắp xếp và quản lý các giao dịch đã ghi nhận</small></span></span><span class="collapse-action">＋ Mở bảng</span></summary>
+                <div class="bg-white p-3 sm:p-4 rounded-2xl shadow-sm border border-slate-100 min-w-0 mt-2">
                     <div class="table-scroll rounded-xl border border-slate-100">
                     <table id="transactions-table" class="data-table text-left text-[10px] sm:text-[11px]">
                         <thead>
@@ -298,6 +476,7 @@
                     </table>
                     </div>
                 </div>
+                </details>
             </div>
         </main>
     </div>
@@ -572,7 +751,13 @@
 
             assetMap['TIEN_MAT'] = { qty: 0, totalCost: 0, boughtQty: 0, soldQty: 0, channel: 'TIENMAT', startDate: new Date().toISOString().split('T')[0] };
 
-            transactions.forEach((tx, idx) => {
+            // Tính toán luôn theo ngày giao dịch, độc lập với cách sắp xếp bảng lịch sử.
+            // Nếu cùng ngày, giữ thứ tự nhập ban đầu để kết quả ổn định.
+            const chronologicalTransactions = transactions
+                .map((tx, originalIndex) => ({ tx, originalIndex }))
+                .sort((a, b) => String(a.tx.date || '').localeCompare(String(b.tx.date || '')) || a.originalIndex - b.originalIndex);
+
+            chronologicalTransactions.forEach(({ tx, originalIndex: idx }) => {
                 // Ví tiền mặt là sổ dòng tiền: capital mới là số tiền giao dịch.
                 // Một số dữ liệu cũ có thể lưu qty và capital lệch nhau; ưu tiên capital
                 // để tránh ví chỉ bị trừ một phần số tiền rút.
@@ -602,6 +787,13 @@
                 }
 
                 if (tx.type === 'BUY' && (tx.channel === 'CK' || tx.channel === 'CCQ')) {
+                    assetMap['TIEN_MAT'].qty -= Number(tx.capital) || 0;
+                    assetMap['TIEN_MAT'].totalCost -= Number(tx.capital) || 0;
+                }
+
+                // Khi tái tục tiết kiệm bằng tiền đáo hạn đã nằm trong ví,
+                // chuyển số tiền đó từ ví sang khoản tiết kiệm mới để tránh tính trùng tài sản.
+                if (tx.type === 'BUY' && tx.channel === 'TIETKIEM' && ['ROLLOVER', 'CASH'].includes(tx.fundingSource)) {
                     assetMap['TIEN_MAT'].qty -= Number(tx.capital) || 0;
                     assetMap['TIEN_MAT'].totalCost -= Number(tx.capital) || 0;
                 }
@@ -811,6 +1003,7 @@
                         <label class="block text-[11px] font-bold text-gray-500 mb-1">🗓️ Kỳ hạn (tháng)</label>
                         <input type="text" inputmode="decimal" id="${prefix}-term" placeholder="VD: 12" class="w-full border border-slate-200 p-2 rounded-xl text-xs">
                     </div>
+                    ${type === 'BUY' ? `<div class="md:col-span-3"><label class="block text-[11px] font-bold text-gray-500 mb-1">🔄 Nguồn tiền gửi</label><select id="${prefix}-funding-source" class="w-full border border-slate-200 p-2 rounded-xl text-xs bg-white"><option value="NEW">Vốn mới từ bên ngoài</option><option value="CASH">Chuyển từ ví tiền mặt (không tính vốn mới)</option><option value="ROLLOVER">Tái tục gốc + lãi (không tính vốn mới)</option></select><p class="text-[10px] text-slate-400 mt-1">Chọn tái tục khi tiền đến từ khoản tiết kiệm đáo hạn đã ghi nhận trước đó.</p></div>` : ''}
                 `;
             } else if (channel === 'TIENMAT') {
                 let maxHint = "";
@@ -924,6 +1117,7 @@
                 tx.capital = parseFloat(cleanNumericValue(document.getElementById('tx-capital').value));
                 tx.rate = parseFloat(cleanNumericValue(document.getElementById('tx-rate').value));
                 tx.term = parseInt(document.getElementById('tx-term').value);
+                tx.fundingSource = document.getElementById('tx-funding-source')?.value || 'NEW';
                 if (isNaN(tx.capital) || isNaN(tx.rate) || isNaN(tx.term) || tx.capital <= 0) {
                     alert("Vui lòng nhập thông tin tiết kiệm hợp lệ!");
                     return;
@@ -1068,6 +1262,7 @@
                 document.getElementById('edit-capital').value = formatNumericValue(tx.capital);
                 document.getElementById('edit-rate').value = tx.rate;
                 document.getElementById('edit-term').value = tx.term;
+                if (document.getElementById('edit-funding-source')) document.getElementById('edit-funding-source').value = tx.fundingSource || 'NEW';
             } else if (tx.channel === 'TIENMAT') {
                 document.getElementById('edit-capital').value = formatNumericValue(tx.capital);
                 if (tx.type === 'SELL' && document.getElementById('edit-note')) {
@@ -1116,6 +1311,7 @@
                 tx.capital = parseFloat(cleanNumericValue(document.getElementById('edit-capital').value));
                 tx.rate = parseFloat(cleanNumericValue(document.getElementById('edit-rate').value));
                 tx.term = parseInt(document.getElementById('edit-term').value);
+                tx.fundingSource = document.getElementById('edit-funding-source')?.value || 'NEW';
                 tx.qty = 1;
                 tx.price = tx.capital;
                 const interest = tx.capital * (tx.rate / 100) * (tx.term / 12);
@@ -1297,12 +1493,12 @@
             sortedTransactions.sort((a, b) => {
                 let av, bv;
                 switch (transactionSortKey) {
-                    case 'date': av = new Date(a.date || 0).getTime() || 0; bv = new Date(b.date || 0).getTime() || 0; break;
+                    case 'date': av = String(a.date || ''); bv = String(b.date || ''); break;
                     case 'type': av = a.type || ''; bv = b.type || ''; break;
                     case 'channel': av = channelLabels[a.channel] || a.channel || ''; bv = channelLabels[b.channel] || b.channel || ''; break;
                     case 'symbol': av = (a.symbol || '').toString().toLocaleUpperCase('vi'); bv = (b.symbol || '').toString().toLocaleUpperCase('vi'); break;
                     case 'capital': av = Number(a.capital) || 0; bv = Number(b.capital) || 0; break;
-                    default: av = new Date(a.date || 0).getTime() || 0; bv = new Date(b.date || 0).getTime() || 0;
+                    default: av = String(a.date || ''); bv = String(b.date || '');
                 }
                 let cmp = typeof av === 'number' && typeof bv === 'number' ? av - bv : String(av).localeCompare(String(bv), 'vi', { numeric: true, sensitivity: 'base' });
                 return transactionSortDirection === 'asc' ? cmp : -cmp;
@@ -1511,8 +1707,124 @@
             document.getElementById('chart-center-total').innerText = formatCurrencyCompact(chartTotalInvested);
             renderChart(chartLabels, chartValues, bgColors, chartTotalInvested, chartKeys);
             renderPerformanceChart(chartLabels, chartKeys.map(k => channelProfits[k]), chartKeys.map(k => channelInvested[k] > 0 ? (channelProfits[k] / channelInvested[k]) * 100 : 0), bgColors);
+            renderCapitalLedger({ assetMap, calculatedAssets, totalProfitVal });
             onTxTypeChange();
             applyRoleUI();
+        }
+
+        function renderCapitalLedger(context = null) {
+            const body = document.getElementById('capital-ledger-body');
+            if (!body) return;
+            const today = new Date();
+            const period = document.getElementById('ledger-period')?.value || 'all';
+            const thisYear = String(today.getFullYear());
+            const thisMonth = today.getFullYear() + '-' + String(today.getMonth() + 1).padStart(2, '0');
+
+            // Tính giá vốn bình quân theo trình tự ngày, không phụ thuộc thứ tự hiển thị lịch sử.
+            const chronologicalTransactions = transactions
+                .map((tx, originalIndex) => ({ tx, originalIndex }))
+                .sort((a, b) => String(a.tx.date || '').localeCompare(String(b.tx.date || '')) || a.originalIndex - b.originalIndex);
+            const positions = {};
+            const realizedByTransaction = {};
+            chronologicalTransactions.forEach(({ tx, originalIndex }) => {
+                if (!['VANG', 'CK', 'CCQ'].includes(tx.channel)) return;
+                const symbolKey = `${tx.channel}:${tx.symbol || ''}`;
+                if (!positions[symbolKey]) positions[symbolKey] = { qty: 0, totalCost: 0 };
+                const position = positions[symbolKey];
+                const qty = Math.max(0, Number(tx.qty) || 0);
+                const amount = Number(tx.capital) || 0;
+                if (tx.type === 'BUY') {
+                    position.qty += qty;
+                    position.totalCost += amount;
+                    realizedByTransaction[originalIndex] = 0;
+                } else {
+                    let realized = 0;
+                    if (qty > 0 && position.qty > 0) {
+                        const soldQty = Math.min(qty, position.qty);
+                        const avgCost = position.totalCost / position.qty;
+                        realized = amount - soldQty * avgCost;
+                        position.qty -= soldQty;
+                        position.totalCost -= soldQty * avgCost;
+                        if (position.qty <= 1e-10) { position.qty = 0; position.totalCost = 0; }
+                    }
+                    realizedByTransaction[originalIndex] = realized;
+                }
+            });
+
+            const events = [];
+            transactions.forEach((tx, idx) => {
+                const amount = Number(tx.capital) || 0;
+                let netCapitalImpact = 0;
+                let label = '';
+                if (tx.channel === 'TIETKIEM' && tx.type === 'BUY') {
+                    netCapitalImpact = tx.fundingSource && tx.fundingSource !== 'NEW' ? 0 : amount;
+                    label = tx.fundingSource === 'ROLLOVER' ? `Tái tục tiết kiệm · ${tx.symbol}` : (tx.fundingSource === 'CASH' ? `Chuyển ví sang tiết kiệm · ${tx.symbol}` : `Gửi tiết kiệm mới · ${tx.symbol}`);
+                } else if (tx.channel === 'TIENMAT') {
+                    netCapitalImpact = tx.type === 'BUY' ? amount : -amount;
+                    label = tx.type === 'BUY' ? 'Nạp vốn vào ví' : `Rút tiền khỏi danh mục${tx.note ? ' · ' + tx.note : ''}`;
+                } else if (tx.channel === 'VANG' && tx.type === 'BUY') {
+                    netCapitalImpact = amount; label = `Mua vàng · ${tx.symbol}`;
+                } else if (['CK', 'CCQ'].includes(tx.channel)) {
+                    label = `${tx.type === 'BUY' ? 'Mua' : 'Bán'} ${tx.channel} · ${tx.symbol}`;
+                } else {
+                    label = `${tx.type === 'BUY' ? 'Mua' : 'Bán'} · ${tx.symbol || tx.channel}`;
+                }
+                const saleProfit = tx.type === 'SELL' && ['VANG', 'CK', 'CCQ'].includes(tx.channel)
+                    ? (Number(realizedByTransaction[idx]) || 0) : 0;
+                events.push({ date: tx.date || '1970-01-01', label, impact: netCapitalImpact, realizedProfit: saleProfit, order: idx * 2 + 1 });
+
+                if (tx.channel === 'TIETKIEM' && tx.type === 'BUY' && tx.date && Number(tx.term) > 0) {
+                    const start = new Date(tx.date + 'T12:00:00');
+                    if (!Number.isNaN(start.getTime())) {
+                        const maturity = new Date(start);
+                        maturity.setMonth(maturity.getMonth() + parseInt(tx.term, 10));
+                        const maturityDate = `${maturity.getFullYear()}-${String(maturity.getMonth()+1).padStart(2,'0')}-${String(maturity.getDate()).padStart(2,'0')}`;
+                        const todayISO = `${today.getFullYear()}-${String(today.getMonth()+1).padStart(2,'0')}-${String(today.getDate()).padStart(2,'0')}`;
+                        if (maturityDate <= todayISO) {
+                            const interest = amount * ((Number(tx.rate) || 0) / 100) * ((Number(tx.term) || 0) / 12);
+                            events.push({ date: maturityDate, label: `Lãi tiết kiệm đáo hạn · ${tx.symbol}`, impact: 0, realizedProfit: interest, order: idx * 2 + 2 });
+                        }
+                    }
+                }
+            });
+
+            events.sort((a, b) => String(a.date || '').localeCompare(String(b.date || '')) || a.order - b.order);
+            // Bộ lọc áp dụng đồng nhất cho KPI và bảng. Lũy kế trong bảng được tính lại
+            // từ đầu khoảng đang chọn, tránh KPI/bảng không đồng nhất khi lọc năm hoặc tháng.
+            const filteredAscending = events.filter(ev => {
+                if (period === 'year') return String(ev.date).slice(0, 4) === thisYear;
+                if (period === 'month') return String(ev.date).slice(0, 7) === thisMonth;
+                return true;
+            });
+            let cumulativeCapital = 0, cumulativeRealizedProfit = 0;
+            const filteredTimeline = filteredAscending.map(ev => {
+                cumulativeCapital += Number(ev.impact) || 0;
+                cumulativeRealizedProfit += Number(ev.realizedProfit) || 0;
+                return { ...ev, cumulativeCapital, cumulativeRealizedProfit };
+            });
+
+            const externalEl = document.getElementById('ledger-external-capital');
+            const realizedEl = document.getElementById('ledger-realized-profit');
+            const externalLabel = document.getElementById('ledger-external-label');
+            const realizedLabel = document.getElementById('ledger-realized-label');
+            const periodSuffix = period === 'year' ? `năm ${thisYear}` : period === 'month' ? `tháng ${thisMonth}` : 'toàn bộ thời gian';
+            if (externalLabel) externalLabel.textContent = 'Vốn ròng';
+            if (realizedLabel) realizedLabel.textContent = 'Lãi/lỗ đã chốt';
+            if (externalEl) {
+                externalEl.textContent = `${cumulativeCapital < 0 ? '-' : ''}${formatCurrency(Math.abs(cumulativeCapital))}`;
+                externalEl.className = `ledger-value ${cumulativeCapital < 0 ? 'text-rose-700' : 'text-slate-800'}`;
+            }
+            if (realizedEl) {
+                realizedEl.textContent = `${cumulativeRealizedProfit < 0 ? '-' : ''}${formatCurrency(Math.abs(cumulativeRealizedProfit))}`;
+                realizedEl.className = `ledger-value ${cumulativeRealizedProfit >= 0 ? 'text-emerald-700' : 'text-rose-700'}`;
+            }
+
+            const filtered = filteredTimeline.slice().reverse();
+            if (!filtered.length) {
+                body.innerHTML = '<tr><td colspan="6" class="text-center text-slate-400 py-5">Chưa có sự kiện trong khoảng thời gian đã chọn.</td></tr>';
+                return;
+            }
+            body.innerHTML = filtered.map(ev => `<tr class="hover:bg-slate-50"><td class="font-semibold text-slate-600">${formatDateDDMMYY(ev.date)}</td><td class="text-slate-700">${escapeHtml(ev.label)}</td><td class="font-bold ${ev.impact > 0 ? 'text-blue-700' : ev.impact < 0 ? 'text-rose-600' : 'text-slate-400'}">${ev.impact > 0 ? '+' : ''}${formatCurrency(ev.impact)}</td><td class="font-bold text-slate-800">${formatCurrency(ev.cumulativeCapital)}</td><td class="font-bold ${ev.realizedProfit > 0 ? 'text-emerald-700' : ev.realizedProfit < 0 ? 'text-rose-600' : 'text-slate-400'}">${ev.realizedProfit > 0 ? '+' : ev.realizedProfit < 0 ? '-' : ''}${formatCurrency(Math.abs(ev.realizedProfit))}</td><td class="font-bold ${ev.cumulativeRealizedProfit >= 0 ? 'text-emerald-700' : 'text-rose-700'}">${ev.cumulativeRealizedProfit < 0 ? '-' : ''}${formatCurrency(Math.abs(ev.cumulativeRealizedProfit))}</td></tr>`).join('');
         }
 
         function updateSingleMarketPrice(symbol) {
