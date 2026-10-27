@@ -573,14 +573,37 @@
             assetMap['TIEN_MAT'] = { qty: 0, totalCost: 0, boughtQty: 0, soldQty: 0, channel: 'TIENMAT', startDate: new Date().toISOString().split('T')[0] };
 
             transactions.forEach((tx, idx) => {
-                if (tx.type === 'SELL' && tx.channel !== 'TIENMAT') {
-                    assetMap['TIEN_MAT'].qty += tx.capital;
-                    assetMap['TIEN_MAT'].totalCost += tx.capital;
+                // Ví tiền mặt là sổ dòng tiền: capital mới là số tiền giao dịch.
+                // Một số dữ liệu cũ có thể lưu qty và capital lệch nhau; ưu tiên capital
+                // để tránh ví chỉ bị trừ một phần số tiền rút.
+                if (tx.channel === 'TIENMAT') {
+                    const storedCapital = Number(tx.capital);
+                    const storedQty = Number(tx.qty);
+                    const cashAmount = Number.isFinite(storedCapital) && storedCapital > 0
+                        ? storedCapital
+                        : (Number.isFinite(storedQty) && storedQty > 0 ? storedQty : 0);
+
+                    if (tx.type === 'BUY') {
+                        assetMap['TIEN_MAT'].qty += cashAmount;
+                        assetMap['TIEN_MAT'].totalCost += cashAmount;
+                        assetMap['TIEN_MAT'].boughtQty += cashAmount;
+                    } else if (tx.type === 'SELL') {
+                        assetMap['TIEN_MAT'].qty -= cashAmount;
+                        assetMap['TIEN_MAT'].totalCost -= cashAmount;
+                        assetMap['TIEN_MAT'].soldQty += cashAmount;
+                    }
+                    return;
+                }
+
+                // Bán tài sản tạo tiền về ví; mua CK/CCQ sử dụng tiền từ ví.
+                if (tx.type === 'SELL') {
+                    assetMap['TIEN_MAT'].qty += Number(tx.capital) || 0;
+                    assetMap['TIEN_MAT'].totalCost += Number(tx.capital) || 0;
                 }
 
                 if (tx.type === 'BUY' && (tx.channel === 'CK' || tx.channel === 'CCQ')) {
-                    assetMap['TIEN_MAT'].qty -= tx.capital;
-                    assetMap['TIEN_MAT'].totalCost -= tx.capital;
+                    assetMap['TIEN_MAT'].qty -= Number(tx.capital) || 0;
+                    assetMap['TIEN_MAT'].totalCost -= Number(tx.capital) || 0;
                 }
 
                 let key = tx.symbol;
@@ -598,29 +621,21 @@
                 assetMap[key].startDate = tx.date;
 
                 if (tx.type === 'BUY') {
-                    assetMap[key].qty += tx.qty;
-                    assetMap[key].boughtQty += tx.qty;
-                    assetMap[key].totalCost += tx.capital;
+                    assetMap[key].qty += Number(tx.qty) || 0;
+                    assetMap[key].boughtQty += Number(tx.qty) || 0;
+                    assetMap[key].totalCost += Number(tx.capital) || 0;
                     if (new Date(tx.date) < new Date(assetMap[key].firstBuyDate)) {
                         assetMap[key].firstBuyDate = tx.date;
                     }
                 } else {
-                    assetMap[key].soldQty += tx.qty;
-                    if (tx.channel === 'TIENMAT') {
-                        // Ví tiền mặt là sổ dòng tiền: không ép số dư tạm thời về 0.
-                        // Các khoản thu (ví dụ tiền tiết kiệm đáo hạn) có thể được cộng
-                        // ở bước sau; ép về 0 tại đây sẽ làm mất dấu tiền rút trước đó.
+                    assetMap[key].soldQty += Number(tx.qty) || 0;
+                    if (assetMap[key].qty > 0) {
+                        const avgCost = assetMap[key].totalCost / assetMap[key].qty;
                         assetMap[key].qty -= Number(tx.qty) || 0;
-                        assetMap[key].totalCost -= Number(tx.capital) || 0;
-                    } else {
-                        if (assetMap[key].qty > 0) {
-                            const avgCost = assetMap[key].totalCost / assetMap[key].qty;
-                            assetMap[key].qty -= tx.qty;
-                            assetMap[key].totalCost -= tx.qty * avgCost;
-                            if (assetMap[key].qty <= 0) {
-                                assetMap[key].qty = 0;
-                                assetMap[key].totalCost = 0;
-                            }
+                        assetMap[key].totalCost -= (Number(tx.qty) || 0) * avgCost;
+                        if (assetMap[key].qty <= 0) {
+                            assetMap[key].qty = 0;
+                            assetMap[key].totalCost = 0;
                         }
                     }
                 }
