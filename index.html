@@ -220,6 +220,12 @@
         #top-metrics-grid > .metric-cash h3, #top-metrics-grid > .metric-cash p { color:#ffdf55 !important; }
         #top-metrics-grid > .metric-cash .metric-icon { opacity:.25; }
         #top-metrics-grid > .metric-cash #quick-cash-controls { margin-top:3px; }
+        #top-metrics-grid > .metric-cash .cash-metrics-grid { display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:10px; width:100%; align-items:stretch; }
+        #top-metrics-grid > .metric-cash .cash-metric-item { min-width:0; display:flex; flex-direction:column; gap:5px; }
+        #top-metrics-grid > .metric-cash .cash-deposited-item { border-left:1px solid rgba(255,255,255,.32); padding-left:10px; }
+        #top-metrics-grid > .metric-cash .cash-metric-label { color:#ffed9a; font-size:10px; font-weight:850; line-height:1.25; letter-spacing:.035em; text-transform:uppercase; }
+        #top-metrics-grid > .metric-cash .cash-metric-item p { color:#ffdf55 !important; font-size:clamp(15px,1.35vw,21px) !important; font-weight:950 !important; line-height:1.2 !important; letter-spacing:-.025em !important; overflow-wrap:anywhere; }
+        @media (max-width:640px) { #top-metrics-grid > .metric-cash .cash-metrics-grid { gap:8px; } #top-metrics-grid > .metric-cash .cash-metric-item p { font-size:18px !important; } #top-metrics-grid > .metric-cash .cash-deposited-item { padding-left:8px; } }
         @media (min-width:641px) and (max-width:1023px) { #top-metrics-grid { grid-template-columns:repeat(2,minmax(0,1fr)) !important; } }
         @media (max-width:640px) { #top-metrics-grid { grid-template-columns:1fr !important; gap:9px !important; } #top-metrics-grid > .metric-card { min-height:96px; padding:15px 16px !important; } #top-metrics-grid > .metric-card p { font-size:21px !important; } }
 </style>
@@ -290,7 +296,16 @@
                     <div class="metric-card metric-cash relative overflow-hidden min-w-0">
                         <div class="metric-icon" aria-hidden="true">💵</div>
                         <h3><span>💵</span> Ví tiền mặt</h3>
-                        <p id="top-cash-balance">0 đ</p>
+                        <div class="cash-metrics-grid">
+                            <div class="cash-metric-item">
+                                <span class="cash-metric-label">Số dư hiện tại</span>
+                                <p id="top-cash-balance">0 đ</p>
+                            </div>
+                            <div class="cash-metric-item cash-deposited-item">
+                                <span class="cash-metric-label">Vốn đã nạp</span>
+                                <p id="top-cash-deposited">0 đ</p>
+                            </div>
+                        </div>
                         <div id="quick-cash-controls" data-requires-editor class="editor-only hidden flex flex-col gap-1.5 w-full">
                             <input type="text" inputmode="decimal" id="quick-cash-input" placeholder="Số tiền..." aria-label="Số tiền nạp hoặc rút" class="bg-white/10 border border-white/30 px-2.5 py-1.5 rounded-lg text-xs placeholder-yellow-200 text-white focus:outline-none focus:bg-white/20 w-full tabular-nums">
                             <div class="grid grid-cols-2 gap-1.5 w-full">
@@ -1421,9 +1436,22 @@
                 }
             });
 
-            // Số dư tiền mặt
+            // Số dư tiền mặt hiện tại và tổng vốn đã nạp trực tiếp vào ví.
+            // Chỉ cộng các giao dịch NẠP tiền mặt (TIENMAT/BUY); không tính tiền bán tài sản,
+            // tiền đáo hạn tiết kiệm hoặc chuyển tiền nội bộ để tránh nhầm với vốn nạp mới.
             const cashBalance = assetMap['TIEN_MAT'] ? assetMap['TIEN_MAT'].qty : 0;
+            const cashDeposited = transactions.reduce((total, tx) => {
+                if (tx.channel !== 'TIENMAT' || tx.type !== 'BUY') return total;
+                const capital = Number(tx.capital);
+                const qty = Number(tx.qty);
+                const amount = Number.isFinite(capital) && capital > 0
+                    ? capital
+                    : (Number.isFinite(qty) && qty > 0 ? qty : 0);
+                return total + amount;
+            }, 0);
             document.getElementById('top-cash-balance').innerText = formatCurrencyCompact(cashBalance);
+            const depositedEl = document.getElementById('top-cash-deposited');
+            if (depositedEl) depositedEl.innerText = formatCurrencyCompact(cashDeposited);
 
             // Bảng giá thị trường thủ công theo các mã đã nhập
             const marketSymbols = Object.keys(assetMap).filter(key => {
