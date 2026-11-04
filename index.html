@@ -1436,18 +1436,19 @@
                 }
             });
 
-            // Số dư tiền mặt hiện tại và tổng vốn đã nạp trực tiếp vào ví.
-            // Chỉ cộng các giao dịch NẠP tiền mặt (TIENMAT/BUY); không tính tiền bán tài sản,
-            // tiền đáo hạn tiết kiệm hoặc chuyển tiền nội bộ để tránh nhầm với vốn nạp mới.
+            // Số dư tiền mặt hiện tại và vốn nạp ròng còn lại trong ví.
+            // Nạp trực tiếp (TIENMAT/BUY) làm tăng vốn; rút trực tiếp (TIENMAT/SELL)
+            // làm giảm vốn. Mua/bán CK, vàng, CCQ hoặc chuyển sang tiết kiệm chỉ là
+            // luân chuyển nội bộ giữa các tài sản nên không làm thay đổi vốn đã nạp.
             const cashBalance = assetMap['TIEN_MAT'] ? assetMap['TIEN_MAT'].qty : 0;
             const cashDeposited = transactions.reduce((total, tx) => {
-                if (tx.channel !== 'TIENMAT' || tx.type !== 'BUY') return total;
+                if (tx.channel !== 'TIENMAT' || !['BUY', 'SELL'].includes(tx.type)) return total;
                 const capital = Number(tx.capital);
                 const qty = Number(tx.qty);
                 const amount = Number.isFinite(capital) && capital > 0
                     ? capital
                     : (Number.isFinite(qty) && qty > 0 ? qty : 0);
-                return total + amount;
+                return total + (tx.type === 'BUY' ? amount : -amount);
             }, 0);
             document.getElementById('top-cash-balance').innerText = formatCurrencyCompact(cashBalance);
             const depositedEl = document.getElementById('top-cash-deposited');
