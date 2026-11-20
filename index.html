@@ -467,6 +467,349 @@
   #wallet-panel #top-metrics-grid > .metric-card { padding:8px 9px !important; }
 }
 
+
+        /* Portfolio allocation widget: current market value basis */
+        #portfolio-allocation-widget .allocation-layout { display:grid; grid-template-columns:minmax(170px,210px) minmax(0,1fr); align-items:center; gap:18px; }
+        #portfolio-allocation-widget .allocation-donut { width:176px; height:176px; max-width:100%; aspect-ratio:1; border-radius:50%; position:relative; display:grid; place-items:center; margin:0 auto; background:#e2e8f0; }
+        #portfolio-allocation-widget .allocation-donut::before { content:""; position:absolute; inset:19px; border-radius:50%; background:#fff; box-shadow:inset 0 0 0 1px #f1f5f9; }
+        #portfolio-allocation-widget .allocation-donut-center { position:relative; z-index:1; text-align:center; padding:0 8px; }
+        #portfolio-allocation-widget .allocation-donut-total { color:#172033; font-size:clamp(13px,1.5vw,17px); font-weight:950; line-height:1.2; overflow-wrap:anywhere; }
+        #portfolio-allocation-widget .allocation-donut-caption { color:#94a3b8; font-size:9px; font-weight:800; letter-spacing:.04em; margin-top:4px; }
+        #portfolio-allocation-widget .allocation-legend { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:8px; }
+        #portfolio-allocation-widget .allocation-legend-item { min-width:0; border:1px solid #e8edf5; border-radius:11px; padding:8px 10px; background:linear-gradient(135deg,#fff,#f8fafc); }
+        #portfolio-allocation-widget .allocation-legend-heading { display:flex; align-items:center; gap:7px; min-width:0; color:#475569; font-size:10px; font-weight:850; }
+        #portfolio-allocation-widget .allocation-dot { width:9px; height:9px; flex:0 0 9px; border-radius:3px; }
+        #portfolio-allocation-widget .allocation-legend-name { overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+        #portfolio-allocation-widget .allocation-legend-value { margin-top:5px; color:#172033; font-size:12px; font-weight:900; overflow-wrap:anywhere; }
+        #portfolio-allocation-widget .allocation-legend-percent { color:#64748b; font-size:10px; font-weight:850; margin-top:2px; }
+        @media (max-width:640px) {
+          #portfolio-allocation-widget .allocation-layout { grid-template-columns:1fr; gap:12px; }
+          #portfolio-allocation-widget .allocation-donut { width:154px; height:154px; }
+          #portfolio-allocation-widget .allocation-legend { grid-template-columns:repeat(2,minmax(0,1fr)); gap:6px; }
+          #portfolio-allocation-widget .allocation-legend-item { padding:7px 8px; }
+        }
+
+/* === V12: three compact top widgets on one desktop row === */
+#entry-wallet-row {
+  display:grid !important;
+  grid-template-columns:minmax(0,5fr) minmax(255px,3fr) minmax(320px,4fr) !important;
+  gap:12px !important;
+  align-items:stretch !important;
+}
+#entry-wallet-row > #transaction-entry-panel,
+#entry-wallet-row > #wallet-panel,
+#entry-wallet-row > #portfolio-allocation-section {
+  min-width:0 !important;
+  width:auto !important;
+  height:100% !important;
+  margin:0 !important;
+  border:1px solid #e5eaf2 !important;
+  border-radius:17px !important;
+  box-shadow:0 5px 17px rgba(18,35,67,.055) !important;
+}
+#transaction-entry-panel { padding:15px !important; }
+#transaction-entry-panel h3 { margin-bottom:12px !important; font-size:12px !important; }
+#transaction-entry-panel h3 > span,
+#portfolio-allocation-section .flex.items-center.gap-2\.5 > span {
+  width:30px !important; height:30px !important; border-radius:10px !important;
+}
+#transaction-entry-panel label { font-size:10px !important; margin-bottom:5px !important; }
+#transaction-entry-panel select,
+#transaction-entry-panel input { padding:8px 9px !important; font-size:11px !important; border-radius:9px !important; }
+#transaction-entry-panel .grid { gap:8px !important; }
+#transaction-entry-panel button { padding:10px !important; font-size:12px !important; border-radius:10px !important; }
+#wallet-panel {
+  padding:14px !important;
+  display:flex !important;
+  flex-direction:column !important;
+  justify-content:flex-start !important;
+  background:linear-gradient(145deg,#087b62 0%,#0b9876 100%) !important;
+}
+#wallet-panel h3 { margin:0 0 9px !important; font-size:12px !important; }
+#wallet-panel .cash-metrics-grid { display:grid !important; grid-template-columns:minmax(0,1fr) !important; gap:0 !important; margin:0 !important; }
+#wallet-panel .cash-metric-item { min-height:72px !important; padding:10px 12px !important; border-radius:12px !important; }
+#wallet-panel .cash-metric-label { font-size:9px !important; }
+#wallet-panel .cash-metric-item p { margin-top:5px !important; font-size:clamp(21px,1.8vw,28px) !important; line-height:1.15 !important; }
+.wallet-overview-divider { margin:10px 0 9px !important; }
+.wallet-overview-heading { margin-bottom:7px !important; }
+.wallet-overview-heading > span { width:23px !important; height:23px !important; font-size:12px !important; }
+.wallet-overview-heading h4 { font-size:9px !important; }
+#wallet-panel #top-metrics-grid {
+  display:grid !important;
+  grid-template-columns:repeat(2,minmax(0,1fr)) !important;
+  gap:6px !important;
+  margin:0 !important;
+}
+#wallet-panel #top-metrics-grid > .metric-card {
+  min-width:0 !important;
+  min-height:65px !important;
+  height:auto !important;
+  padding:8px 9px !important;
+  display:flex !important;
+  flex-direction:column !important;
+  justify-content:center !important;
+  align-items:flex-start !important;
+  gap:4px !important;
+  border-radius:10px !important;
+  box-shadow:none !important;
+}
+#wallet-panel #top-metrics-grid > .metric-card h3 {
+  font-size:8px !important;
+  line-height:1.2 !important;
+  white-space:normal !important;
+  margin:0 !important;
+  padding:0 !important;
+}
+#wallet-panel #top-metrics-grid > .metric-card > p {
+  width:100% !important;
+  margin:0 !important;
+  text-align:left !important;
+  white-space:normal !important;
+  overflow-wrap:anywhere !important;
+  font-size:clamp(11px,.95vw,14px) !important;
+  line-height:1.18 !important;
+}
+#wallet-panel #top-metrics-grid > .metric-card .metric-icon { display:none !important; }
+#portfolio-allocation-section { padding:14px !important; background:#fff !important; }
+#portfolio-allocation-section .flex.items-center.gap-2\.5 { gap:8px !important; margin-bottom:8px !important; }
+#portfolio-allocation-section h3 { font-size:12px !important; }
+#portfolio-allocation-section p { font-size:9px !important; line-height:1.35 !important; }
+#portfolio-allocation-widget .allocation-layout { grid-template-columns:minmax(105px, .85fr) minmax(0,1.15fr) !important; gap:9px !important; }
+#portfolio-allocation-widget .allocation-donut { width:min(100%,132px) !important; height:auto !important; aspect-ratio:1 !important; }
+#portfolio-allocation-widget .allocation-donut::before { inset:14px !important; }
+#portfolio-allocation-widget .allocation-donut-total { font-size:12px !important; }
+#portfolio-allocation-widget .allocation-donut-caption { font-size:7px !important; }
+#portfolio-allocation-widget .allocation-legend { grid-template-columns:minmax(0,1fr) !important; gap:6px !important; }
+#portfolio-allocation-widget .allocation-legend-item { padding:7px 8px !important; border-radius:9px !important; }
+#portfolio-allocation-widget .allocation-legend-heading { font-size:9px !important; }
+#portfolio-allocation-widget .allocation-legend-value { margin-top:3px !important; font-size:11px !important; }
+#portfolio-allocation-widget .allocation-legend-percent { font-size:9px !important; margin-top:1px !important; }
+@media (max-width:1100px) {
+  #entry-wallet-row { grid-template-columns:minmax(0,1fr) minmax(260px,.85fr) !important; }
+  #entry-wallet-row > #transaction-entry-panel { grid-column:1 / -1 !important; }
+  #entry-wallet-row > #wallet-panel,
+  #entry-wallet-row > #portfolio-allocation-section { grid-column:auto !important; }
+  #portfolio-allocation-widget .allocation-layout { grid-template-columns:minmax(110px,.8fr) minmax(0,1.2fr) !important; }
+}
+@media (max-width:640px) {
+  #entry-wallet-row { grid-template-columns:minmax(0,1fr) !important; gap:10px !important; }
+  #entry-wallet-row > #transaction-entry-panel,
+  #entry-wallet-row > #wallet-panel,
+  #entry-wallet-row > #portfolio-allocation-section { grid-column:1 !important; }
+  #transaction-entry-panel { padding:13px !important; }
+  #wallet-panel { padding:13px !important; }
+  #wallet-panel #top-metrics-grid { grid-template-columns:repeat(2,minmax(0,1fr)) !important; }
+  #wallet-panel #top-metrics-grid > .metric-card { min-height:62px !important; }
+  #portfolio-allocation-section { padding:13px !important; }
+  #portfolio-allocation-widget .allocation-layout { grid-template-columns:112px minmax(0,1fr) !important; gap:10px !important; }
+  #portfolio-allocation-widget .allocation-donut { width:108px !important; }
+  #portfolio-allocation-widget .allocation-donut::before { inset:12px !important; }
+  #portfolio-allocation-widget .allocation-legend-item { padding:6px 7px !important; }
+}
+
+
+
+/* === V12: modern wallet and allocation cards; clearer desktop hierarchy === */
+#entry-wallet-row {
+  grid-template-columns:minmax(0,5fr) minmax(285px,3.15fr) minmax(330px,4.15fr) !important;
+  gap:14px !important;
+  align-items:stretch !important;
+}
+#entry-wallet-row > #transaction-entry-panel,
+#entry-wallet-row > #wallet-panel,
+#entry-wallet-row > #portfolio-allocation-section {
+  border-radius:22px !important;
+  box-shadow:0 10px 28px rgba(25,45,80,.075) !important;
+}
+#transaction-entry-panel h3 { font-size:14px !important; margin-bottom:15px !important; }
+#transaction-entry-panel label { font-size:11px !important; color:#52627a !important; }
+#transaction-entry-panel select,
+#transaction-entry-panel input { font-size:13px !important; min-height:40px; border-color:#dce5f1 !important; background:#fbfcff !important; }
+#transaction-entry-panel button { min-height:44px; font-size:13px !important; }
+#wallet-panel {
+  position:relative !important;
+  overflow:hidden !important;
+  padding:17px !important;
+  background:radial-gradient(circle at 100% 0%,rgba(255,255,255,.19),transparent 36%),linear-gradient(145deg,#073f4b 0%,#087c70 55%,#0a9874 100%) !important;
+  border:1px solid rgba(8,124,112,.55) !important;
+  box-shadow:0 12px 28px rgba(7,91,85,.19) !important;
+}
+#wallet-panel:after { content:""; position:absolute; width:180px; height:180px; border-radius:50%; right:-95px; bottom:-105px; border:1px solid rgba(255,255,255,.13); box-shadow:0 0 0 18px rgba(255,255,255,.035),0 0 0 38px rgba(255,255,255,.025); pointer-events:none; }
+#wallet-panel h3 { position:relative; z-index:1; color:#e8fffa !important; font-size:14px !important; font-weight:900 !important; letter-spacing:.06em !important; margin-bottom:13px !important; }
+#wallet-panel .cash-metric-item.cash-balance-item {
+  position:relative; z-index:1; min-height:108px !important; padding:16px 17px !important;
+  background:linear-gradient(120deg,rgba(255,255,255,.19),rgba(255,255,255,.09)) !important;
+  border:1px solid rgba(255,255,255,.24) !important; border-radius:17px !important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.12);
+}
+#wallet-panel .cash-metric-label { color:#c8f8ec !important; font-size:11px !important; font-weight:800 !important; letter-spacing:.06em !important; }
+#wallet-panel .cash-balance-item p { color:#fff !important; font-size:clamp(27px,2.1vw,36px) !important; line-height:1.12 !important; font-weight:950 !important; letter-spacing:-.045em !important; margin-top:9px !important; text-shadow:0 2px 12px rgba(0,0,0,.12); }
+#wallet-panel .wallet-overview-divider { height:1px; margin:15px 0 12px !important; background:linear-gradient(90deg,rgba(255,255,255,.3),rgba(255,255,255,.05)) !important; }
+#wallet-panel .wallet-overview-heading { position:relative; z-index:1; margin-bottom:10px !important; }
+#wallet-panel .wallet-overview-heading > span { width:28px !important; height:28px !important; border-radius:9px !important; background:rgba(255,255,255,.15) !important; font-size:14px !important; }
+#wallet-panel .wallet-overview-heading h4 { color:#e3fff7 !important; font-size:11px !important; letter-spacing:.075em !important; }
+#wallet-panel #top-metrics-grid { position:relative; z-index:1; grid-template-columns:repeat(2,minmax(0,1fr)) !important; gap:8px !important; }
+#wallet-panel #top-metrics-grid > .metric-card {
+  min-height:83px !important; padding:11px 12px !important; border-radius:13px !important;
+  display:flex !important; flex-direction:column !important; justify-content:center !important; align-items:flex-start !important; gap:7px !important;
+  border:1px solid rgba(255,255,255,.72) !important; box-shadow:0 4px 12px rgba(0,0,0,.055) !important;
+}
+#wallet-panel #top-metrics-grid > .metric-card h3 { color:#526174 !important; font-size:9px !important; line-height:1.3 !important; letter-spacing:.035em !important; font-weight:850 !important; white-space:normal !important; margin:0 !important; }
+#wallet-panel #top-metrics-grid > .metric-card > p { color:#172033 !important; font-size:clamp(14px,1.15vw,18px) !important; font-weight:950 !important; line-height:1.2 !important; text-align:left !important; white-space:normal !important; overflow-wrap:anywhere !important; margin:0 !important; }
+#wallet-panel #top-metrics-grid > .metric-portfolio { background:linear-gradient(145deg,#f0eaff,#fff) !important; border-left:4px solid #8b5cf6 !important; }
+#wallet-panel #top-metrics-grid > .metric-invested { background:linear-gradient(145deg,#eaf2ff,#fff) !important; border-left:4px solid #3b82f6 !important; }
+#wallet-panel #top-metrics-grid > .metric-realized { background:linear-gradient(145deg,#fff5df,#fff) !important; border-left:4px solid #f59e0b !important; }
+#wallet-panel #top-metrics-grid > .metric-profit { background:linear-gradient(145deg,#e8f8ef,#fff) !important; border-left:4px solid #16a34a !important; }
+#wallet-panel #top-metrics-grid > .metric-card .metric-icon { display:none !important; }
+#portfolio-allocation-section {
+  padding:17px !important; position:relative; overflow:hidden;
+  background:radial-gradient(circle at 100% 0%,#f0eaff 0%,transparent 42%),linear-gradient(145deg,#fff 0%,#fbfaff 100%) !important;
+  border:1px solid #e7e0f7 !important;
+}
+#portfolio-allocation-section .flex.items-center.gap-2\.5 { margin-bottom:14px !important; }
+#portfolio-allocation-section .flex.items-center.gap-2\.5 > span { width:34px !important; height:34px !important; border-radius:11px !important; background:#eee8ff !important; color:#7046c5 !important; }
+#portfolio-allocation-section h3 { color:#35235f !important; font-size:14px !important; letter-spacing:.055em !important; }
+#portfolio-allocation-section p { color:#82789b !important; font-size:10px !important; line-height:1.45 !important; }
+#portfolio-allocation-widget .allocation-layout { grid-template-columns:minmax(138px,.9fr) minmax(0,1.1fr) !important; gap:14px !important; align-items:center !important; }
+#portfolio-allocation-widget .allocation-donut { width:min(100%,164px) !important; height:auto !important; aspect-ratio:1 !important; filter:drop-shadow(0 7px 12px rgba(83,61,145,.13)); }
+#portfolio-allocation-widget .allocation-donut::before { inset:18px !important; background:linear-gradient(145deg,#fff,#faf8ff) !important; box-shadow:inset 0 0 0 1px #eee9f8 !important; }
+#portfolio-allocation-widget .allocation-donut-total { color:#2c2148 !important; font-size:clamp(15px,1.3vw,20px) !important; font-weight:950 !important; letter-spacing:-.035em; }
+#portfolio-allocation-widget .allocation-donut-caption { color:#8b82a0 !important; font-size:8px !important; letter-spacing:.07em !important; }
+#portfolio-allocation-widget .allocation-legend { grid-template-columns:minmax(0,1fr) !important; gap:8px !important; }
+#portfolio-allocation-widget .allocation-legend-item { padding:10px 11px !important; border:1px solid #ebe6f5 !important; border-radius:13px !important; background:rgba(255,255,255,.9) !important; box-shadow:0 3px 9px rgba(61,43,105,.035); }
+#portfolio-allocation-widget .allocation-legend-heading { font-size:10px !important; color:#5c5470 !important; }
+#portfolio-allocation-widget .allocation-dot { width:10px !important; height:10px !important; flex-basis:10px !important; border-radius:4px !important; }
+#portfolio-allocation-widget .allocation-legend-value { margin-top:5px !important; color:#2d2541 !important; font-size:clamp(13px,1.05vw,16px) !important; font-weight:950 !important; }
+#portfolio-allocation-widget .allocation-bar { height:5px; margin-top:7px; border-radius:99px; background:#f0edf5; overflow:hidden; }
+#portfolio-allocation-widget .allocation-bar span { display:block; height:100%; border-radius:99px; min-width:2px; }
+#portfolio-allocation-widget .allocation-legend-percent { margin-top:5px !important; color:#5d5277 !important; font-size:11px !important; font-weight:900 !important; }
+#portfolio-allocation-widget .allocation-legend-percent small { color:#9a92a9; font-size:9px; font-weight:700; }
+@media (max-width:1200px) and (min-width:901px) {
+  #entry-wallet-row { grid-template-columns:minmax(0,1.3fr) minmax(0,1fr) !important; }
+  #entry-wallet-row > #transaction-entry-panel { grid-column:1 / -1 !important; }
+  #entry-wallet-row > #wallet-panel, #entry-wallet-row > #portfolio-allocation-section { grid-column:auto !important; }
+}
+@media (max-width:900px) {
+  #entry-wallet-row { grid-template-columns:minmax(0,1fr) !important; }
+  #entry-wallet-row > #transaction-entry-panel, #entry-wallet-row > #wallet-panel, #entry-wallet-row > #portfolio-allocation-section { grid-column:1 !important; }
+  #wallet-panel #top-metrics-grid > .metric-card { min-height:86px !important; }
+  #portfolio-allocation-widget .allocation-layout { grid-template-columns:minmax(145px,.85fr) minmax(0,1.15fr) !important; }
+}
+@media (max-width:520px) {
+  #wallet-panel .cash-balance-item p { font-size:28px !important; }
+  #wallet-panel #top-metrics-grid > .metric-card { min-height:78px !important; padding:10px !important; }
+  #wallet-panel #top-metrics-grid > .metric-card > p { font-size:14px !important; }
+  #portfolio-allocation-widget .allocation-layout { grid-template-columns:112px minmax(0,1fr) !important; gap:10px !important; }
+  #portfolio-allocation-widget .allocation-donut { width:108px !important; }
+  #portfolio-allocation-widget .allocation-donut::before { inset:12px !important; }
+  #portfolio-allocation-widget .allocation-donut-total { font-size:11px !important; }
+  #portfolio-allocation-widget .allocation-donut-caption { font-size:6px !important; }
+  #portfolio-allocation-widget .allocation-legend-item { padding:8px !important; }
+  #portfolio-allocation-widget .allocation-legend-heading { font-size:8px !important; }
+  #portfolio-allocation-widget .allocation-legend-value { font-size:11px !important; }
+  #portfolio-allocation-widget .allocation-legend-percent { font-size:9px !important; }
+}
+
+
+/* === v13: compact, clearer market tracking cards === */
+#market-tracking-section { padding:12px !important; }
+#market-tracking-section > div:first-child { margin-bottom:8px !important; padding:2px 2px 7px !important; }
+#market-prices-widget { gap:7px !important; }
+#market-prices-widget > div:last-child { margin-bottom:0 !important; }
+#market-prices-widget .market-card {
+  padding:11px 12px !important;
+  border-radius:14px !important;
+  border:1px solid #dce5f1 !important;
+  border-left:3px solid #6886d8 !important;
+  box-shadow:0 2px 7px rgba(30,55,90,.035) !important;
+  background:#fff !important;
+}
+#market-prices-widget .market-card:nth-of-type(2n) { border-left-color:#17a58a !important; }
+#market-prices-widget .market-card:nth-of-type(3n) { border-left-color:#d69a38 !important; }
+#market-prices-widget .market-name-row { min-height:28px; gap:8px !important; }
+#market-prices-widget .market-name-row .font-extrabold { font-size:15px !important; line-height:1.25 !important; letter-spacing:.01em; }
+#market-prices-widget .market-subtitle { font-size:10px !important; color:#8491a5 !important; }
+#market-prices-widget .market-card > .grid {
+  display:grid !important;
+  grid-template-columns:repeat(5,minmax(0,1fr)) !important;
+  gap:6px !important;
+  margin-top:8px !important;
+}
+#market-prices-widget .market-price-panel {
+  min-width:0 !important;
+  min-height:64px !important;
+  padding:8px 9px !important;
+  border-radius:10px !important;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  gap:2px;
+}
+#market-prices-widget .market-price-label {
+  font-size:10px !important;
+  line-height:1.2 !important;
+  letter-spacing:.015em !important;
+  font-weight:800 !important;
+  color:#64748b !important;
+}
+#market-prices-widget .market-price-value {
+  margin-top:3px !important;
+  font-size:clamp(15px,1.1vw,18px) !important;
+  line-height:1.2 !important;
+  font-weight:900 !important;
+  overflow-wrap:anywhere !important;
+  letter-spacing:-.02em;
+}
+#market-prices-widget .unit-price-strip {
+  grid-template-columns:repeat(3,minmax(0,1fr)) !important;
+  gap:6px !important;
+  margin-top:7px !important;
+}
+#market-prices-widget .unit-price-item {
+  padding:7px 9px !important;
+  gap:7px !important;
+  border-radius:10px !important;
+  min-height:48px;
+}
+#market-prices-widget .unit-price-icon {
+  width:25px !important; height:25px !important; flex-basis:25px !important;
+  border-radius:8px !important; font-size:12px !important;
+}
+#market-prices-widget .unit-price-label { font-size:9px !important; line-height:1.2 !important; }
+#market-prices-widget .unit-price-value { font-size:13px !important; line-height:1.2 !important; margin-top:3px !important; }
+#market-prices-widget .unit-price-difference-values { gap:3px !important; }
+#market-prices-widget .unit-price-difference-row { gap:2px 5px !important; }
+#market-prices-widget .unit-price-difference-row .unit-price-label { font-size:8px !important; }
+#market-prices-widget .unit-price-difference-row .unit-price-value { font-size:12px !important; }
+#market-prices-widget .volume-summary { margin-top:7px !important; padding-top:6px !important; border-top:1px solid #edf1f6; }
+#market-prices-widget .volume-summary .volume-heading { margin-bottom:5px !important; font-size:9px !important; letter-spacing:.035em; }
+#market-prices-widget .volume-summary > .flex { gap:6px !important; }
+#market-prices-widget .volume-chip { padding:5px 8px !important; border-radius:8px !important; font-size:10px !important; gap:4px; }
+#market-prices-widget .volume-chip .volume-value { font-size:13px !important; line-height:1.15 !important; margin-top:1px !important; }
+#market-prices-widget .savings-details { margin-top:7px !important; }
+#market-prices-widget .savings-details summary { padding:8px 10px !important; font-size:10px !important; }
+#market-prices-widget .savings-detail-list { gap:5px !important; padding:0 8px 8px !important; }
+#market-prices-widget .savings-detail-row { padding:7px 8px !important; gap:6px !important; font-size:10px !important; }
+#market-prices-widget .savings-detail-label { font-size:8px !important; }
+#market-prices-widget .savings-detail-value { font-size:11px !important; margin-top:2px !important; }
+@media (min-width:641px) and (max-width:1050px) {
+  #market-prices-widget .market-card > .grid { grid-template-columns:repeat(3,minmax(0,1fr)) !important; }
+  #market-prices-widget .market-price-value { font-size:16px !important; }
+}
+@media (max-width:640px) {
+  #market-tracking-section { padding:9px !important; }
+  #market-prices-widget .market-card { padding:9px !important; }
+  #market-prices-widget .market-card > .grid { grid-template-columns:repeat(2,minmax(0,1fr)) !important; gap:5px !important; }
+  #market-prices-widget .market-price-panel { min-height:57px !important; padding:7px 8px !important; }
+  #market-prices-widget .market-price-label { font-size:9px !important; }
+  #market-prices-widget .market-price-value { font-size:15px !important; }
+  #market-prices-widget .unit-price-strip { grid-template-columns:1fr !important; gap:5px !important; }
+  #market-prices-widget .unit-price-item { min-height:40px; padding:6px 8px !important; }
+  #market-prices-widget .unit-price-icon { width:23px !important; height:23px !important; flex-basis:23px !important; }
+  #market-prices-widget .unit-price-value { font-size:13px !important; }
+  #market-prices-widget .volume-chip { padding:5px 7px !important; }
+}
+
 </style>
 </head>
 <body class="bg-slate-50 font-sans leading-normal tracking-normal text-gray-800 text-sm">
@@ -503,7 +846,9 @@
 <!-- Tổng quan tài sản: các widget quan trọng luôn ở đầu trang -->
 
 <!-- Dashboard chính: nhập liệu, giá thị trường, danh mục và lịch sử trong một luồng -->
-<main class="flex-grow max-w-7xl w-full mx-auto px-4 py-4 space-y-4"><section class="grid grid-cols-1 xl:grid-cols-3 gap-4 items-stretch" id="entry-wallet-row"><div class="bg-white p-4 sm:p-5 rounded-2xl shadow-xs border border-slate-100 min-w-0" id="transaction-entry-panel">
+<main class="flex-grow max-w-7xl w-full mx-auto px-4 py-4 space-y-4">
+
+<section class="grid grid-cols-1 gap-3 items-stretch" id="entry-wallet-row"><div class="bg-white p-4 sm:p-5 rounded-2xl shadow-xs border border-slate-100 min-w-0" id="transaction-entry-panel">
 <h3 class="text-sm font-extrabold text-slate-800 uppercase tracking-wide mb-4 flex items-center gap-2"><span class="inline-flex w-9 h-9 items-center justify-center rounded-xl bg-blue-50 text-lg">✨</span> THÊM GIAO DỊCH</h3>
 <div class="grid grid-cols-1 md:grid-cols-3 gap-3 mb-3">
 <div>
@@ -572,7 +917,18 @@
 </div>
 
 </div>
-</div></section><section class="bg-white p-4 sm:p-5 rounded-2xl shadow-sm border border-slate-100 min-w-0" id="market-tracking-section"><div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-100 min-w-0">
+</div><section id="portfolio-allocation-section" class="bg-white p-4 sm:p-5 rounded-2xl shadow-sm border border-slate-100 min-w-0">
+  <div class="flex items-center gap-2.5 mb-3">
+    <span class="inline-flex w-9 h-9 items-center justify-center rounded-xl bg-violet-50 text-violet-700">◔</span>
+    <div>
+      <h3 class="text-sm font-extrabold text-slate-800 uppercase tracking-wide">TỶ TRỌNG DANH MỤC</h3>
+      <p class="text-[10px] text-slate-400 mt-0.5">Cơ cấu 3 nhóm tài sản theo giá trị hiện tại · Không gồm tiền mặt</p>
+    </div>
+  </div>
+  <div id="portfolio-allocation-widget">
+    <div class="text-center text-xs text-slate-400 py-5">Đang tổng hợp danh mục...</div>
+  </div>
+</section></section><section class="bg-white p-4 sm:p-5 rounded-2xl shadow-sm border border-slate-100 min-w-0" id="market-tracking-section"><div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-100 min-w-0">
 <div class="flex justify-between items-center gap-2 mb-3">
 <div class="flex items-center gap-2.5">
 <span class="inline-flex w-9 h-9 items-center justify-center rounded-xl bg-blue-50 text-blue-700">↗</span>
@@ -1152,15 +1508,14 @@
                     if (assetMap[sym]) maxHint = ` (Số dư: ${assetMap[sym].qty.toLocaleString()} đ)`;
                 }
                 container.innerHTML = `
-                    <div class="${type === 'SELL' ? 'md:col-span-1' : 'md:col-span-3'}">
+                    <div class="md:col-span-1">
                         <label class="block text-[11px] font-bold text-gray-500 mb-1">💵 Số tiền (VNĐ)${maxHint}</label>
                         <input type="text" inputmode="decimal" id="${prefix}-capital" placeholder="0" class="w-full border border-slate-200 p-2 rounded-xl text-xs">
                     </div>
-                    ${type === 'SELL' ? `
                     <div class="md:col-span-2">
-                        <label class="block text-[11px] font-bold text-gray-500 mb-1">📝 Ghi chú / mục đích rút tiền</label>
-                        <input type="text" id="${prefix}-note" maxlength="240" placeholder="VD: Chi phí sinh hoạt, mua sắm, thanh toán..." class="w-full border border-slate-200 p-2 rounded-xl text-xs">
-                    </div>` : ''}
+                        <label class="block text-[11px] font-bold text-gray-500 mb-1">📝 Ghi chú giao dịch</label>
+                        <input type="text" id="${prefix}-note" maxlength="240" placeholder="VD: Nạp tiền tiết kiệm, nhận lương, chi phí sinh hoạt..." class="w-full border border-slate-200 p-2 rounded-xl text-xs">
+                    </div>
                 `;
             } else if (channel === 'VANG' || channel === 'CK') {
                 let maxHint = "";
@@ -1248,7 +1603,7 @@
             }
 
             let tx = { type, channel, symbol, date };
-            if (channel === 'TIENMAT' && type === 'SELL') {
+            if (channel === 'TIENMAT') {
                 tx.note = (document.getElementById('tx-note')?.value || '').trim();
             }
 
@@ -1422,7 +1777,7 @@
                 if (document.getElementById('edit-funding-source')) document.getElementById('edit-funding-source').value = tx.fundingSource === 'ROLLOVER' ? 'ROLLOVER' : 'CASH';
             } else if (tx.channel === 'TIENMAT') {
                 document.getElementById('edit-capital').value = formatNumericValue(tx.capital);
-                if (tx.type === 'SELL' && document.getElementById('edit-note')) {
+                if (document.getElementById('edit-note')) {
                     document.getElementById('edit-note').value = tx.note || '';
                 }
             } else if (tx.channel === 'VANG' || tx.channel === 'CK') {
@@ -1460,7 +1815,7 @@
             }
 
             let tx = { type, channel, symbol, date };
-            if (channel === 'TIENMAT' && type === 'SELL') {
+            if (channel === 'TIENMAT') {
                 tx.note = (document.getElementById('edit-note')?.value || '').trim();
             }
 
@@ -1681,6 +2036,59 @@
             return result;
         }
 
+        function renderPortfolioAllocation(displayAssets, totalPortfolioVal) {
+            const widget = document.getElementById('portfolio-allocation-widget');
+            if (!widget) return;
+
+            // Widget chỉ gom thành 3 nhóm đầu tư; ví tiền mặt không tạo thành nhóm riêng.
+            // Mẫu số là tổng giá trị hiện tại của 3 nhóm để tỷ trọng cộng lại đúng 100%.
+            const groups = [
+                { key: 'VANG', label: 'VÀNG', color: '#eab308', value: 0 },
+                { key: 'CK_CCQ', label: 'CHỨNG KHOÁN VÀ CHỨNG CHỈ QUỸ', color: '#2563eb', value: 0 },
+                { key: 'TIETKIEM', label: 'TIẾT KIỆM', color: '#8b5cf6', value: 0 }
+            ];
+            (displayAssets || []).forEach(asset => {
+                const value = Math.max(0, Number(asset.marketVal) || 0);
+                if (asset.channel === 'TIENMAT') return;
+                if (asset.channel === 'TIETKIEM') groups[2].value += value;
+                else if (asset.channel === 'VANG') groups[0].value += value;
+                else if (asset.channel === 'CK' || asset.channel === 'CCQ') groups[1].value += value;
+            });
+            const items = groups.filter(item => item.value > 0);
+            const allocationTotal = items.reduce((sum, item) => sum + item.value, 0);
+
+            if (!(allocationTotal > 0) || !items.length) {
+                widget.innerHTML = '<div class="text-center text-xs text-slate-400 py-5">Chưa có tài sản đầu tư để phân bổ tỷ trọng.</div>';
+                return;
+            }
+
+            let cumulative = 0;
+            const stops = items.map(item => {
+                const start = cumulative;
+                cumulative += item.value / allocationTotal * 100;
+                return `${item.color} ${start.toFixed(4)}% ${cumulative.toFixed(4)}%`;
+            });
+            const legend = items.map(item => {
+                const percent = item.value / allocationTotal * 100;
+                return `<div class="allocation-legend-item" style="--allocation-color:${item.color}">
+                    <div class="allocation-legend-heading"><span class="allocation-dot" style="background:${item.color}"></span><span class="allocation-legend-name" title="${escapeHtml(item.label)}">${escapeHtml(item.label)}</span></div>
+                    <div class="allocation-legend-value">${formatCurrencyCompact(item.value)}</div>
+                    <div class="allocation-bar"><span style="width:${percent.toFixed(2)}%;background:${item.color}"></span></div>
+                    <div class="allocation-legend-percent">${percent.toFixed(2)}% <small>tỷ trọng</small></div>
+                </div>`;
+            }).join('');
+
+            widget.innerHTML = `<div class="allocation-layout">
+                <div class="allocation-donut" role="img" aria-label="Biểu đồ tỷ trọng 3 nhóm tài sản theo giá trị hiện tại" style="background:conic-gradient(${stops.join(',')})">
+                    <div class="allocation-donut-center">
+                        <div class="allocation-donut-total">${formatCurrencyCompact(allocationTotal)}</div>
+                        <div class="allocation-donut-caption">TỔNG GIÁ TRỊ ĐẦU TƯ</div>
+                    </div>
+                </div>
+                <div class="allocation-legend">${legend}</div>
+            </div>`;
+        }
+
         function renderDashboard() {
             // Dùng để tính số ngày còn lại của các khoản tiết kiệm trong bảng tổng hợp.
             // Biến này thuộc phạm vi renderDashboard, không liên quan đến cột Số ngày của lịch sử giao dịch.
@@ -1851,15 +2259,17 @@
             });
 
             // Bảo đảm tổng danh mục dùng cùng một cơ sở tính với các thẻ bên dưới.
+            // Tổng giá trị hiện tại là mẫu số chung cho mọi tỷ trọng.
             totalPortfolioVal = displayAssets.reduce((sum, asset) => sum + (Number(asset.marketVal) || 0), 0);
             displayAssets.sort((a, b) => b.marketVal - a.marketVal);
+            renderPortfolioAllocation(displayAssets, totalPortfolioVal);
 
             const realTotalInvested = calculateNetExternalCapital();
             document.getElementById('total-invested').innerText = formatCurrencyCompact(realTotalInvested);
             let totalCurrentCost = 0;
             let totalUnrealizedProfit = 0;
             const cardsHtml = displayAssets.map((asset, idx) => {
-                const weight = totalPortfolioVal > 0 ? asset.marketVal / totalPortfolioVal * 100 : 0;
+                const weight = totalPortfolioVal > 0 ? (Number(asset.marketVal) || 0) / totalPortfolioVal * 100 : 0;
                 const isSavings = asset.channel === 'TIETKIEM';
                 const isCash = asset.channel === 'TIENMAT';
                 if (!isCash) {
